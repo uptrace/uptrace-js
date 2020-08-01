@@ -1,0 +1,52 @@
+{
+  "name": "uptrace-base",
+  "version": "0.0.1",
+  "description": "Uptrace JS exporter for OpenTelemetry",
+  "main": "build/src/index.js",
+  "types": "build/src/index.d.ts",
+  "scripts": {
+    "bench": "node benchmark",
+    "clean": "lerna run clean",
+    "postinstall": "yarn run bootstrap",
+    "precompile": "tsc --version",
+    "version:update": "lerna run version:update",
+    "compile": "lerna run compile",
+    "test": "lerna run test",
+    "test:browser": "lerna run test:browser",
+    "bootstrap": "lerna bootstrap",
+    "bump": "lerna publish",
+    "codecov": "lerna run codecov",
+    "codecov:browser": "lerna run codecov:browser",
+    "changelog": "lerna-changelog",
+    "predocs-test": "yarn run docs",
+    "docs-test": "lerna run docs-test",
+    "docs": "lerna run docs",
+    "docs-deploy": "lerna run docs-deploy",
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint:fix",
+    "lint:examples": "eslint ./examples/**/*.js",
+    "lint:examples:fix": "eslint ./examples/**/*.js --fix",
+    "lint:markdown": "./node_modules/.bin/markdownlint $(git ls-files '*.md') -i ./CHANGELOG.md",
+    "lint:markdown:fix": "./node_modules/.bin/markdownlint $(git ls-files '*.md') -i ./CHANGELOG.md --fix"
+  },
+  "repository": "uptrace/uptrace-js",
+  "keywords": [
+    "opentelemetry",
+    "nodejs",
+    "profiling",
+    "metrics",
+    "stats",
+    "uptrace"
+  ],
+  "author": "Uptrace Authors",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "3.7.1",
+    "@typescript-eslint/parser": "3.7.1",
+    "eslint": "7.6.0",
+    "gts": "2.0.2",
+    "lerna": "3.22.1",
+    "markdownlint-cli": "0.23.2",
+    "typescript": "3.9.7"
+  }
+}
