@@ -25,18 +25,26 @@ export function setupOnError(tracer: Tracer): void {
       startedSpan = true
     }
 
+    const attrs: Attributes = {
+      onerror: true,
+    }
+
+    if (window.navigator && window.navigator.userAgent) {
+      attrs['http.user_agent'] = String(window.navigator.userAgent)
+    }
+
+    if (window.location) {
+      attrs['http.url'] = String(window.location)
+    }
+
     if (err) {
-      span.addEvent('exception', {
-        'exception.type': err.name,
-        'exception.message': err.message,
-        'exception.stacktrace': err.stack,
-        onerror: true,
-      })
+      attrs['exception.type'] = err.name
+      attrs['exception.message'] = err.message
+      attrs['exception.stacktrace'] = err.stack
+
+      span.addEvent('exception', attrs)
     } else if (message) {
-      const attrs: Attributes = {
-        'exception.message': message,
-        onerror: true,
-      }
+      attrs['exception.message'] = message
       if (file) {
         attrs['frame.file'] = file
       }
