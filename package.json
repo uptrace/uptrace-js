@@ -14,7 +14,7 @@
     "test": "lerna run test",
     "test:browser": "lerna run test:browser",
     "bootstrap": "lerna bootstrap",
-    "bump": "lerna publish",
+    "bump": "lerna publish --skip-npm --no-git-tag-version --no-push",
     "codecov": "lerna run codecov",
     "codecov:browser": "lerna run codecov:browser",
     "changelog": "lerna-changelog",
