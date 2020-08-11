@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "precompile": "tsc --version",
     "version:update": "node ../../scripts/version-update.js",
-    "compile": "yarn run version:update && tsc -p .",
+    "compile": "rm -rf ./build && yarn run version:update && tsc -p .",
     "docs-test": "linkinator docs/out --silent",
     "docs": "typedoc --tsconfig tsconfig.json --exclude test/**/*.ts",
     "prepare": "yarn run compile",

@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "precompile": "tsc --version",
     "version:update": "node ../../scripts/version-update.js",
-    "compile": "yarn run version:update && tsc -p .",
+    "compile": "rm -rf ./build && yarn run version:update && tsc -p .",
     "docs-test": "linkinator docs/out --silent",
     "docs": "typedoc --tsconfig tsconfig.json --exclude test/**/*.ts",
     "prepare": "yarn run compile",
@@ -49,20 +49,20 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.10.1",
-    "@opentelemetry/core": "^0.10.1",
-    "@opentelemetry/tracing": "^0.10.1",
-    "cross-fetch": "^3.0.4"
+    "@opentelemetry/api": "^0.10.2",
+    "@opentelemetry/core": "^0.10.2",
+    "@opentelemetry/tracing": "^0.10.2",
+    "cross-fetch": "^3.0.5"
   },
   "devDependencies": {
-    "@types/mocha": "8.0.0",
+    "@types/mocha": "8.0.1",
     "@types/node": "14.0.27",
-    "@typescript-eslint/eslint-plugin": "3.7.1",
+    "@typescript-eslint/eslint-plugin": "3.8.0",
     "eslint": "7.6.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "3.1.4",
     "gts": "2.0.2",
-    "mocha": "7.2.0",
+    "mocha": "8.1.1",
     "nyc": "15.1.0",
     "ts-mocha": "7.0.0",
     "typescript": "3.9.7"

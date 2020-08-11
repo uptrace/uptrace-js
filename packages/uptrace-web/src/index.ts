@@ -1,2 +1,2 @@
 export * from '@uptrace/core'
-export * from './onerror'
+export * from './uptrace'

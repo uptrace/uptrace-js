@@ -4,6 +4,8 @@ import { hrTimeToTimeStamp, ExportResult } from '@opentelemetry/core'
 import { Attributes, Link, TimedEvent } from '@opentelemetry/api'
 import { SpanExporter, ReadableSpan, BatchSpanProcessor } from '@opentelemetry/tracing'
 
+import { Config } from './config'
+
 interface ExpoEvent {
   name: string
   attrs: Attributes | undefined
@@ -39,11 +41,6 @@ interface ExpoSpan {
 }
 
 type TraceMap = { [traceId: string]: ExpoSpan[] | undefined }
-
-export interface Config {
-  dsn: string
-  disabled?: boolean
-}
 
 export class Exporter implements SpanExporter {
   private _cfg: Config
@@ -117,7 +114,7 @@ export class Exporter implements SpanExporter {
   shutdown(): void {}
 }
 
-export function batchSpanProcessor(cfg: Config): BatchSpanProcessor {
+export function newBatchSpanProcessor(cfg: Config): BatchSpanProcessor {
   return new BatchSpanProcessor(new Exporter(cfg), {
     bufferSize: 10000,
     bufferTimeout: 5 * 1000,

@@ -1,6 +1,6 @@
 {
-  "name": "uptrace-base",
-  "version": "0.0.1",
+  "name": "",
+  "version": "",
   "description": "Uptrace JS exporter for OpenTelemetry",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -41,8 +41,8 @@
   "author": "Uptrace Authors",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "3.7.1",
-    "@typescript-eslint/parser": "3.7.1",
+    "@typescript-eslint/eslint-plugin": "3.8.0",
+    "@typescript-eslint/parser": "3.8.0",
     "eslint": "7.6.0",
     "gts": "2.0.2",
     "lerna": "3.22.1",
