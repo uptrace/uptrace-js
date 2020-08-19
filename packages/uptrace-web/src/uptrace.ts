@@ -5,7 +5,7 @@ import { WebTracerProvider } from '@opentelemetry/web'
 
 import { Uptrace, Config } from '@uptrace/core'
 
-export function newUptrace(cfg: Config): Uptrace {
+export function createUptrace(cfg: Config): Uptrace {
   if (!cfg.provider) {
     const provider = new WebTracerProvider({
       //plugins: [new DocumentLoad()],
