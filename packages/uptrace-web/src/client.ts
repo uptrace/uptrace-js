@@ -8,6 +8,8 @@ import { Client, Config } from '@uptrace/core'
 export function createClient(cfg: Config): Client {
   if (!cfg.provider) {
     const provider = new WebTracerProvider({
+      resource: cfg.resource,
+      sampler: cfg.sampler,
       //plugins: [new DocumentLoad()],
     })
     provider.register({

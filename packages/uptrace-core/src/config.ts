@@ -1,4 +1,6 @@
+import { Sampler } from '@opentelemetry/api'
 import { BasicTracerProvider } from '@opentelemetry/tracing'
+import { Resource } from '@opentelemetry/resources'
 
 import { SpanFilter } from './types'
 
@@ -8,6 +10,13 @@ export interface Config {
   // Example: https://<key>@uptrace.dev/<project_id>
   // The default is to use UPTRACE_DSN environment var.
   dsn: string
+
+  // Resource contains attributes representing an entity that produces telemetry.
+  // These attributes will be copied to every span and event.
+  resource?: Resource
+
+  // Sampler is the default sampler used when creating new spans.
+  sampler?: Sampler
 
   filters?: SpanFilter[]
 
