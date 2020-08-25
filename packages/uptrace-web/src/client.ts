@@ -3,9 +3,9 @@ import { WebTracerProvider } from '@opentelemetry/web'
 //import { ZoneContextManager } from '@opentelemetry/context-zone'
 //import { DocumentLoad } from '@opentelemetry/plugin-document-load'
 
-import { Uptrace, Config } from '@uptrace/core'
+import { Client, Config } from '@uptrace/core'
 
-export function createUptrace(cfg: Config): Uptrace {
+export function createClient(cfg: Config): Client {
   if (!cfg.provider) {
     const provider = new WebTracerProvider({
       //plugins: [new DocumentLoad()],
@@ -17,13 +17,13 @@ export function createUptrace(cfg: Config): Uptrace {
     cfg.provider = provider
   }
 
-  const uptrace = new Uptrace(cfg)
+  const uptrace = new Client(cfg)
   setupOnError(uptrace)
 
   return uptrace
 }
 
-function setupOnError(uptrace: Uptrace): void {
+function setupOnError(uptrace: Client): void {
   const oldHandler = window.onerror
 
   window.onerror = function uptraceOnerrorHandler(

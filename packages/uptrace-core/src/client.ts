@@ -6,7 +6,7 @@ import { newBatchSpanProcessor } from './exporter'
 
 const DUMMY_SPAN_NAME = '__dummy__'
 
-export class Uptrace {
+export class Client {
   private _cfg: Config
   private _provider: BasicTracerProvider
   private _tracer?: Tracer

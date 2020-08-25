@@ -1,3 +1,3 @@
 export * from './config'
-export * from './uptrace'
+export * from './client'
 export * from './exporter'

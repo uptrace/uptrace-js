@@ -49,6 +49,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@opentelemetry/node": "^0.10.2",
     "@uptrace/core": "^0.0.3"
   },
   "devDependencies": {

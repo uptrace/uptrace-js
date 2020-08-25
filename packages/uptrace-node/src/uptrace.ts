@@ -1,13 +1,13 @@
 const { NodeTracerProvider } = require('@opentelemetry/node')
 
-import { Uptrace, Config } from '@uptrace/core'
+import { Client, Config } from '@uptrace/core'
 
-export function createUptrace(cfg: Config): Uptrace {
+export function createClient(cfg: Config): Client {
   if (!cfg.provider) {
     const provider = new NodeTracerProvider()
     cfg.provider = provider
   }
 
-  const uptrace = new Uptrace(cfg)
+  const uptrace = new Client(cfg)
   return uptrace
 }
