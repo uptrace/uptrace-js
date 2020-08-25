@@ -1,3 +1,4 @@
 export * from './config'
 export * from './client'
 export * from './exporter'
+export * from './types'

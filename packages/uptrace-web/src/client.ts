@@ -17,10 +17,30 @@ export function createClient(cfg: Config): Client {
     cfg.provider = provider
   }
 
-  const uptrace = new Client(cfg)
-  setupOnError(uptrace)
+  if (!cfg.filters) {
+    cfg.filters = []
+  }
 
-  return uptrace
+  cfg.filters.unshift((span) => {
+    if (typeof window === undefined) {
+      return true
+    }
+
+    if (window.navigator && window.navigator.userAgent) {
+      span.attrs['http.user_agent'] = String(window.navigator.userAgent)
+    }
+
+    if (window.location) {
+      span.attrs['http.url'] = String(window.location)
+    }
+
+    return true
+  })
+
+  const client = new Client(cfg)
+  setupOnError(client)
+
+  return client
 }
 
 function setupOnError(uptrace: Client): void {

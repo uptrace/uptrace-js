@@ -1,46 +1,13 @@
 import fetch from 'cross-fetch'
 
 import { hrTimeToTimeStamp, ExportResult } from '@opentelemetry/core'
-import { Attributes, Link, TimedEvent } from '@opentelemetry/api'
+import { Link, TimedEvent } from '@opentelemetry/api'
 import { SpanExporter, ReadableSpan, BatchSpanProcessor } from '@opentelemetry/tracing'
 
 import { Config } from './config'
+import type { SpanData, EventData, LinkData } from './types'
 
-interface ExpoEvent {
-  name: string
-  attrs: Attributes | undefined
-  time: string
-}
-
-interface ExpoLink {
-  traceId: string
-  spanId: string
-  attrs: Attributes | undefined
-}
-
-interface ExpoTracer {
-  name: string
-  version: string
-}
-
-interface ExpoSpan {
-  id: string
-  parentId: string
-
-  name: string
-  kind: number
-  startTime: string
-  endTime: string
-  attrs: Attributes
-
-  events: ExpoEvent[]
-  links: ExpoLink[]
-  resource: Attributes
-
-  tracer: ExpoTracer
-}
-
-type TraceMap = { [traceId: string]: ExpoSpan[] | undefined }
+type TraceMap = { [traceId: string]: SpanData[] | undefined }
 
 export class Exporter implements SpanExporter {
   private _cfg: Config
@@ -69,6 +36,19 @@ export class Exporter implements SpanExporter {
     }
   }
 
+  private _filter(span: SpanData): boolean {
+    if (!this._cfg.filters) {
+      return true
+    }
+
+    for (let fn of this._cfg.filters) {
+      if (!fn(span)) {
+        return false
+      }
+    }
+    return true
+  }
+
   export(spans: ReadableSpan[], resultCallback: (result: ExportResult) => void): void {
     if (this._cfg.disabled) {
       resultCallback(ExportResult.SUCCESS)
@@ -79,6 +59,10 @@ export class Exporter implements SpanExporter {
 
     for (const span of spans) {
       const expo = expoSpan(span)
+
+      if (!this._filter(expo)) {
+        continue
+      }
 
       const traceId = span.spanContext.traceId
       let expoSpans = m[traceId]
@@ -121,7 +105,7 @@ export function newBatchSpanProcessor(cfg: Config): BatchSpanProcessor {
   })
 }
 
-function expoSpan(span: ReadableSpan): ExpoSpan {
+function expoSpan(span: ReadableSpan): SpanData {
   const expo = {
     id: span.spanContext.spanId,
     parentId: span.parentSpanId,
@@ -137,13 +121,13 @@ function expoSpan(span: ReadableSpan): ExpoSpan {
     resource: span.resource.labels,
 
     tracer: span.instrumentationLibrary,
-  } as ExpoSpan
+  } as SpanData
 
   return expo
 }
 
-function expoEvents(events: TimedEvent[]): ExpoEvent[] {
-  const expoEvents: ExpoEvent[] = []
+function expoEvents(events: TimedEvent[]): EventData[] {
+  const expoEvents: EventData[] = []
   for (const event of events) {
     expoEvents.push({
       name: event.name,
@@ -154,8 +138,8 @@ function expoEvents(events: TimedEvent[]): ExpoEvent[] {
   return expoEvents
 }
 
-function expoLinks(links: Link[]): ExpoLink[] {
-  const expoLinks: ExpoLink[] = []
+function expoLinks(links: Link[]): LinkData[] {
+  const expoLinks: LinkData[] = []
   for (const link of links) {
     expoLinks.push({
       traceId: link.context.traceId,

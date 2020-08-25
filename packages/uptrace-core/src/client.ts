@@ -19,6 +19,7 @@ export class Client {
     } else {
       throw new Error('uptrace: Config.provider is required')
     }
+
     this._provider.addSpanProcessor(newBatchSpanProcessor(this._cfg))
   }
 
@@ -38,14 +39,6 @@ export class Client {
     if (!span) {
       span = tracer.startSpan(DUMMY_SPAN_NAME)
       startedSpan = true
-    }
-
-    if (window.navigator && window.navigator.userAgent) {
-      attrs['http.user_agent'] = String(window.navigator.userAgent)
-    }
-
-    if (window.location) {
-      attrs['http.url'] = String(window.location)
     }
 
     if (typeof err === 'string') {
