@@ -250,7 +250,7 @@
     "@opentelemetry/core" "^0.10.2"
     gcp-metadata "^3.5.0"
 
-"@opentelemetry/sdk-node@^0.10.2":
+"@opentelemetry/sdk-node@0.10.2":
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/@opentelemetry/sdk-node/-/sdk-node-0.10.2.tgz#29dc6aba2f522ab9acf72d48d73be89a24294619"
   integrity sha512-WRE9Jw3HPkYpo7072NO9XnYazI0Fuxx+Oq53p6bhLK+8ag78p2v1XotJdCAb6AD4AmImQTXTpMxkxaclBXLmMA==
