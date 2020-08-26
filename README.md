@@ -12,5 +12,5 @@
 uptrace-js is the official Uptrace client for JavaScript that sends your traces/spans to
 [Uptrace.dev](https://uptrace.dev). uptrace-js comes in two flavors:
 
-- [uptrace-node](https://docs.uptrace.dev/javascript/) - for Web browsers.
-- [uptrace-web](https://docs.uptrace.dev/node/) - for Node.js.
+- [@uptrace/node](https://docs.uptrace.dev/javascript/) - for Web browsers.
+- [@uptrace/web](https://docs.uptrace.dev/node/) - for Node.js.
