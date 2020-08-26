@@ -8,5 +8,5 @@
 
 ## Introduction
 
-@uptrace/node is Uptrace client for Node.js that sends your traces/spans to
+@uptrace/node is the official Uptrace client for Node.js that sends your traces/spans to
 [Uptrace.dev](https://uptrace.dev).
