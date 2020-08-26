@@ -4,7 +4,11 @@ import { NodeTracerProvider } from '@opentelemetry/node'
 import { Client } from '@uptrace/core'
 import { Config } from './config'
 
-export function createClient(cfg: Config): Client {
+export function createClient(cfg: Config = {}): Client {
+  if (!cfg.dsn && process.env.UPTRACE_DSN) {
+    cfg.dsn = process.env.UPTRACE_DSN
+  }
+
   if (!cfg.provider) {
     const nodeConfig: Partial<NodeSDKConfiguration> = {
       autoDetectResources: true,

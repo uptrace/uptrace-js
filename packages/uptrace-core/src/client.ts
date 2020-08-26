@@ -1,14 +1,22 @@
 import { TracerProvider, Attributes } from '@opentelemetry/api'
-import { BasicTracerProvider, Tracer, TracerConfig } from '@opentelemetry/tracing'
+import {
+  BasicTracerProvider,
+  Tracer,
+  TracerConfig,
+  BatchSpanProcessor,
+} from '@opentelemetry/tracing'
 
 import { Config } from './config'
-import { newBatchSpanProcessor } from './exporter'
+import { Exporter } from './exporter'
 
 const DUMMY_SPAN_NAME = '__dummy__'
 
 export class Client {
   private _cfg: Config
+
+  private _bsp: BatchSpanProcessor
   private _provider: BasicTracerProvider
+
   private _tracer?: Tracer
 
   constructor(cfg: Config) {
@@ -17,21 +25,33 @@ export class Client {
     if (this._cfg.provider) {
       this._provider = this._cfg.provider
     } else {
-      throw new Error('uptrace: Config.provider is required')
+      throw new Error('uptrace: config.provider is required')
     }
 
-    this._provider.addSpanProcessor(newBatchSpanProcessor(this._cfg))
+    const exporter = new Exporter(cfg)
+    this._bsp = new BatchSpanProcessor(exporter, {
+      bufferSize: 10000,
+      bufferTimeout: 5 * 1000,
+    })
+
+    this._provider.addSpanProcessor(this._bsp)
     this._provider.register()
+  }
+
+  public close() {
+    this._bsp.shutdown()
   }
 
   public getProvider(): TracerProvider {
     return this._provider
   }
 
+  // getTracer returns a named tracer that exports span to Uptrace.
   public getTracer(name: string, version = '*', config?: TracerConfig): Tracer {
     return this._provider.getTracer(name, version, config)
   }
 
+  // reportException reports an exception as a span event creating a dummy span if necessary.
   public reportException(err: Error | string, attrs: Attributes = {}) {
     let startedSpan = false
 

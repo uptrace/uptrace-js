@@ -2,7 +2,7 @@ import fetch from 'cross-fetch'
 
 import { hrTimeToTimeStamp, ExportResult } from '@opentelemetry/core'
 import { Link, TimedEvent } from '@opentelemetry/api'
-import { SpanExporter, ReadableSpan, BatchSpanProcessor } from '@opentelemetry/tracing'
+import { SpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 
 import { Config } from './config'
 import type { SpanData, EventData, LinkData } from './types'
@@ -96,13 +96,6 @@ export class Exporter implements SpanExporter {
   }
 
   shutdown(): void {}
-}
-
-export function newBatchSpanProcessor(cfg: Config): BatchSpanProcessor {
-  return new BatchSpanProcessor(new Exporter(cfg), {
-    bufferSize: 10000,
-    bufferTimeout: 5 * 1000,
-  })
 }
 
 function expoSpan(span: ReadableSpan): SpanData {

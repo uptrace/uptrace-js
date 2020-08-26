@@ -5,7 +5,13 @@ import { WebTracerProvider } from '@opentelemetry/web'
 
 import { Client, Config } from '@uptrace/core'
 
-export function createClient(cfg: Config): Client {
+const hasWindow = typeof window === undefined
+
+export function createClient(cfg: Config = {}): Client {
+  if (!cfg.dsn && hasWindow && window.UPTRACE_DSN) {
+    cfg.dsn = window.UPTRACE_DSN
+  }
+
   if (!cfg.provider) {
     const provider = new WebTracerProvider({
       resource: cfg.resource,
@@ -27,7 +33,7 @@ export function createClient(cfg: Config): Client {
   }
 
   cfg.filters.unshift((span) => {
-    if (typeof window === undefined) {
+    if (!hasWindow) {
       return true
     }
 
@@ -43,7 +49,9 @@ export function createClient(cfg: Config): Client {
   })
 
   const client = new Client(cfg)
-  setupOnError(client)
+  if (hasWindow) {
+    setupOnError(client)
+  }
 
   return client
 }
