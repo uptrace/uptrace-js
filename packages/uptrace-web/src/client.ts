@@ -22,6 +22,9 @@ export function createClient(cfg: Config): Client {
   if (!cfg.filters) {
     cfg.filters = []
   }
+  if (cfg.filter) {
+    cfg.filters.push(cfg.filter)
+  }
 
   cfg.filters.unshift((span) => {
     if (typeof window === undefined) {

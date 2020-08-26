@@ -21,6 +21,7 @@ export class Client {
     }
 
     this._provider.addSpanProcessor(newBatchSpanProcessor(this._cfg))
+    this._provider.register()
   }
 
   public getProvider(): TracerProvider {

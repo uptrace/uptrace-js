@@ -18,11 +18,16 @@ export interface Config {
   // Sampler is the default sampler used when creating new spans.
   sampler?: Sampler
 
-  filters?: SpanFilter[]
-
-  provider?: BasicTracerProvider
+  // Filter is the function used to filter and change span data.
+  filter?: SpanFilter
 
   // Disabled disables the exporter.
   // The default is to use UPTRACE_DISABLED environment var.
   disabled?: boolean
+
+  // Internal fields.
+
+  filters?: SpanFilter[]
+
+  provider?: BasicTracerProvider
 }
