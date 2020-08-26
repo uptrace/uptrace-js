@@ -44,5 +44,5 @@ tracer.withSpan(mainSpan, () => {
   span.end()
 })
 
-// flush and close the client.
+// Flush and close the client.
 upclient.close()
