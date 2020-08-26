@@ -53,7 +53,7 @@
     "@uptrace/core": "^0.0.3"
   },
   "devDependencies": {
-    "@opentelemetry/sdk-node": "^0.10.2",
+    "@opentelemetry/sdk-node": "0.10.2",
     "@types/node": "14.6.0",
     "@typescript-eslint/eslint-plugin": "3.10.1",
     "eslint": "7.7.0",
