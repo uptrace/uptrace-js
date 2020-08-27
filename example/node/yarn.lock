@@ -52,7 +52,7 @@
     "@opentelemetry/tracing" "^0.10.2"
     cross-fetch "^3.0.5"
 
-"@uptrace/node@^0.0.3":
+"@uptrace/node@0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@uptrace/node/-/node-0.0.3.tgz#e661c3b6cdffa6be8eea3c06eddcdb199e7234ab"
   integrity sha512-woXhP+MFTi/9NmhrebC7OqXYsLRupbIMhxTsRaOpa9JyfBM2hGsWNnZi+RCKiOYVTrR1R0oBhTO1wcpqSPSHfg==
