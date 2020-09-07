@@ -2,7 +2,7 @@
 
 To run this example:
 
-```
+```bash
 npm install
 UPTRACE_DSN="https://<key>@uptrace.dev/<project_id>" node app.js
 ```

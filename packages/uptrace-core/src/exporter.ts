@@ -111,7 +111,7 @@ function expoSpan(span: ReadableSpan): SpanData {
 
     events: expoEvents(span.events),
     links: expoLinks(span.links),
-    resource: span.resource.labels,
+    resource: span.resource.attributes,
 
     tracer: span.instrumentationLibrary,
   } as SpanData

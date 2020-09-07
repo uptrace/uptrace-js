@@ -1,7 +1,7 @@
 # Uptrace for JavaScript
 
 [![Build Status](https://travis-ci.org/uptrace/uptrace-js.svg?branch=master)](https://travis-ci.org/uptrace/uptrace-js)
-[![Documentation](https://img.shields.io/badge/docs-uptrace-brightgreen)](https://docs.uptrace.dev/javascript/)
+[![Documentation](https://img.shields.io/badge/uptrace-documentation-informational)](https://docs.uptrace.dev/javascript/)
 
 <a href="https://docs.uptrace.dev/javascript/">
   <img src="https://docs.uptrace.dev/devicons/javascript-original.svg" height="200px" />
