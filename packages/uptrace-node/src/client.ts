@@ -1,7 +1,7 @@
 import { NodeSDKConfiguration } from '@opentelemetry/sdk-node'
 import { NodeTracerProvider } from '@opentelemetry/node'
 
-import { Client } from '@uptrace/core'
+import { createClient as coreCreateClient, Client } from '@uptrace/core'
 import { Config } from './config'
 
 export function createClient(cfg: Config = {}): Client {
@@ -27,13 +27,6 @@ export function createClient(cfg: Config = {}): Client {
     cfg.provider = provider
   }
 
-  if (!cfg.filters) {
-    cfg.filters = []
-  }
-  if (cfg.filter) {
-    cfg.filters.push(cfg.filter)
-  }
-
-  const uptrace = new Client(cfg)
+  const uptrace = coreCreateClient(cfg)
   return uptrace
 }

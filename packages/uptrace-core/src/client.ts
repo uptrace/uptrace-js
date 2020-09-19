@@ -84,3 +84,14 @@ export class Client {
     return this._tracer
   }
 }
+
+export function createClient(cfg: Config = {}): Client {
+  if (!cfg.filters) {
+    cfg.filters = []
+  }
+  if (cfg.filter) {
+    cfg.filters.push(cfg.filter)
+  }
+
+  return new Client(cfg)
+}

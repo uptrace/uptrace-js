@@ -1,9 +1,9 @@
 import { Attributes } from '@opentelemetry/api'
-import { WebTracerProvider } from '@opentelemetry/web'
+import { WebTracerProvider, WebTracerConfig } from '@opentelemetry/web'
 //import { ZoneContextManager } from '@opentelemetry/context-zone'
 //import { DocumentLoad } from '@opentelemetry/plugin-document-load'
 
-import { Client, Config } from '@uptrace/core'
+import { createClient as coreCreateClient, Config, Client } from '@uptrace/core'
 
 const hasWindow = typeof window === undefined
 
@@ -13,11 +13,17 @@ export function createClient(cfg: Config = {}): Client {
   }
 
   if (!cfg.provider) {
-    const provider = new WebTracerProvider({
-      resource: cfg.resource,
-      sampler: cfg.sampler,
+    const webConfig: WebTracerConfig = {
       //plugins: [new DocumentLoad()],
-    })
+    }
+    if (cfg.resource) {
+      webConfig.resource = cfg.resource
+    }
+    if (cfg.sampler) {
+      webConfig.sampler = cfg.sampler
+    }
+
+    const provider = new WebTracerProvider(webConfig)
     provider.register({
       //contextManager: new ZoneContextManager(),
     })
@@ -27,9 +33,6 @@ export function createClient(cfg: Config = {}): Client {
 
   if (!cfg.filters) {
     cfg.filters = []
-  }
-  if (cfg.filter) {
-    cfg.filters.push(cfg.filter)
   }
 
   cfg.filters.unshift((span) => {
@@ -48,7 +51,8 @@ export function createClient(cfg: Config = {}): Client {
     return true
   })
 
-  const client = new Client(cfg)
+  const client = coreCreateClient(cfg)
+
   if (hasWindow) {
     setupOnError(client)
   }
