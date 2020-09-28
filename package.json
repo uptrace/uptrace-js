@@ -42,9 +42,9 @@
   "author": "Uptrace Authors",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.1.1",
-    "@typescript-eslint/parser": "4.1.1",
-    "eslint": "7.9.0",
+    "@typescript-eslint/eslint-plugin": "4.2.0",
+    "@typescript-eslint/parser": "4.2.0",
+    "eslint": "7.10.0",
     "gts": "2.0.2",
     "lerna": "3.22.1",
     "markdownlint-cli": "0.23.2",
