@@ -35,21 +35,17 @@ export function createClient(cfg: Config = {}): Client {
     cfg.filters = []
   }
 
-  cfg.filters.unshift((span) => {
-    if (!hasWindow) {
+  if (hasWindow) {
+    cfg.filters.unshift((span) => {
+      if (window.navigator && window.navigator.userAgent) {
+        span.attrs['http.user_agent'] = String(window.navigator.userAgent)
+      }
+      if (window.location) {
+        span.attrs['http.url'] = String(window.location)
+      }
       return true
-    }
-
-    if (window.navigator && window.navigator.userAgent) {
-      span.attrs['http.user_agent'] = String(window.navigator.userAgent)
-    }
-
-    if (window.location) {
-      span.attrs['http.url'] = String(window.location)
-    }
-
-    return true
-  })
+    })
+  }
 
   const client = coreCreateClient(cfg)
 
@@ -79,13 +75,13 @@ function setupOnError(uptrace: Client): void {
     } else {
       const attrs: Attributes = {}
       if (file) {
-        attrs['frame.file'] = file
+        attrs['code.filepath'] = file
       }
       if (line) {
-        attrs['frame.line'] = line
+        attrs['code.lineno'] = line
       }
       if (column) {
-        attrs['frame.column'] = column
+        attrs['code.colno'] = column
       }
       uptrace.reportException(String(message), attrs)
     }
