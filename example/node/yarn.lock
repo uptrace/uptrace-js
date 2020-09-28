@@ -66,23 +66,23 @@
     "@opentelemetry/resources" "^0.11.0"
     "@opentelemetry/semantic-conventions" "^0.11.0"
 
-"@uptrace/core@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@uptrace/core/-/core-0.1.1.tgz#eb941e8e3760a265a8c710ee50b6ae1bc3c87eff"
-  integrity sha512-c225vkdN4JOpa0FMQVQir7h0H5qzRx9jrXTTg+qNExAtf5v4t1Pkn8NH/F27gPFjQkBTrU67tiTk9wIVbTQy0Q==
+"@uptrace/core@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@uptrace/core/-/core-0.1.2.tgz#c4f0f375d91fc416be3875ad415fa5ff773980b0"
+  integrity sha512-Stiui0klsJhVkrbKAtDzZQEViDxvT2TCIxcZJ7FXMksDjnDekP5xXlOyUmPHaLg/1FSBxTYvNbJS1Ahz/V+4Kw==
   dependencies:
     "@opentelemetry/api" "^0.11.0"
     "@opentelemetry/core" "^0.11.0"
     "@opentelemetry/tracing" "^0.11.0"
     cross-fetch "^3.0.5"
 
-"@uptrace/node@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@uptrace/node/-/node-0.1.1.tgz#b40b99d2fed1ac0b1d5b702cef884388e0e861a6"
-  integrity sha512-yd8YjAg5hIZ9Hx0gVYApPyxFQddDwOGYBcQ4otVe+ML3l3SjrH5PZ/MB9rtN718/IPJAHNzues801sqUF5QvuQ==
+"@uptrace/node@0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@uptrace/node/-/node-0.1.2.tgz#f0c08e5bfd77aa6ffff7b0962b2aeadddba71f18"
+  integrity sha512-HBTN0nvUR42+byyLA+HQjsBgDpyjqVCn52/PZ6GTRxBeL4224z9/lMADQTCsbdqg9iV8BpyQyPZGCmvwKIj4ZQ==
   dependencies:
     "@opentelemetry/node" "^0.11.0"
-    "@uptrace/core" "^0.1.1"
+    "@uptrace/core" "^0.1.2"
 
 cross-fetch@^3.0.5:
   version "3.0.5"
