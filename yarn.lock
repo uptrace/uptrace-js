@@ -3053,10 +3053,10 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
   integrity sha1-TK+tdrxi8C+gObL5Tpo906ORpyU=
 
-gts@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/gts/-/gts-3.0.0.tgz#6ebdba7b8a1713f55907fbda8aa2e7abb4e60ddf"
-  integrity sha512-3liT4WARX+GXNpTLU1xZ8n5x/RUBCaYifBz7z4h2tCSsKO1yNbuRiBtaQPs321QgEqQ9qMoBUUtHf+2zgNUdjQ==
+gts@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/gts/-/gts-3.0.1.tgz#0670544ca7287c80dba85cf4e1625c898a70d90c"
+  integrity sha512-A2ysCoDNgXrPFa7snU4v9Jrll1NG266eVifo1s4bvweScHvsHWIShXpZbvNqxsOEtW+IFmrpGd/yYnpPXTw7zw==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^4.2.0"
     "@typescript-eslint/parser" "^4.2.0"
