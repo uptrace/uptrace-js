@@ -95,7 +95,11 @@ export class Exporter implements SpanExporter {
       })
   }
 
-  shutdown(): void {}
+  shutdown(): Promise<void> {
+    return new Promise((resolve) => {
+      resolve()
+    })
+  }
 }
 
 function expoSpan(span: ReadableSpan): SpanData {
