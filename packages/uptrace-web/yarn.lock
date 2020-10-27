@@ -1579,10 +1579,10 @@ growl@1.10.5:
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.5.tgz#f2735dc2283674fa67478b10181059355c369e5e"
   integrity sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA==
 
-gts@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/gts/-/gts-3.0.1.tgz#0670544ca7287c80dba85cf4e1625c898a70d90c"
-  integrity sha512-A2ysCoDNgXrPFa7snU4v9Jrll1NG266eVifo1s4bvweScHvsHWIShXpZbvNqxsOEtW+IFmrpGd/yYnpPXTw7zw==
+gts@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/gts/-/gts-3.0.2.tgz#a13ec9c0abdfaa718f57968f6cb74bf405f9472f"
+  integrity sha512-Vhy9/ToD7B8nlPIiNyBfeLwMCRb9Xw1eMh6lRu4/Th2ifMO/Tbi8q8GsqB975NMiHIkmsDTPki5d2x84WcUmgA==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^4.2.0"
     "@typescript-eslint/parser" "^4.2.0"
