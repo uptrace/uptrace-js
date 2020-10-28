@@ -9,6 +9,6 @@
   "author": "Uptrace",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "@uptrace/node": "0.1.2"
+    "@uptrace/node": "0.2.0"
   }
 }
