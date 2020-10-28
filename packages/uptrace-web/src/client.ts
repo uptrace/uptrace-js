@@ -5,7 +5,7 @@ import { WebTracerProvider, WebTracerConfig } from '@opentelemetry/web'
 
 import { createClient as coreCreateClient, Config, Client } from '@uptrace/core'
 
-const hasWindow = typeof window === undefined
+const hasWindow = typeof window !== undefined
 
 export function createClient(cfg: Config = {}): Client {
   if (!cfg.dsn && hasWindow && (window as any).UPTRACE_DSN) {
