@@ -8,6 +8,9 @@ export interface SpanData {
   kind: number
   startTime: string
   endTime: string
+
+  statusCode: string
+  statusMessage: string
   attrs: Attributes
 
   events: EventData[]

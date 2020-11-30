@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch'
 
 import { hrTimeToTimeStamp, ExportResult } from '@opentelemetry/core'
-import { Link, TimedEvent } from '@opentelemetry/api'
+import { Link, TimedEvent, StatusCode } from '@opentelemetry/api'
 import { SpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 
 import { Config } from './config'
@@ -111,6 +111,8 @@ function expoSpan(span: ReadableSpan): SpanData {
     kind: span.kind,
     startTime: hrTimeToTimeStamp(span.startTime),
     endTime: hrTimeToTimeStamp(span.endTime),
+
+    statusCode: expoStatus(span.status.code),
     attrs: span.attributes,
 
     events: expoEvents(span.events),
@@ -119,6 +121,10 @@ function expoSpan(span: ReadableSpan): SpanData {
 
     tracer: span.instrumentationLibrary,
   } as SpanData
+
+  if (span.status.message) {
+    expo.statusMessage = span.status.message
+  }
 
   return expo
 }
@@ -145,4 +151,15 @@ function expoLinks(links: Link[]): LinkData[] {
     })
   }
   return expoLinks
+}
+
+function expoStatus(code: StatusCode): string {
+  switch (code) {
+    case StatusCode.OK:
+      return 'ok'
+    case StatusCode.Error:
+      return 'error'
+    default:
+      return 'unset'
+  }
 }
