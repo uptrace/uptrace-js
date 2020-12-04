@@ -61,7 +61,7 @@
     "eslint": "7.14.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "3.2.0",
-    "gts": "3.0.2",
+    "gts": "3.0.3",
     "mocha": "8.2.1",
     "nyc": "15.1.0",
     "ts-mocha": "8.0.0",
