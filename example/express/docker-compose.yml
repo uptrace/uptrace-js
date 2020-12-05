@@ -5,9 +5,9 @@ services:
       - UPTRACE_DSN
     build:
       dockerfile: $PWD/Dockerfile
-      context: .
+      context: ../..
     ports:
       - '9999:9999'
     command:
       - 'node'
-      - 'app.js'
+      - 'main.js'
