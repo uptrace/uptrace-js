@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch'
 
 import { hrTimeToTimeStamp, ExportResult, ExportResultCode } from '@opentelemetry/core'
-import { Link, TimedEvent, StatusCode } from '@opentelemetry/api'
+import { SpanKind, Link, TimedEvent, StatusCode } from '@opentelemetry/api'
 import { SpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 
 import { Config } from './config'
@@ -11,24 +11,16 @@ type TraceMap = { [traceId: string]: SpanData[] | undefined }
 
 export class Exporter implements SpanExporter {
   private _cfg: Config
-  private _endpoint: string
-  private _headers: { [key: string]: string }
+  private _endpoint = ''
+  private _headers: { [key: string]: string } = {}
 
   constructor(cfg: Config) {
     this._cfg = cfg
-
-    if (!cfg.dsn) {
-      throw new Error('uptrace: dsn is required')
+    if (this._cfg.disabled) {
+      return
     }
 
-    let u: URL | undefined
-
-    try {
-      u = new URL(cfg.dsn)
-    } catch (err) {
-      throw new Error(`uptrace: can't parse dsn: ${err.message}`)
-    }
-
+    const u = this._cfg.dsnURL
     this._endpoint = `${u.protocol}//${u.host}/api/v1/tracing${u.pathname}/spans`
     this._headers = {
       Authorization: 'Bearer ' + u.username,
@@ -87,8 +79,15 @@ export class Exporter implements SpanExporter {
       headers: this._headers,
       body: JSON.stringify({ traces }),
     })
-      .then(() => {
-        // resp: Response
+      .then((resp: Response) => {
+        if (resp.status !== 200) {
+          resp.json().then((json) => {
+            console.log(json)
+          })
+        }
+      })
+      .catch((error) => {
+        console.log('uptrace send failed', error)
       })
       .finally(() => {
         resultCallback({ code: ExportResultCode.SUCCESS })
@@ -108,7 +107,7 @@ function expoSpan(span: ReadableSpan): SpanData {
     parentId: span.parentSpanId,
 
     name: span.name,
-    kind: span.kind,
+    kind: expoKind(span.kind),
     startTime: hrTimeToTimeStamp(span.startTime),
     endTime: hrTimeToTimeStamp(span.endTime),
 
@@ -151,6 +150,21 @@ function expoLinks(links: Link[]): LinkData[] {
     })
   }
   return expoLinks
+}
+
+function expoKind(kind: SpanKind): string {
+  switch (kind) {
+    case SpanKind.SERVER:
+      return 'server'
+    case SpanKind.CLIENT:
+      return 'client'
+    case SpanKind.PRODUCER:
+      return 'producer'
+    case SpanKind.CONSUMER:
+      return 'producer'
+    default:
+      return 'internal'
+  }
 }
 
 function expoStatus(code: StatusCode): string {

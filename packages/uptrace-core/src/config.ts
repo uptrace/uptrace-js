@@ -21,13 +21,15 @@ export interface Config {
   // Filter is the function used to filter and change span data.
   filter?: SpanFilter
 
-  // Disabled disables the exporter.
+  // Disables the client.
   // The default is to use UPTRACE_DISABLED environment var.
   disabled?: boolean
 
   // Internal fields.
 
-  filters?: SpanFilter[]
+  dsnURL: URL
 
-  provider?: BasicTracerProvider
+  filters: SpanFilter[]
+
+  provider: BasicTracerProvider
 }

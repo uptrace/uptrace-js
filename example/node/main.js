@@ -42,7 +42,11 @@ tracer.withSpan(mainSpan, () => {
 
   const span = tracer.getCurrentSpan() // == mainSpan
   span.end()
+
+  console.log(upclient.traceUrl(span))
 })
 
 // Flush and close the client.
-upclient.close()
+setTimeout(async () => {
+  await upclient.close()
+}, 1000)

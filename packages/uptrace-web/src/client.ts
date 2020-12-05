@@ -7,7 +7,7 @@ import { createClient as coreCreateClient, Config, Client } from '@uptrace/core'
 
 const hasWindow = typeof window !== undefined
 
-export function createClient(cfg: Config = {}): Client {
+export function createClient(cfg: Partial<Config> = {}): Client {
   if (!cfg.dsn && hasWindow && (window as any).UPTRACE_DSN) {
     cfg.dsn = (window as any).UPTRACE_DSN
   }

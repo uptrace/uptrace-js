@@ -1,4 +1,4 @@
-import { TracerProvider, Attributes } from '@opentelemetry/api'
+import { TracerProvider, Span, Attributes } from '@opentelemetry/api'
 import {
   BasicTracerProvider,
   Tracer,
@@ -28,6 +28,14 @@ export class Client {
       throw new Error('uptrace: config.provider is required')
     }
 
+    if (!this._cfg.dsn) {
+      console.error(
+        'uptrace: UPTRACE_DSN is empty or missing' +
+          ' (to hide this message, use UPTRACE_DISABLED=True)',
+      )
+      this._cfg.disabled = true
+    }
+
     const exporter = new Exporter(cfg)
     this._bsp = new BatchSpanProcessor(exporter, {
       bufferSize: 10000,
@@ -38,8 +46,8 @@ export class Client {
     this._provider.register()
   }
 
-  public close() {
-    this._bsp.shutdown()
+  public close(): Promise<void> {
+    return this._bsp.shutdown()
   }
 
   public getProvider(): TracerProvider {
@@ -53,6 +61,10 @@ export class Client {
 
   // reportException reports an exception as a span event creating a dummy span if necessary.
   public reportException(err: Error | string, attrs: Attributes = {}) {
+    if (this._cfg.disabled) {
+      return
+    }
+
     let startedSpan = false
 
     const tracer = this._internalTracer()
@@ -77,6 +89,13 @@ export class Client {
     }
   }
 
+  public traceUrl(span: Span): string {
+    const u = this._cfg.dsnURL
+    const host = u.host.slice(4)
+    const traceId = span.context().traceId
+    return `${u.protocol}//${host}${u.pathname}/search?q=${traceId}`
+  }
+
   private _internalTracer(): Tracer {
     if (!this._tracer) {
       this._tracer = this.getTracer('github.com/uptrace/uptrace-js')
@@ -85,7 +104,18 @@ export class Client {
   }
 }
 
-export function createClient(cfg: Config = {}): Client {
+export function createClient(cfg: Partial<Config> = {}): Client {
+  if (cfg.dsn) {
+    try {
+      cfg.dsnURL = new URL(cfg.dsn!)
+    } catch (err) {
+      throw new Error(`uptrace: can't parse dsn: ${err.message}`)
+    }
+  }
+  if (!cfg.provider) {
+    throw new Error('uptrace: provider is required')
+  }
+
   if (!cfg.filters) {
     cfg.filters = []
   }
@@ -93,5 +123,5 @@ export function createClient(cfg: Config = {}): Client {
     cfg.filters.push(cfg.filter)
   }
 
-  return new Client(cfg)
+  return new Client(cfg as Config)
 }

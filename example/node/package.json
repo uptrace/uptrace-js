@@ -9,6 +9,7 @@
   "author": "Uptrace",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "@uptrace/node": "0.2.0"
+    "@uptrace/node": "file:../../packages/uptrace-node",
+    "@uptrace/core": "file:../../packages/uptrace-core"
   }
 }

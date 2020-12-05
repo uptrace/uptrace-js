@@ -2,10 +2,10 @@ import { Attributes } from '@opentelemetry/api'
 
 export interface SpanData {
   id: string
-  parentId: string
+  parentId?: string
 
   name: string
-  kind: number
+  kind: string
   startTime: string
   endTime: string
 
