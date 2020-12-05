@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch'
 
-import { hrTimeToTimeStamp, ExportResult } from '@opentelemetry/core'
+import { hrTimeToTimeStamp, ExportResult, ExportResultCode } from '@opentelemetry/core'
 import { Link, TimedEvent, StatusCode } from '@opentelemetry/api'
 import { SpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 
@@ -51,7 +51,7 @@ export class Exporter implements SpanExporter {
 
   export(spans: ReadableSpan[], resultCallback: (result: ExportResult) => void): void {
     if (this._cfg.disabled) {
-      resultCallback(ExportResult.SUCCESS)
+      resultCallback({ code: ExportResultCode.SUCCESS })
       return
     }
 
@@ -91,7 +91,7 @@ export class Exporter implements SpanExporter {
         // resp: Response
       })
       .finally(() => {
-        resultCallback(ExportResult.SUCCESS)
+        resultCallback({ code: ExportResultCode.SUCCESS })
       })
   }
 
@@ -157,7 +157,7 @@ function expoStatus(code: StatusCode): string {
   switch (code) {
     case StatusCode.OK:
       return 'ok'
-    case StatusCode.Error:
+    case StatusCode.ERROR:
       return 'error'
     default:
       return 'unset'
