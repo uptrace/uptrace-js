@@ -7,8 +7,6 @@ import { SpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 import { Config } from './config'
 import type { SpanData, EventData, LinkData } from './types'
 
-type TraceMap = { [traceId: string]: SpanData[] | undefined }
-
 export class Exporter implements SpanExporter {
   private _cfg: Config
   private _endpoint = ''
@@ -47,37 +45,19 @@ export class Exporter implements SpanExporter {
       return
     }
 
-    const m: TraceMap = {}
+    const uptraceSpans: SpanData[] = []
 
     for (const span of spans) {
-      const expo = expoSpan(span)
-
-      if (!this._filter(expo)) {
-        continue
+      const out = uptraceSpan(span)
+      if (this._filter(out)) {
+        uptraceSpans.push(out)
       }
-
-      const traceId = span.spanContext.traceId
-      let expoSpans = m[traceId]
-      if (!expoSpans) {
-        expoSpans = []
-        m[traceId] = expoSpans
-      }
-      expoSpans.push(expo)
-    }
-
-    const traces = []
-
-    for (const traceId in m) {
-      traces.push({
-        id: traceId,
-        spans: m[traceId],
-      })
     }
 
     fetch(this._endpoint, {
       method: 'POST',
       headers: this._headers,
-      body: JSON.stringify({ traces }),
+      body: JSON.stringify({ spans: uptraceSpans }),
     })
       .then((resp: Response) => {
         if (resp.status !== 200) {
@@ -101,58 +81,61 @@ export class Exporter implements SpanExporter {
   }
 }
 
-function expoSpan(span: ReadableSpan): SpanData {
-  const expo = {
+function uptraceSpan(span: ReadableSpan): SpanData {
+  const out = {
     id: span.spanContext.spanId,
-    parentId: span.parentSpanId,
+    traceId: span.spanContext.traceId,
 
     name: span.name,
-    kind: expoKind(span.kind),
+    kind: uptraceKind(span.kind),
     startTime: hrTimeToTimeStamp(span.startTime),
     endTime: hrTimeToTimeStamp(span.endTime),
 
-    statusCode: expoStatus(span.status.code),
+    statusCode: uptraceStatus(span.status.code),
     attrs: span.attributes,
 
-    events: expoEvents(span.events),
-    links: expoLinks(span.links),
+    events: uptraceEvents(span.events),
+    links: uptraceLinks(span.links),
     resource: span.resource.attributes,
 
     tracer: span.instrumentationLibrary,
   } as SpanData
 
+  if (span.parentSpanId) {
+    out.parentId = span.parentSpanId
+  }
   if (span.status.message) {
-    expo.statusMessage = span.status.message
+    out.statusMessage = span.status.message
   }
 
-  return expo
+  return out
 }
 
-function expoEvents(events: TimedEvent[]): EventData[] {
-  const expoEvents: EventData[] = []
+function uptraceEvents(events: TimedEvent[]): EventData[] {
+  const uptraceEvents: EventData[] = []
   for (const event of events) {
-    expoEvents.push({
+    uptraceEvents.push({
       name: event.name,
       attrs: event.attributes,
       time: hrTimeToTimeStamp(event.time),
     })
   }
-  return expoEvents
+  return uptraceEvents
 }
 
-function expoLinks(links: Link[]): LinkData[] {
-  const expoLinks: LinkData[] = []
+function uptraceLinks(links: Link[]): LinkData[] {
+  const uptraceLinks: LinkData[] = []
   for (const link of links) {
-    expoLinks.push({
+    uptraceLinks.push({
       traceId: link.context.traceId,
       spanId: link.context.spanId,
       attrs: link.attributes,
     })
   }
-  return expoLinks
+  return uptraceLinks
 }
 
-function expoKind(kind: SpanKind): string {
+function uptraceKind(kind: SpanKind): string {
   switch (kind) {
     case SpanKind.SERVER:
       return 'server'
@@ -167,7 +150,7 @@ function expoKind(kind: SpanKind): string {
   }
 }
 
-function expoStatus(code: StatusCode): string {
+function uptraceStatus(code: StatusCode): string {
   switch (code) {
     case StatusCode.OK:
       return 'ok'

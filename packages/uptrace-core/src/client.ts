@@ -38,7 +38,7 @@ export class Client {
 
     const exporter = new Exporter(cfg)
     this._bsp = new BatchSpanProcessor(exporter, {
-      bufferSize: 10000,
+      bufferSize: 2000,
       bufferTimeout: 5 * 1000,
     })
 

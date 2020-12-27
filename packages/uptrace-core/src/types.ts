@@ -10,7 +10,7 @@ export interface SpanData {
   endTime: string
 
   statusCode: string
-  statusMessage: string
+  statusMessage?: string
   attrs: Attributes
 
   events: EventData[]
