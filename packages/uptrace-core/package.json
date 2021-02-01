@@ -49,9 +49,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.14.0",
-    "@opentelemetry/core": "^0.14.0",
-    "@opentelemetry/tracing": "^0.14.0",
+    "@opentelemetry/api": "^0.16.0",
+    "@opentelemetry/core": "^0.16.0",
+    "@opentelemetry/tracing": "^0.16.0",
     "cross-fetch": "^3.0.5"
   },
   "devDependencies": {
