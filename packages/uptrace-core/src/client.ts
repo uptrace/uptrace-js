@@ -1,4 +1,4 @@
-import { TracerProvider, Span, Attributes } from '@opentelemetry/api'
+import { context, getSpan, TracerProvider, Span, Attributes } from '@opentelemetry/api'
 import {
   BasicTracerProvider,
   Tracer,
@@ -68,7 +68,8 @@ export class Client {
     let startedSpan = false
 
     const tracer = this._internalTracer()
-    let span = tracer.getCurrentSpan()
+    let span = getSpan(context.active())
+
     if (!span) {
       span = tracer.startSpan(DUMMY_SPAN_NAME)
       startedSpan = true
