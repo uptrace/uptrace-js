@@ -11,6 +11,12 @@ export interface Config {
   // The default is to use UPTRACE_DSN environment var.
   dsn?: string
 
+  // `service.name` resource attribute. It is merged with resource.
+  serviceName?: string
+  // `service.version` resource attribute. It is merged with resource.
+  serviceVersion?: string
+  // Any other resource attributes. They are merged with resource.
+  resourceAttributes?: Record<string, any>
   // Resource contains attributes representing an entity that produces telemetry.
   // These attributes will be copied to every span and event.
   resource?: Resource
@@ -27,9 +33,48 @@ export interface Config {
 
   // Internal fields.
 
-  dsnURL: URL
-
-  filters: SpanFilter[]
+  filters?: SpanFilter[]
 
   provider: BasicTracerProvider
+}
+
+export interface EnrichedConfig extends Config {
+  dsnURL: URL
+}
+
+export function createResource(cfg: Partial<Config>): Resource {
+  return _createResource(
+    cfg.resource,
+    cfg.resourceAttributes,
+    cfg.serviceName ?? '',
+    cfg.serviceVersion ?? '',
+  )
+}
+
+function _createResource(
+  resource: Resource | undefined,
+  resourceAttributes: Record<string, any> | undefined,
+  serviceName: string,
+  serviceVersion: string,
+): Resource {
+  const attrs: Record<string, any> = {}
+
+  if (resourceAttributes) {
+    Object.assign(attrs, resourceAttributes)
+  }
+
+  if (serviceName !== '') {
+    attrs['service.name'] = serviceName
+  }
+  if (serviceVersion !== '') {
+    attrs['service.version'] = serviceVersion
+  }
+
+  if (!resource) {
+    return new Resource(attrs)
+  }
+  if (!Object.keys(attrs).length) {
+    return resource
+  }
+  return resource.merge(new Resource(attrs))
 }

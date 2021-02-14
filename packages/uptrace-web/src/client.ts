@@ -3,7 +3,7 @@ import { WebTracerProvider, WebTracerConfig } from '@opentelemetry/web'
 //import { ZoneContextManager } from '@opentelemetry/context-zone'
 //import { DocumentLoad } from '@opentelemetry/plugin-document-load'
 
-import { createClient as coreCreateClient, Config, Client } from '@uptrace/core'
+import { createClient as coreCreateClient, createResource, Config, Client } from '@uptrace/core'
 
 const hasWindow = typeof window !== undefined
 
@@ -14,10 +14,8 @@ export function createClient(cfg: Partial<Config> = {}): Client {
 
   if (!cfg.provider) {
     const webConfig: WebTracerConfig = {
+      resource: createResource(cfg),
       //plugins: [new DocumentLoad()],
-    }
-    if (cfg.resource) {
-      webConfig.resource = cfg.resource
     }
     if (cfg.sampler) {
       webConfig.sampler = cfg.sampler
@@ -47,7 +45,7 @@ export function createClient(cfg: Partial<Config> = {}): Client {
     })
   }
 
-  const client = coreCreateClient(cfg)
+  const client = coreCreateClient(cfg as Config)
 
   if (hasWindow) {
     setupOnError(client)

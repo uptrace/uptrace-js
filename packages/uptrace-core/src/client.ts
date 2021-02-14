@@ -6,20 +6,20 @@ import {
   BatchSpanProcessor,
 } from '@opentelemetry/tracing'
 
-import { Config } from './config'
-import { Exporter } from './exporter'
+import { Config, EnrichedConfig } from './config'
+import { SpanExporter } from './exporter'
 
 const DUMMY_SPAN_NAME = '__dummy__'
 
 export class Client {
-  private _cfg: Config
+  private _cfg: EnrichedConfig
 
   private _bsp: BatchSpanProcessor
   private _provider: BasicTracerProvider
 
   private _tracer?: Tracer
 
-  constructor(cfg: Config) {
+  constructor(cfg: EnrichedConfig) {
     this._cfg = cfg
 
     if (this._cfg.provider) {
@@ -36,7 +36,7 @@ export class Client {
       this._cfg.disabled = true
     }
 
-    const exporter = new Exporter(cfg)
+    const exporter = new SpanExporter(cfg)
     this._bsp = new BatchSpanProcessor(exporter, {
       bufferSize: 2000,
       bufferTimeout: 5 * 1000,
@@ -105,16 +105,15 @@ export class Client {
   }
 }
 
-export function createClient(cfg: Partial<Config> = {}): Client {
+export function createClient(_cfg: Config): Client {
+  const cfg = _cfg as EnrichedConfig
+
   if (cfg.dsn) {
     try {
       cfg.dsnURL = new URL(cfg.dsn!)
     } catch (err) {
       throw new Error(`uptrace: can't parse dsn: ${err.message}`)
     }
-  }
-  if (!cfg.provider) {
-    throw new Error('uptrace: provider is required')
   }
 
   if (!cfg.filters) {
@@ -124,5 +123,5 @@ export function createClient(cfg: Partial<Config> = {}): Client {
     cfg.filters.push(cfg.filter)
   }
 
-  return new Client(cfg as Config)
+  return new Client(cfg)
 }

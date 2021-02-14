@@ -5,12 +5,6 @@ import { BasicTracerProvider } from '@opentelemetry/tracing'
 import { createClient } from '../src'
 
 describe('time', () => {
-  it('throws with empty', () => {
-    assert.throws(() => {
-      createClient()
-    }, /provider is required/)
-  })
-
   it('throws on invalid dsn', () => {
     assert.throws(() => {
       createClient({ dsn: 'foo bar', provider: new BasicTracerProvider() })

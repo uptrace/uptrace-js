@@ -2,17 +2,17 @@ import fetch from 'cross-fetch'
 
 import { hrTimeToTimeStamp, ExportResult, ExportResultCode } from '@opentelemetry/core'
 import { SpanKind, Link, TimedEvent, StatusCode } from '@opentelemetry/api'
-import { SpanExporter, ReadableSpan } from '@opentelemetry/tracing'
+import { SpanExporter as ISpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 
-import { Config } from './config'
+import { EnrichedConfig } from './config'
 import type { SpanData, EventData, LinkData } from './types'
 
-export class Exporter implements SpanExporter {
-  private _cfg: Config
+export class SpanExporter implements ISpanExporter {
+  private _cfg: EnrichedConfig
   private _endpoint = ''
   private _headers: { [key: string]: string } = {}
 
-  constructor(cfg: Config) {
+  constructor(cfg: EnrichedConfig) {
     this._cfg = cfg
     if (this._cfg.disabled) {
       return

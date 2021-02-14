@@ -1,8 +1,8 @@
 import { NodeSDKConfiguration } from '@opentelemetry/sdk-node'
 import { NodeTracerProvider } from '@opentelemetry/node'
 
-import { createClient as coreCreateClient, Client } from '@uptrace/core'
-import { Config } from './config'
+import { createClient as baseCreateClient, Client } from '@uptrace/core'
+import { Config, createResource } from './config'
 
 export function createClient(cfg: Partial<Config> = {}): Client {
   if (!cfg.dsn && process.env.UPTRACE_DSN) {
@@ -11,10 +11,8 @@ export function createClient(cfg: Partial<Config> = {}): Client {
 
   if (!cfg.provider) {
     const nodeConfig: Partial<NodeSDKConfiguration> = {
+      resource: createResource(cfg),
       autoDetectResources: true,
-    }
-    if (cfg.resource) {
-      nodeConfig.resource = cfg.resource
     }
     if (cfg.sampler) {
       nodeConfig.sampler = cfg.sampler
@@ -27,6 +25,6 @@ export function createClient(cfg: Partial<Config> = {}): Client {
     cfg.provider = provider
   }
 
-  const uptrace = coreCreateClient(cfg)
+  const uptrace = baseCreateClient(cfg as Config)
   return uptrace
 }

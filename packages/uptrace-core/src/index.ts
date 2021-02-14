@@ -1,4 +1,4 @@
-export * from './config'
-export * from './client'
-export * from './exporter'
+export { Config, createResource } from './config'
+export { Client, createClient } from './client'
+export { SpanExporter } from './exporter'
 export * from './types'

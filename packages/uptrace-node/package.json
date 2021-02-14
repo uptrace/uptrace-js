@@ -4,7 +4,11 @@
   "description": "Uptrace JS exporter for Node.js",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
-  "repository": "uptrace/uptrace-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uptrace/uptrace-js.git",
+    "directory": "packages/uptrace-node"
+  },
   "scripts": {
     "test": "nyc ts-mocha -p tsconfig.json test/**/*.test.ts",
     "test:browser": "nyc karma start --single-run",
