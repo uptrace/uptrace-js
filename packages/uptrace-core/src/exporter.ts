@@ -18,10 +18,10 @@ export class SpanExporter implements ISpanExporter {
       return
     }
 
-    const u = this._cfg.dsnURL
-    this._endpoint = `${u.protocol}//${u.host}/api/v1/tracing${u.pathname}/spans`
+    const v = this._cfg._dsn
+    this._endpoint = `${v.scheme}//${v.host}/api/v1/tracing/${v.projectId}/spans`
     this._headers = {
-      Authorization: 'Bearer ' + u.username,
+      Authorization: 'Bearer ' + this._cfg._dsn.token,
       'Content-Type': 'application/json',
     }
   }

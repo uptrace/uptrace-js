@@ -38,8 +38,30 @@ export interface Config {
   provider: BasicTracerProvider
 }
 
+export function createConfig(_cfg: Config): EnrichedConfig {
+  const cfg = _cfg as EnrichedConfig
+
+  try {
+    cfg._dsn = parseDSN(_cfg.dsn ?? '')
+  } catch (err) {
+    cfg.disabled = true
+    console.log('Uptrace is disabled:', err.message ?? err)
+
+    cfg._dsn = parseDSN('https://<token>@api.uptrace.dev/<project_id>')
+  }
+
+  if (!cfg.filters) {
+    cfg.filters = []
+  }
+  if (cfg.filter) {
+    cfg.filters.push(cfg.filter)
+  }
+
+  return cfg
+}
+
 export interface EnrichedConfig extends Config {
-  dsnURL: URL
+  _dsn: DSN
 }
 
 export function createResource(cfg: Partial<Config>): Resource {
@@ -77,4 +99,34 @@ function _createResource(
     return resource
   }
   return resource.merge(new Resource(attrs))
+}
+
+//------------------------------------------------------------------------------
+
+interface DSN {
+  scheme: string
+  host: string
+  projectId: string
+  token: string
+}
+
+function parseDSN(s: string): DSN {
+  if (!s) {
+    throw new Error('uptrace: either dsn option or UPTRACE_DSN is required')
+  }
+
+  let u: URL
+
+  try {
+    u = new URL(s)
+  } catch (err) {
+    throw new Error(`uptrace: can't parse dsn: ${err.message}`)
+  }
+
+  return {
+    scheme: u.protocol,
+    host: u.host,
+    projectId: u.pathname.slice(1),
+    token: u.username,
+  }
 }

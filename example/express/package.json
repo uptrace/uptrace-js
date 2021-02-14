@@ -2,15 +2,15 @@
   "name": "express",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
-    "@opentelemetry/plugin-express": "^0.11.0",
-    "@opentelemetry/plugin-http": "^0.14.0",
+    "@opentelemetry/plugin-express": "^0.13.1",
+    "@opentelemetry/plugin-http": "^0.16.0",
     "@uptrace/node": "file:../../packages/uptrace-node",
     "@uptrace/core": "file:../../packages/uptrace-core",
     "express": "^4.17.1"

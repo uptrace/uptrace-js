@@ -1,21 +1,35 @@
 'use strict'
 
+const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
-if (!process.env.UPTRACE_DSN) {
-  throw new Error('UPTRACE_DSN env variable is required')
-}
-
 // Run this before any other imports for auto-instrumentation to work.
-const upclient = uptrace.createClient({})
+const upclient = uptrace.createClient({
+  serviceName: 'myservice',
+  serviceVersion: '1.0.0',
+})
+const tracer = otel.trace.getTracer('express-example')
 
 const express = require('express')
 const app = express()
 
 app.get('/profiles/:username', (req, res) => {
   const username = req.params.username
-  const name = selectUser(username)
-  res.send(`<html><h1>Hello ${username} ${name}</h1></html>`)
+
+  let name
+  try {
+    name = selectUser(username)
+  } catch {
+    name = 'unknown'
+  }
+
+  const traceUrl = upclient.traceUrl(otel.getSpan(otel.context.active()))
+  res.send(
+    `<html>` +
+      `<h1>Hello ${username} ${name}</h1>` +
+      `<p><a href="${traceUrl}">${traceUrl}</a></p>` +
+      `</html>`,
+  )
 })
 
 const port = 9999
@@ -25,32 +39,17 @@ app.listen(9999, () => {
 })
 
 function selectUser(username) {
-  return withSpan('selectUser', () => _selectUser(username))
-}
+  const currentSpan = otel.getSpan(otel.context.active())
+  const span = tracer.startSpan('selectUser', { parent: currentSpan })
+  span.setAttribute('username', username)
 
-function _selectUser(username) {
   if (username === 'admin') {
+    span.end()
     return 'Joe'
   }
-  throw new Error(`username=${username} not found`)
-}
 
-//------------------------------------------------------------------------------
-
-const api = require('@opentelemetry/api')
-
-const tracer = api.trace.getTracer('express-example')
-
-function withSpan(name, fn) {
-  const span = tracer.startSpan(name, { parent: tracer.getCurrentSpan() })
-  let res
-  try {
-    res = fn()
-  } catch (err) {
-    span.recordException(err)
-    span.end()
-    throw err
-  }
+  const err = new Error(`username=${username} not found`)
+  span.recordException(err)
   span.end()
-  return res
+  throw err
 }

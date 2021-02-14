@@ -1,4 +1,5 @@
-all: build up test
+all:
+	node main.js
 
 build:
 	rm -rf node_modules

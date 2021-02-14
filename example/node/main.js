@@ -1,4 +1,4 @@
-const opentelemetry = require('@opentelemetry/api')
+const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
 const upclient = uptrace.createClient({
@@ -12,7 +12,7 @@ upclient.reportException(new Error('Hello from uptrace-js'), { key1: 'value1' })
 const tracer = upclient.getTracer('github.com/uptrace/uptrace-js')
 
 const mainSpan = tracer.startSpan('main span')
-const ctx = opentelemetry.setSpan(opentelemetry.context.active(), mainSpan)
+const ctx = otel.setSpan(otel.context.active(), mainSpan)
 
 const child1 = tracer.startSpan('child1', undefined, ctx)
 child1.setAttribute('key1', 'value1')

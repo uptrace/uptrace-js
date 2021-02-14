@@ -6,7 +6,7 @@ import {
   BatchSpanProcessor,
 } from '@opentelemetry/tracing'
 
-import { Config, EnrichedConfig } from './config'
+import { createConfig, Config, EnrichedConfig } from './config'
 import { SpanExporter } from './exporter'
 
 const DUMMY_SPAN_NAME = '__dummy__'
@@ -21,24 +21,11 @@ export class Client {
 
   constructor(cfg: EnrichedConfig) {
     this._cfg = cfg
-
-    if (this._cfg.provider) {
-      this._provider = this._cfg.provider
-    } else {
-      throw new Error('uptrace: config.provider is required')
-    }
-
-    if (!this._cfg.dsn) {
-      console.error(
-        'uptrace: UPTRACE_DSN is empty or missing' +
-          ' (to hide this message, use UPTRACE_DISABLED=True)',
-      )
-      this._cfg.disabled = true
-    }
+    this._provider = this._cfg.provider
 
     const exporter = new SpanExporter(cfg)
     this._bsp = new BatchSpanProcessor(exporter, {
-      bufferSize: 2000,
+      bufferSize: 1000,
       bufferTimeout: 5 * 1000,
     })
 
@@ -91,10 +78,10 @@ export class Client {
   }
 
   public traceUrl(span: Span): string {
-    const u = this._cfg.dsnURL
-    const host = u.host.slice(4)
+    const v = this._cfg._dsn
+    const host = v.host.slice(4)
     const traceId = span.context().traceId
-    return `${u.protocol}//${host}${u.pathname}/search?q=${traceId}`
+    return `${v.scheme}//${host}/${v.projectId}/search?q=${traceId}`
   }
 
   private _internalTracer(): Tracer {
@@ -106,22 +93,6 @@ export class Client {
 }
 
 export function createClient(_cfg: Config): Client {
-  const cfg = _cfg as EnrichedConfig
-
-  if (cfg.dsn) {
-    try {
-      cfg.dsnURL = new URL(cfg.dsn!)
-    } catch (err) {
-      throw new Error(`uptrace: can't parse dsn: ${err.message}`)
-    }
-  }
-
-  if (!cfg.filters) {
-    cfg.filters = []
-  }
-  if (cfg.filter) {
-    cfg.filters.push(cfg.filter)
-  }
-
+  const cfg = createConfig(_cfg)
   return new Client(cfg)
 }

@@ -10,4 +10,5 @@ HTTP server is running at http://localhost:9999:
 
 ```bash
 curl -v http://localhost:9999/profiles/admin
+curl -v http://localhost:9999/profiles/foo
 ```

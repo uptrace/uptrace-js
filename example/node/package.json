@@ -1,14 +1,14 @@
 {
-  "name": "nodejs-example",
+  "name": "node",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Uptrace",
-  "license": "BSD-2-Clause",
-  "devDependencies": {
+  "license": "Apache-2.0",
+  "dependencies": {
     "@uptrace/node": "file:../../packages/uptrace-node",
     "@uptrace/core": "file:../../packages/uptrace-core"
   }
