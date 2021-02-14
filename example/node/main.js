@@ -1,50 +1,30 @@
+const opentelemetry = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
-const upclient = uptrace.createClient()
-
-// Report an exception.
-upclient.reportException(new Error('hello world'), {
-  foo: 'bar',
+const upclient = uptrace.createClient({
+  serviceName: 'myservice',
+  serviceVersion: '1.0.0',
 })
+
+// Use upclient to report errors when there are no spans.
+upclient.reportException(new Error('Hello from uptrace-js'), { key1: 'value1' })
 
 const tracer = upclient.getTracer('github.com/uptrace/uptrace-js')
 
-// Start a root/main span (span without a parent).
 const mainSpan = tracer.startSpan('main span')
+const ctx = opentelemetry.setSpan(opentelemetry.context.active(), mainSpan)
 
-// Activate main span.
-tracer.withSpan(mainSpan, () => {
-  // span1 is a child of mainSpan.
-  const span1 = tracer.startSpan('span1', {
-    parent: tracer.getCurrentSpan(),
-  })
+const child1 = tracer.startSpan('child1', undefined, ctx)
+child1.setAttribute('key1', 'value1')
+child1.recordException(new Error('error1'))
+child1.end()
 
-  // Activate span1.
-  tracer.withSpan(span1, () => {
-    const span = tracer.getCurrentSpan() // == span1
-    span.setAttribute('key1', 'value1')
-    span.addEvent('event-name')
-    span.end()
-  })
+const child2 = tracer.startSpan('child2', undefined, ctx)
+child2.setAttribute('key2', 42)
+child2.end()
 
-  // span2 is a child of mainSpan.
-  const span2 = tracer.startSpan('span2', {
-    parent: tracer.getCurrentSpan(),
-  })
-
-  // Activate span2.
-  tracer.withSpan(span2, () => {
-    const span = tracer.getCurrentSpan() // == span2
-    span.setAttribute('key2', 'value2')
-    span.addEvent('event-name')
-    span.end()
-  })
-
-  const span = tracer.getCurrentSpan() // == mainSpan
-  span.end()
-
-  console.log(upclient.traceUrl(span))
-})
+mainSpan.end()
+console.log(upclient.traceUrl(mainSpan))
 
 // Flush and close the client.
 setTimeout(async () => {
