@@ -5,18 +5,23 @@ import { BasicTracerProvider } from '@opentelemetry/tracing'
 import { createClient } from '../src'
 
 describe('time', () => {
-  it('throws on invalid dsn', () => {
-    assert.throws(() => {
-      createClient({ dsn: 'foo bar', provider: new BasicTracerProvider() })
-    }, /can't parse dsn/)
-  })
-
-  it('does not throw on empty dsn', () => {
+  it('logs on empty dsn', () => {
     const spy = sinon.spy(console, 'error')
 
     createClient({ dsn: '', provider: new BasicTracerProvider() })
 
+    spy.restore()
     assert.ok(spy.called)
-    assert.match(spy.args[0][0], /UPTRACE_DSN is empty or missing/)
+    assert.match(spy.args[0][1], /either dsn option or UPTRACE_DSN is required/)
+  })
+
+  it('logs on invalid dsn', () => {
+    const spy = sinon.spy(console, 'error')
+
+    createClient({ dsn: 'foo bar', provider: new BasicTracerProvider() })
+
+    spy.restore()
+    assert.ok(spy.called)
+    assert.match(spy.args[0][1], /can't parse DSN: "foo bar"/)
   })
 })

@@ -45,7 +45,7 @@ export function createConfig(_cfg: Config): EnrichedConfig {
     cfg._dsn = parseDSN(_cfg.dsn ?? '')
   } catch (err) {
     cfg.disabled = true
-    console.log('Uptrace is disabled:', err.message ?? err)
+    console.error('Uptrace is disabled:', err.message ?? err)
 
     cfg._dsn = parseDSN('https://<token>@api.uptrace.dev/<project_id>')
   }
@@ -120,7 +120,7 @@ function parseDSN(s: string): DSN {
   try {
     u = new URL(s)
   } catch (err) {
-    throw new Error(`uptrace: can't parse dsn: ${err.message}`)
+    throw new Error(`uptrace: can't parse DSN: ${JSON.stringify(s)}`)
   }
 
   return {
