@@ -85,10 +85,10 @@ function _createResource(
     Object.assign(attrs, resourceAttributes)
   }
 
-  if (serviceName !== '') {
+  if (serviceName) {
     attrs['service.name'] = serviceName
   }
-  if (serviceVersion !== '') {
+  if (serviceVersion) {
     attrs['service.version'] = serviceVersion
   }
 
