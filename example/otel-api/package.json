@@ -9,7 +9,6 @@
   "author": "Uptrace",
   "license": "Apache-2.0",
   "dependencies": {
-    "@uptrace/node": "file:../../packages/uptrace-node",
-    "@uptrace/core": "file:../../packages/uptrace-core"
+    "@uptrace/node": "^0.4.1"
   }
 }

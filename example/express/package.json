@@ -11,8 +11,7 @@
   "dependencies": {
     "@opentelemetry/plugin-express": "^0.13.1",
     "@opentelemetry/plugin-http": "^0.17.0",
-    "@uptrace/node": "file:../../packages/uptrace-node",
-    "@uptrace/core": "file:../../packages/uptrace-core",
+    "@uptrace/node": "^0.4.1",
     "express": "^4.17.1"
   }
 }
