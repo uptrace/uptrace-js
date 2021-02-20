@@ -53,16 +53,16 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.16.0",
-    "@opentelemetry/context-zone": "^0.16.0",
+    "@opentelemetry/api": "^0.17.0",
+    "@opentelemetry/context-zone": "^0.17.0",
     "@opentelemetry/plugin-document-load": "^0.13.1",
-    "@opentelemetry/tracing": "^0.16.0",
-    "@opentelemetry/web": "^0.16.0",
+    "@opentelemetry/tracing": "^0.17.0",
+    "@opentelemetry/web": "^0.17.0",
     "@uptrace/core": "^0.4.0"
   },
   "devDependencies": {
-    "@types/node": "14.14.27",
-    "@typescript-eslint/eslint-plugin": "4.15.0",
+    "@types/node": "14.14.31",
+    "@typescript-eslint/eslint-plugin": "4.15.1",
     "eslint": "7.20.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "3.3.1",

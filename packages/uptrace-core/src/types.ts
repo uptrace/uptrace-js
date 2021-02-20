@@ -1,40 +1,38 @@
-import { Attributes } from '@opentelemetry/api'
+import { SpanAttributes } from '@opentelemetry/api'
 
 export interface SpanData {
   id: string
   parentId?: string
+  traceId: string
 
   name: string
   kind: string
   startTime: string
   endTime: string
 
-  statusCode: string
-  statusMessage?: string
-  attrs: Attributes
+  resource: SpanAttributes
+  attrs: SpanAttributes
 
   events: EventData[]
   links: LinkData[]
-  resource: Attributes
 
-  tracer: TracerData
+  statusCode: string
+  statusMessage?: string
+
+  tracerName: string
+  tracerVersion?: string
 }
 
 export interface EventData {
   name: string
-  attrs: Attributes | undefined
+  attrs?: SpanAttributes
   time: string
 }
 
 export interface LinkData {
   traceId: string
   spanId: string
-  attrs: Attributes | undefined
-}
-
-export interface TracerData {
-  name: string
-  version: string
+  attrs?: SpanAttributes
 }
 
 export type SpanFilter = (span: SpanData) => boolean

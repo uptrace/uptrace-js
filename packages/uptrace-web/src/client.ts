@@ -1,4 +1,4 @@
-import { Attributes } from '@opentelemetry/api'
+import { SpanAttributes } from '@opentelemetry/api'
 import { WebTracerProvider, WebTracerConfig } from '@opentelemetry/web'
 //import { ZoneContextManager } from '@opentelemetry/context-zone'
 //import { DocumentLoad } from '@opentelemetry/plugin-document-load'
@@ -71,7 +71,7 @@ function setupOnError(uptrace: Client): void {
     if (err) {
       uptrace.reportException(err, { onerror: true })
     } else {
-      const attrs: Attributes = {}
+      const attrs: SpanAttributes = {}
       if (file) {
         attrs['code.filepath'] = file
       }

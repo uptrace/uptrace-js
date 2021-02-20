@@ -1,10 +1,13 @@
-import { context, getSpan, TracerProvider, Span, Attributes } from '@opentelemetry/api'
 import {
-  BasicTracerProvider,
+  trace,
+  getSpan,
+  context,
+  TracerProvider,
   Tracer,
-  TracerConfig,
-  BatchSpanProcessor,
-} from '@opentelemetry/tracing'
+  Span,
+  SpanAttributes,
+} from '@opentelemetry/api'
+import { BasicTracerProvider, BatchSpanProcessor } from '@opentelemetry/tracing'
 
 import { createConfig, Config, EnrichedConfig } from './config'
 import { SpanExporter } from './exporter'
@@ -25,8 +28,9 @@ export class Client {
 
     const exporter = new SpanExporter(cfg)
     this._bsp = new BatchSpanProcessor(exporter, {
-      bufferSize: 1000,
-      bufferTimeout: 5 * 1000,
+      maxExportBatchSize: 1000,
+      maxQueueSize: 1000,
+      scheduledDelayMillis: 5 * 1000,
     })
 
     this._provider.addSpanProcessor(this._bsp)
@@ -37,17 +41,12 @@ export class Client {
     return this._bsp.shutdown()
   }
 
-  public getProvider(): TracerProvider {
+  public getTracerProvider(): TracerProvider {
     return this._provider
   }
 
-  // getTracer returns a named tracer that exports span to Uptrace.
-  public getTracer(name: string, version = '*', config?: TracerConfig): Tracer {
-    return this._provider.getTracer(name, version, config)
-  }
-
   // reportException reports an exception as a span event creating a dummy span if necessary.
-  public reportException(err: Error | string, attrs: Attributes = {}) {
+  public reportException(err: Error | string, attrs: SpanAttributes = {}) {
     if (this._cfg.disabled) {
       return
     }
@@ -86,7 +85,7 @@ export class Client {
 
   private _internalTracer(): Tracer {
     if (!this._tracer) {
-      this._tracer = this.getTracer('github.com/uptrace/uptrace-js')
+      this._tracer = trace.getTracer('uptrace-js')
     }
     return this._tracer
   }

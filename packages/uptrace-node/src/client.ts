@@ -17,9 +17,6 @@ export function createClient(cfg: Partial<Config> = {}): Client {
     if (cfg.sampler) {
       nodeConfig.sampler = cfg.sampler
     }
-    if (cfg.plugins) {
-      nodeConfig.plugins = cfg.plugins
-    }
 
     const provider = new NodeTracerProvider(nodeConfig)
     cfg.provider = provider

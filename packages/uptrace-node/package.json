@@ -53,13 +53,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/node": "^0.16.0",
+    "@opentelemetry/node": "^0.17.0",
     "@uptrace/core": "^0.4.0"
   },
   "devDependencies": {
-    "@opentelemetry/sdk-node": "0.16.0",
-    "@types/node": "14.14.27",
-    "@typescript-eslint/eslint-plugin": "4.15.0",
+    "@opentelemetry/sdk-node": "0.17.0",
+    "@types/node": "14.14.31",
+    "@typescript-eslint/eslint-plugin": "4.15.1",
     "eslint": "7.20.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "3.3.1",

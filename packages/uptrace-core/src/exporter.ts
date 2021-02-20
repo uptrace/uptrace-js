@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch'
 
 import { hrTimeToTimeStamp, ExportResult, ExportResultCode } from '@opentelemetry/core'
-import { SpanKind, Link, TimedEvent, StatusCode } from '@opentelemetry/api'
+import { SpanKind, Link, TimedEvent, SpanStatusCode } from '@opentelemetry/api'
 import { SpanExporter as ISpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 
 import { EnrichedConfig } from './config'
@@ -82,7 +82,7 @@ export class SpanExporter implements ISpanExporter {
 }
 
 function uptraceSpan(span: ReadableSpan): SpanData {
-  const out = {
+  const out: SpanData = {
     id: span.spanContext.spanId,
     traceId: span.spanContext.traceId,
 
@@ -91,24 +91,28 @@ function uptraceSpan(span: ReadableSpan): SpanData {
     startTime: hrTimeToTimeStamp(span.startTime),
     endTime: hrTimeToTimeStamp(span.endTime),
 
-    statusCode: uptraceStatus(span.status.code),
+    resource: span.resource.attributes,
     attrs: span.attributes,
 
     events: uptraceEvents(span.events),
     links: uptraceLinks(span.links),
-    resource: span.resource.attributes,
 
-    tracer: span.instrumentationLibrary,
-  } as SpanData
+    statusCode: uptraceStatus(span.status.code),
+    tracerName: span.instrumentationLibrary.name,
+  }
 
   if (span.parentSpanId) {
     out.parentId = span.parentSpanId
   }
+
   if (span.status.message) {
     out.statusMessage = span.status.message
   }
+  if (span.instrumentationLibrary.version) {
+    out.tracerVersion = span.instrumentationLibrary.version
+  }
 
-  return out
+  return out as SpanData
 }
 
 function uptraceEvents(events: TimedEvent[]): EventData[] {
@@ -150,11 +154,11 @@ function uptraceKind(kind: SpanKind): string {
   }
 }
 
-function uptraceStatus(code: StatusCode): string {
+function uptraceStatus(code: SpanStatusCode): string {
   switch (code) {
-    case StatusCode.OK:
+    case SpanStatusCode.OK:
       return 'ok'
-    case StatusCode.ERROR:
+    case SpanStatusCode.ERROR:
       return 'error'
     default:
       return 'unset'
