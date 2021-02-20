@@ -4,16 +4,20 @@ const otel = require('@opentelemetry/api')
 const instrumentation = require('@opentelemetry/instrumentation')
 const uptrace = require('@uptrace/node')
 
-// Run this before any other imports for auto-instrumentation to work.
 const upclient = uptrace.createClient({
+  // Set dsn or UPTRACE_DSN env var.
+  dsn: '',
+
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
+
+// Run this before any other imports for auto-instrumentation to work.
 instrumentation.registerInstrumentations({
   tracerProvider: upclient.getTracerProvider(),
 })
 
-const tracer = otel.trace.getTracer('express-example')
+const tracer = otel.trace.getTracer('app_or_package_name')
 
 const express = require('express')
 const app = express()
