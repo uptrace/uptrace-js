@@ -9,9 +9,9 @@ const upclient = uptrace.createClient({
 // Use upclient to report errors when there are no spans.
 upclient.reportException(new Error('Hello from uptrace-js'), { key1: 'value1' })
 
-const tracer = upclient.getTracer('github.com/uptrace/uptrace-js')
+const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
-const mainSpan = tracer.startSpan('main span')
+const mainSpan = tracer.startSpan('main')
 const ctx = otel.setSpan(otel.context.active(), mainSpan)
 
 const child1 = tracer.startSpan('child1', undefined, ctx)

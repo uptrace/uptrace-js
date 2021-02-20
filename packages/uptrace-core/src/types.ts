@@ -10,17 +10,17 @@ export interface SpanData {
   startTime: string
   endTime: string
 
-  resource: SpanAttributes
-  attrs: SpanAttributes
-
-  events: EventData[]
-  links: LinkData[]
-
   statusCode: string
   statusMessage?: string
 
   tracerName: string
   tracerVersion?: string
+
+  resource: SpanAttributes
+  attrs: SpanAttributes
+
+  events?: EventData[]
+  links?: LinkData[]
 }
 
 export interface EventData {

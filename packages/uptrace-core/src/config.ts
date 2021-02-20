@@ -1,5 +1,6 @@
-import { Sampler } from '@opentelemetry/api'
+import { Sampler, TextMapPropagator } from '@opentelemetry/api'
 import { BasicTracerProvider } from '@opentelemetry/tracing'
+import { ContextManager } from '@opentelemetry/context-base'
 import { Resource } from '@opentelemetry/resources'
 
 import { SpanFilter } from './types'
@@ -23,6 +24,12 @@ export interface Config {
 
   // Sampler is the default sampler used when creating new spans.
   sampler?: Sampler
+
+  // Propagator to register as the global propagator
+  propagator?: TextMapPropagator | null
+
+  // Context manager to register as the global context manager
+  contextManager?: ContextManager | null
 
   // Filter is the function used to filter and change span data.
   filter?: SpanFilter

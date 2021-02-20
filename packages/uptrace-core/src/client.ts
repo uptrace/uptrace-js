@@ -34,7 +34,10 @@ export class Client {
     })
 
     this._provider.addSpanProcessor(this._bsp)
-    this._provider.register()
+    this._provider.register({
+      propagator: cfg.propagator,
+      contextManager: cfg.contextManager,
+    })
   }
 
   public close(): Promise<void> {
@@ -80,7 +83,7 @@ export class Client {
     const v = this._cfg._dsn
     const host = v.host.slice(4)
     const traceId = span.context().traceId
-    return `${v.scheme}//${host}/${v.projectId}/search?q=${traceId}`
+    return `${v.scheme}//${host}/search/${v.projectId}?q=${traceId}`
   }
 
   private _internalTracer(): Tracer {

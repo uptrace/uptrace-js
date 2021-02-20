@@ -1,6 +1,7 @@
 'use strict'
 
 const otel = require('@opentelemetry/api')
+const instrumentation = require('@opentelemetry/instrumentation')
 const uptrace = require('@uptrace/node')
 
 // Run this before any other imports for auto-instrumentation to work.
@@ -8,10 +9,23 @@ const upclient = uptrace.createClient({
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
+instrumentation.registerInstrumentations({
+  tracerProvider: upclient.getTracerProvider(),
+})
+
 const tracer = otel.trace.getTracer('express-example')
 
 const express = require('express')
 const app = express()
+
+app.get('/', (req, res) => {
+  res.send(
+    `<html>` +
+      `<p><a href="/profiles/admin">admin profile</a></p>` +
+      `<p><a href="/profiles/unknown">unknown profile</a></p>` +
+      `</html>`,
+  )
+})
 
 app.get('/profiles/:username', (req, res) => {
   const username = req.params.username
@@ -24,6 +38,8 @@ app.get('/profiles/:username', (req, res) => {
   }
 
   const traceUrl = upclient.traceUrl(otel.getSpan(otel.context.active()))
+  console.log('trace', traceUrl)
+
   res.send(
     `<html>` +
       `<h1>Hello ${username} ${name}</h1>` +

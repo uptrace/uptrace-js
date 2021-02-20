@@ -54,20 +54,22 @@ export class SpanExporter implements ISpanExporter {
       }
     }
 
+    const body = JSON.stringify({ spans: uptraceSpans })
+
     fetch(this._endpoint, {
       method: 'POST',
       headers: this._headers,
-      body: JSON.stringify({ spans: uptraceSpans }),
+      body,
     })
       .then((resp: Response) => {
         if (resp.status !== 200) {
           resp.json().then((json) => {
-            console.log(json)
+            console.error('uptrace send failed: ${json.message}')
           })
         }
       })
       .catch((error) => {
-        console.log('uptrace send failed', error)
+        console.error('uptrace send failed', error)
       })
       .finally(() => {
         resultCallback({ code: ExportResultCode.SUCCESS })
@@ -94,9 +96,6 @@ function uptraceSpan(span: ReadableSpan): SpanData {
     resource: span.resource.attributes,
     attrs: span.attributes,
 
-    events: uptraceEvents(span.events),
-    links: uptraceLinks(span.links),
-
     statusCode: uptraceStatus(span.status.code),
     tracerName: span.instrumentationLibrary.name,
   }
@@ -110,6 +109,13 @@ function uptraceSpan(span: ReadableSpan): SpanData {
   }
   if (span.instrumentationLibrary.version) {
     out.tracerVersion = span.instrumentationLibrary.version
+  }
+
+  if (span.events.length) {
+    out.events = uptraceEvents(span.events)
+  }
+  if (span.links.length) {
+    out.links = uptraceLinks(span.links)
   }
 
   return out as SpanData

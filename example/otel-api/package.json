@@ -1,18 +1,15 @@
 {
-  "name": "express",
+  "name": "otel-api",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Uptrace",
   "license": "Apache-2.0",
   "dependencies": {
-    "@opentelemetry/plugin-express": "^0.13.1",
-    "@opentelemetry/plugin-http": "^0.17.0",
     "@uptrace/node": "file:../../packages/uptrace-node",
-    "@uptrace/core": "file:../../packages/uptrace-core",
-    "express": "^4.17.1"
+    "@uptrace/core": "file:../../packages/uptrace-core"
   }
 }
