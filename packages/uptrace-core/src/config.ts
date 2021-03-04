@@ -1,6 +1,5 @@
-import { Sampler, TextMapPropagator } from '@opentelemetry/api'
+import { Sampler, TextMapPropagator, ContextManager } from '@opentelemetry/api'
 import { BasicTracerProvider } from '@opentelemetry/tracing'
-import { ContextManager } from '@opentelemetry/context-base'
 import { Resource } from '@opentelemetry/resources'
 
 import { SpanFilter } from './types'

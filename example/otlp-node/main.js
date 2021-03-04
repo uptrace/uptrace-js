@@ -6,6 +6,7 @@ const { CollectorTraceExporter } = require('@opentelemetry/exporter-collector')
 const exporter = new CollectorTraceExporter({
   url: 'https://otlp.uptrace.dev/v1/traces',
   headers: {
+    // Set the Uptrace token here or use UPTRACE_TOKEN env var.
     'uptrace-token': process.env.UPTRACE_TOKEN,
   },
 
