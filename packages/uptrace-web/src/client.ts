@@ -70,18 +70,25 @@ function setupOnError(uptrace: Client): void {
 
     if (err) {
       uptrace.reportException(err, { onerror: true })
-    } else {
-      const attrs: SpanAttributes = {}
-      if (file) {
-        attrs['code.filepath'] = file
-      }
-      if (line) {
-        attrs['code.lineno'] = line
-      }
-      if (column) {
-        attrs['code.colno'] = column
-      }
-      uptrace.reportException(String(message), attrs)
+      return
     }
+
+    if (message === 'Script error.') {
+      return
+    }
+
+    const attrs: SpanAttributes = {
+      'window.onerror': true,
+    }
+    if (file) {
+      attrs['code.filepath'] = file
+    }
+    if (line) {
+      attrs['code.lineno'] = line
+    }
+    if (column) {
+      attrs['code.colno'] = column
+    }
+    uptrace.reportException(String(message), attrs)
   }
 }
