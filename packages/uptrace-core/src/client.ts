@@ -1,59 +1,19 @@
-import {
-  trace,
-  getSpan,
-  context,
-  TracerProvider,
-  Tracer,
-  Span,
-  SpanAttributes,
-} from '@opentelemetry/api'
-import { BasicTracerProvider, BatchSpanProcessor } from '@opentelemetry/tracing'
+import { trace, getSpan, context, Tracer, Span, SpanAttributes } from '@opentelemetry/api'
 
-import { createConfig, Config, EnrichedConfig } from './config'
-import { SpanExporter } from './exporter'
+import { DSN } from './config'
 
 const DUMMY_SPAN_NAME = '__dummy__'
 
 export class Client {
-  private _cfg: EnrichedConfig
-
-  private _bsp: BatchSpanProcessor
-  private _provider: BasicTracerProvider
-
+  private _dsn: DSN
   private _tracer?: Tracer
 
-  constructor(cfg: EnrichedConfig) {
-    this._cfg = cfg
-    this._provider = this._cfg.provider
-
-    const exporter = new SpanExporter(cfg)
-    this._bsp = new BatchSpanProcessor(exporter, {
-      maxExportBatchSize: 1000,
-      maxQueueSize: 1000,
-      scheduledDelayMillis: 5 * 1000,
-    })
-
-    this._provider.addSpanProcessor(this._bsp)
-    this._provider.register({
-      propagator: cfg.propagator,
-      contextManager: cfg.contextManager,
-    })
-  }
-
-  public close(): Promise<void> {
-    return this._bsp.shutdown()
-  }
-
-  public getTracerProvider(): TracerProvider {
-    return this._provider
+  constructor(dsn: DSN) {
+    this._dsn = dsn
   }
 
   // reportException reports an exception as a span event creating a dummy span if necessary.
   public reportException(err: Error | string, attrs: SpanAttributes = {}) {
-    if (this._cfg.disabled) {
-      return
-    }
-
     let startedSpan = false
 
     const tracer = this._internalTracer()
@@ -80,10 +40,10 @@ export class Client {
   }
 
   public traceUrl(span: Span): string {
-    const v = this._cfg._dsn
-    const host = v.host.slice(4)
+    const dsn = this._dsn
+    const host = dsn.host.slice(4)
     const traceId = span.context().traceId
-    return `${v.scheme}//${host}/search/${v.projectId}?q=${traceId}`
+    return `${dsn.scheme}//${host}/search/${dsn.projectId}?q=${traceId}`
   }
 
   private _internalTracer(): Tracer {
@@ -94,7 +54,6 @@ export class Client {
   }
 }
 
-export function createClient(_cfg: Config): Client {
-  const cfg = createConfig(_cfg)
-  return new Client(cfg)
+export function createClient(dsn: DSN): Client {
+  return new Client(dsn)
 }

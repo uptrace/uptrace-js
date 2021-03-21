@@ -1,1 +1,2 @@
-export * from './client'
+export * from './uptrace'
+export * from './version'

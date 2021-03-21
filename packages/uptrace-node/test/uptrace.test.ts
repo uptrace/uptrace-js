@@ -1,14 +1,13 @@
 import * as assert from 'assert'
 import * as sinon from 'sinon'
-import { BasicTracerProvider } from '@opentelemetry/tracing'
 
-import { createClient } from '../src'
+import { configureOpentelemetry } from '../src'
 
-describe('time', () => {
+describe('configureOpentelemetry', () => {
   it('logs on empty dsn', () => {
     const spy = sinon.spy(console, 'error')
 
-    createClient({ dsn: '', provider: new BasicTracerProvider() })
+    configureOpentelemetry({ dsn: '' })
 
     spy.restore()
     assert.ok(spy.called)
@@ -18,7 +17,7 @@ describe('time', () => {
   it('logs on invalid dsn', () => {
     const spy = sinon.spy(console, 'error')
 
-    createClient({ dsn: 'foo bar', provider: new BasicTracerProvider() })
+    configureOpentelemetry({ dsn: 'foo bar' })
 
     spy.restore()
     assert.ok(spy.called)

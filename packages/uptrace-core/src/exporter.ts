@@ -4,57 +4,29 @@ import { hrTimeToTimeStamp, ExportResult, ExportResultCode } from '@opentelemetr
 import { SpanKind, Link, TimedEvent, SpanStatusCode } from '@opentelemetry/api'
 import { SpanExporter as ISpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 
-import { EnrichedConfig } from './config'
+import { DSN } from './config'
 import type { SpanData, EventData, LinkData } from './types'
 
 export class SpanExporter implements ISpanExporter {
-  private _cfg: EnrichedConfig
   private _endpoint = ''
   private _headers: { [key: string]: string } = {}
 
-  constructor(cfg: EnrichedConfig) {
-    this._cfg = cfg
-    if (this._cfg.disabled) {
-      return
-    }
-
-    const v = this._cfg._dsn
-    this._endpoint = `${v.scheme}//${v.host}/api/v1/tracing/${v.projectId}/spans`
+  constructor(dsn: DSN) {
+    this._endpoint = `${dsn.scheme}//${dsn.host}/api/v1/tracing/${dsn.projectId}/spans`
     this._headers = {
-      Authorization: 'Bearer ' + this._cfg._dsn.token,
+      Authorization: 'Bearer ' + dsn.token,
       'Content-Type': 'application/json',
     }
   }
 
-  private _filter(span: SpanData): boolean {
-    if (!this._cfg.filters) {
-      return true
-    }
-
-    for (let fn of this._cfg.filters) {
-      if (!fn(span)) {
-        return false
-      }
-    }
-    return true
-  }
-
   export(spans: ReadableSpan[], resultCallback: (result: ExportResult) => void): void {
-    if (this._cfg.disabled) {
-      resultCallback({ code: ExportResultCode.SUCCESS })
-      return
-    }
-
-    const uptraceSpans: SpanData[] = []
+    const outSpans: SpanData[] = []
 
     for (const span of spans) {
-      const out = uptraceSpan(span)
-      if (this._filter(out)) {
-        uptraceSpans.push(out)
-      }
+      outSpans.push(_span(span))
     }
 
-    const body = JSON.stringify({ spans: uptraceSpans })
+    const body = JSON.stringify({ spans: outSpans })
 
     fetch(this._endpoint, {
       method: 'POST',
@@ -83,27 +55,26 @@ export class SpanExporter implements ISpanExporter {
   }
 }
 
-function uptraceSpan(span: ReadableSpan): SpanData {
+function _span(span: ReadableSpan): SpanData {
   const out: SpanData = {
     id: span.spanContext.spanId,
     traceId: span.spanContext.traceId,
 
     name: span.name,
-    kind: uptraceKind(span.kind),
+    kind: _kind(span.kind),
     startTime: hrTimeToTimeStamp(span.startTime),
     endTime: hrTimeToTimeStamp(span.endTime),
 
     resource: span.resource.attributes,
     attrs: span.attributes,
 
-    statusCode: uptraceStatus(span.status.code),
+    statusCode: _status(span.status.code),
     tracerName: span.instrumentationLibrary.name,
   }
 
   if (span.parentSpanId) {
     out.parentId = span.parentSpanId
   }
-
   if (span.status.message) {
     out.statusMessage = span.status.message
   }
@@ -112,16 +83,16 @@ function uptraceSpan(span: ReadableSpan): SpanData {
   }
 
   if (span.events.length) {
-    out.events = uptraceEvents(span.events)
+    out.events = _events(span.events)
   }
   if (span.links.length) {
-    out.links = uptraceLinks(span.links)
+    out.links = _links(span.links)
   }
 
   return out as SpanData
 }
 
-function uptraceEvents(events: TimedEvent[]): EventData[] {
+function _events(events: TimedEvent[]): EventData[] {
   const uptraceEvents: EventData[] = []
   for (const event of events) {
     uptraceEvents.push({
@@ -133,7 +104,7 @@ function uptraceEvents(events: TimedEvent[]): EventData[] {
   return uptraceEvents
 }
 
-function uptraceLinks(links: Link[]): LinkData[] {
+function _links(links: Link[]): LinkData[] {
   const uptraceLinks: LinkData[] = []
   for (const link of links) {
     uptraceLinks.push({
@@ -145,7 +116,7 @@ function uptraceLinks(links: Link[]): LinkData[] {
   return uptraceLinks
 }
 
-function uptraceKind(kind: SpanKind): string {
+function _kind(kind: SpanKind): string {
   switch (kind) {
     case SpanKind.SERVER:
       return 'server'
@@ -160,7 +131,7 @@ function uptraceKind(kind: SpanKind): string {
   }
 }
 
-function uptraceStatus(code: SpanStatusCode): string {
+function _status(code: SpanStatusCode): string {
   switch (code) {
     case SpanStatusCode.OK:
       return 'ok'

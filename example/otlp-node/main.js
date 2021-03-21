@@ -1,5 +1,9 @@
 const otel = require('@opentelemetry/api')
-const { BatchSpanProcessor } = require('@opentelemetry/tracing')
+const {
+  ConsoleSpanExporter,
+  SimpleSpanProcessor,
+  BatchSpanProcessor,
+} = require('@opentelemetry/tracing')
 const { NodeTracerProvider } = require('@opentelemetry/node')
 const { CollectorTraceExporter } = require('@opentelemetry/exporter-collector')
 
@@ -20,6 +24,7 @@ const bsp = new BatchSpanProcessor(exporter, {
 
 const provider = new NodeTracerProvider()
 provider.addSpanProcessor(bsp)
+provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()))
 provider.register()
 
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
@@ -34,16 +39,16 @@ otel.context.with(otel.setSpan(otel.context.active(), main), () => {
   })
 
   const child2 = tracer.startSpan('child2')
-  otel.context.with(otel.setSpan(otel.context.active(), child1), () => {
+  otel.context.with(otel.setSpan(otel.context.active(), child2), () => {
     child2.setAttribute('key2', 42)
     child2.end()
   })
 
-  console.log('trace id:', main.context().traceId)
   main.end()
+  console.log('trace id:', main.context().traceId)
 })
 
 // Flush the buffers.
 setTimeout(async () => {
   await bsp.shutdown()
-})
+}, 1000)

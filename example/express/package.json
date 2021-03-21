@@ -9,9 +9,9 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "@opentelemetry/plugin-express": "^0.13.1",
+    "@opentelemetry/plugin-express": "^0.14.0",
     "@opentelemetry/plugin-http": "^0.18.0",
-    "@uptrace/node": "^0.4.2",
+    "@uptrace/node": "^0.4.3",
     "express": "^4.17.1"
   }
 }
