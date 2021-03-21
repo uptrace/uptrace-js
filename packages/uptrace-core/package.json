@@ -1,6 +1,6 @@
 {
   "name": "@uptrace/core",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Uptrace JS core",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -53,10 +53,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@opentelemetry/api": "^0.18.1",
-    "@opentelemetry/core": "^0.18.0",
-    "@opentelemetry/instrumentation": "^0.18.0",
-    "@opentelemetry/tracing": "^0.18.0",
+    "@opentelemetry/api": "0.18.1",
+    "@opentelemetry/core": "0.18.0",
+    "@opentelemetry/instrumentation": "0.18.0",
+    "@opentelemetry/tracing": "0.18.0",
     "cross-fetch": "^3.1.2"
   },
   "devDependencies": {

@@ -26,8 +26,8 @@ export function reportException(err: Error | string, attrs: SpanAttributes = {})
 //------------------------------------------------------------------------------
 
 export interface Config extends BaseConfig, TracerConfig {
-  contextManager: ContextManager
-  textMapPropagator: TextMapPropagator
+  contextManager?: ContextManager
+  textMapPropagator?: TextMapPropagator
 }
 
 export function configureOpentelemetry(cfg: Config) {
