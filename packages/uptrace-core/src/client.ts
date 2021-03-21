@@ -39,10 +39,14 @@ export class Client {
     }
   }
 
-  public traceUrl(span: Span): string {
+  public traceUrl(span?: Span): string {
+    if (!span) {
+      span = getSpan(context.active())
+    }
+
     const dsn = this._dsn
     const host = dsn.host.slice(4)
-    const traceId = span.context().traceId
+    const traceId = span?.context().traceId
     return `${dsn.scheme}//${host}/search/${dsn.projectId}?q=${traceId}`
   }
 

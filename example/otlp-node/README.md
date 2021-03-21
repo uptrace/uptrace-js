@@ -10,7 +10,7 @@ Install dependencies:
 yarn install
 ```
 
-Run:
+Then run:
 
 ```go
 UPTRACE_TOKEN=<token> node main.js

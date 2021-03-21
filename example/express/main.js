@@ -1,75 +1,67 @@
 'use strict'
 
+const port = 9999
 const otel = require('@opentelemetry/api')
-const instrumentation = require('@opentelemetry/instrumentation')
 const uptrace = require('@uptrace/node')
 
-const upclient = uptrace.createClient({
-  // Set dsn or UPTRACE_DSN env var.
-  dsn: '',
+uptrace
+  .configureOpentelemetry({
+    // Set dsn or UPTRACE_DSN env var.
+    dsn: '',
 
-  serviceName: 'myservice',
-  serviceVersion: '1.0.0',
-})
+    serviceName: 'myservice',
+    serviceVersion: '1.0.0',
 
-// Run this before any other imports for auto-instrumentation to work.
-instrumentation.registerInstrumentations({
-  tracerProvider: upclient.getTracerProvider(),
-})
+    instrumentations: [
+      {
+        plugins: {
+          express: {
+            enabled: true,
+            path: '@opentelemetry/plugin-express',
+          },
+        },
+      },
+    ],
+  })
+  .start()
+  .then(main)
 
-const tracer = otel.trace.getTracer('app_or_package_name')
+function main() {
+  const otel = require('@opentelemetry/api')
+  const express = require('express')
+  const app = express()
+  const tracer = otel.trace.getTracer('express-example')
 
-const express = require('express')
-const app = express()
+  app.get('/', indexHandler)
+  app.get('/profiles/:username', userHandler)
 
-app.get('/', (req, res) => {
+  app.listen(9999, () => {
+    console.log(`listening at http://localhost:${port}`)
+  })
+}
+
+function indexHandler(req, res) {
+  const traceUrl = uptrace.traceUrl()
   res.send(
     `<html>` +
-      `<p><a href="/profiles/admin">admin profile</a></p>` +
-      `<p><a href="/profiles/unknown">unknown profile</a></p>` +
+      `<p>Here are some routes for you:</p>` +
+      `<ul>` +
+      `<li><a href="/profiles/world">Hello world</a></li>` +
+      `<li><a href="/profiles/foo-bar">Hello foo-bar</a></li>` +
+      `<p><a href="${traceUrl}">${traceUrl}</a></p>` +
+      `</ul>` +
       `</html>`,
   )
-})
+}
 
-app.get('/profiles/:username', (req, res) => {
+function userHandler(req, res) {
   const username = req.params.username
-
-  let name
-  try {
-    name = selectUser(username)
-  } catch {
-    name = 'unknown'
-  }
-
-  const traceUrl = upclient.traceUrl(otel.getSpan(otel.context.active()))
-  console.log('trace', traceUrl)
+  const traceUrl = uptrace.traceUrl()
 
   res.send(
     `<html>` +
-      `<h1>Hello ${username} ${name}</h1>` +
+      `<h3>Hello ${username}</h3>` +
       `<p><a href="${traceUrl}">${traceUrl}</a></p>` +
       `</html>`,
   )
-})
-
-const port = 9999
-
-app.listen(9999, () => {
-  console.log(`listening at http://localhost:${port}`)
-})
-
-function selectUser(username) {
-  const currentSpan = otel.getSpan(otel.context.active())
-  const span = tracer.startSpan('selectUser', { parent: currentSpan })
-  span.setAttribute('username', username)
-
-  if (username === 'admin') {
-    span.end()
-    return 'Joe'
-  }
-
-  const err = new Error(`username=${username} not found`)
-  span.recordException(err)
-  span.end()
-  throw err
 }

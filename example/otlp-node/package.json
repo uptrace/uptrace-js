@@ -9,7 +9,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "@opentelemetry/api": "^0.18.1",
+    "@opentelemetry/api": "^0.18.0",
     "@opentelemetry/exporter-collector": "^0.18.0",
     "@opentelemetry/node": "^0.18.0",
     "@opentelemetry/tracing": "^0.18.0"

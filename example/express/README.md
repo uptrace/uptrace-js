@@ -3,12 +3,7 @@
 To run this example:
 
 ```bash
-UPTRACE_DSN="https://<key>@uptrace.dev/<project_id>" make
+UPTRACE_DSN="https://<key>@uptrace.dev/<project_id>" node main.js
 ```
 
-HTTP server is running at http://localhost:9999:
-
-```bash
-curl -v http://localhost:9999/profiles/admin
-curl -v http://localhost:9999/profiles/foo
-```
+Then open http://localhost:9999

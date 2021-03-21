@@ -1,4 +1,4 @@
-import { Span } from '@opentelemetry/api'
+import { Span, SpanAttributes } from '@opentelemetry/api'
 import { BatchSpanProcessor } from '@opentelemetry/tracing'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
 
@@ -17,7 +17,13 @@ export function traceUrl(span: Span): string {
   return _CLIENT.traceUrl(span)
 }
 
+export function reportException(err: Error | string, attrs: SpanAttributes = {}) {
+  _CLIENT.reportException(err, attrs)
+}
+
 //------------------------------------------------------------------------------
+
+let _SDK: NodeSDK | undefined
 
 export interface Config extends BaseConfig, Partial<NodeSDKConfiguration> {}
 
@@ -25,7 +31,8 @@ export function configureOpentelemetry(cfg: Config): NodeSDK {
   configureResource(cfg)
   configureTracing(cfg)
 
-  return new NodeSDK(cfg)
+  _SDK = new NodeSDK(cfg)
+  return _SDK
 }
 
 function configureResource(cfg: Config) {
@@ -60,4 +67,11 @@ function configureTracing(cfg: Config) {
     maxQueueSize: 1000,
     scheduledDelayMillis: 5 * 1000,
   })
+}
+
+export function shutdown(): Promise<void> {
+  if (_SDK) {
+    return _SDK.shutdown()
+  }
+  return Promise.resolve()
 }

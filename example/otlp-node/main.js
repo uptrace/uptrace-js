@@ -30,6 +30,7 @@ provider.register()
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
 const main = tracer.startSpan('main')
+
 otel.context.with(otel.setSpan(otel.context.active(), main), () => {
   const child1 = tracer.startSpan('child1')
   otel.context.with(otel.setSpan(otel.context.active(), child1), () => {
@@ -50,5 +51,5 @@ otel.context.with(otel.setSpan(otel.context.active(), main), () => {
 
 // Flush the buffers.
 setTimeout(async () => {
-  await bsp.shutdown()
+  await provider.shutdown()
 }, 1000)
