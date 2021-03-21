@@ -1,6 +1,6 @@
 # Uptrace for JavaScript
 
-[![Build Status](https://travis-ci.org/uptrace/uptrace-js.svg?branch=master)](https://travis-ci.org/uptrace/uptrace-js)
+![build workflow](https://github.com/uptrace/uptrace-js/actions/workflows/build.yml/badge.svg)
 [![Documentation](https://img.shields.io/badge/uptrace-documentation-informational)](https://docs.uptrace.dev/javascript/)
 
 <a href="https://docs.uptrace.dev/javascript/">
