@@ -13,7 +13,7 @@ import {
 
 const hasWindow = typeof window !== undefined
 
-let _CLIENT = createClient(parseDSN('https://<key>@api.uptrace.dev/<project_id>'))
+let _CLIENT = createClient(parseDSN('https://TOKEN@api.uptrace.dev/PROJECT_ID'))
 
 export function traceUrl(span: Span): string {
   return _CLIENT.traceUrl(span)

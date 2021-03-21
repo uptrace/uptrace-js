@@ -147,19 +147,10 @@
     "@opentelemetry/semantic-conventions" "^0.18.0"
     lodash.merge "^4.6.2"
 
-"@uptrace/core@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@uptrace/core/-/core-0.4.3.tgz#fb47a3348ee228ace019d4d805e4227852eb9a6c"
-  integrity sha512-CxdLwysb1Otv36S1ptvHzcpY4L3WUbfJ1pwFkc6pdz8IJvpONj9IiQPNOxC6O57A2vZJ7VfMvWZmF+Y3oa+BtQ==
-  dependencies:
-    "@opentelemetry/api" "^0.18.1"
-    "@opentelemetry/core" "^0.18.0"
-    "@opentelemetry/instrumentation" "^0.18.0"
-    "@opentelemetry/tracing" "^0.18.0"
-    cross-fetch "^3.0.6"
-
-"@uptrace/core@file:../../packages/uptrace-core":
-  version "0.4.3"
+"@uptrace/core@^0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@uptrace/core/-/core-0.18.0.tgz#2e009e209afe546a15ab1d67fc7fa4207623591d"
+  integrity sha512-65xD9Rl3KVPD6okr3iFZyGqJcGg3D/vz+9JJSutqBI8MSGkhNHMEaefSY9exFnzVTkZAJGKZVf+Pk1q/JTwEmg==
   dependencies:
     "@opentelemetry/api" "^0.18.1"
     "@opentelemetry/core" "^0.18.0"
@@ -167,12 +158,14 @@
     "@opentelemetry/tracing" "^0.18.0"
     cross-fetch "^3.1.2"
 
-"@uptrace/node@file:../../packages/uptrace-node":
-  version "0.4.3"
+"@uptrace/node@^0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@uptrace/node/-/node-0.18.0.tgz#0a0bf3660180aa72fe502ca6d84f2227ec73b235"
+  integrity sha512-+yA2PcL5XP8Lwh95hUdcIR8xUdaSdDqqPQkr/lV1waD1JGoIpYJIk9u2/oqsus3bywcyGu38i7GVYwZQiM5YZg==
   dependencies:
     "@opentelemetry/node" "^0.18.0"
     "@opentelemetry/sdk-node" "^0.18.0"
-    "@uptrace/core" "^0.4.3"
+    "@uptrace/core" "^0.18.0"
 
 abort-controller@^3.0.0:
   version "3.0.0"
@@ -248,13 +241,6 @@ cookie@0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.0.tgz#beb437e7022b3b6d49019d088665303ebe9c14ba"
   integrity sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg==
-
-cross-fetch@^3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.0.6.tgz#3a4040bc8941e653e0e9cf17f29ebcd177d3365c"
-  integrity sha512-KBPUbqgFjzWlVcURG+Svp9TlhA5uliYtiNx/0r8nv0pdypeQCRJ9IaSIc3q/x3q8t3F75cHuwxVql1HFGHCNJQ==
-  dependencies:
-    node-fetch "2.6.1"
 
 cross-fetch@^3.1.2:
   version "3.1.2"

@@ -1,20 +1,25 @@
 const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
-const upclient = uptrace.createClient({
-  serviceName: 'myservice',
-  serviceVersion: '1.0.0',
-  //console: true,
-})
+uptrace
+  .configureOpentelemetry({
+    serviceName: 'myservice',
+    serviceVersion: '1.0.0',
+    //console: true,
+  })
+  .start()
+  .then(main)
 
-const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
+function main() {
+  const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
-spanExample()
-activeSpanExample()
-contextExample()
+  spanExample(tracer)
+  activeSpanExample(tracer)
+  contextExample(tracer)
+}
 
 // This example shows how to start a span and set some attributes.
-function spanExample() {
+function spanExample(tracer) {
   const span = tracer.startSpan('span', { kind: otel.SpanKind.SERVER })
   // Activate the span.
   otel.context.with(otel.setSpan(otel.context.active(), span), () => {
@@ -38,7 +43,7 @@ function spanExample() {
 }
 
 // This example shows how to get/set active span from context.
-function activeSpanExample() {
+function activeSpanExample(tracer) {
   const main = tracer.startSpan('main')
   otel.context.with(otel.setSpan(otel.context.active(), main), () => {
     if (otel.getSpan(otel.context.active()) === main) {
@@ -61,7 +66,7 @@ function activeSpanExample() {
   })
 }
 
-function contextExample() {
+function contextExample(tracer) {
   const span = tracer.startSpan('main')
 
   // By default context is empty.
