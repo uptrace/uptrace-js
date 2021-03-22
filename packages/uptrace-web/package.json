@@ -58,7 +58,7 @@
     "@opentelemetry/plugin-document-load": "0.13.1",
     "@opentelemetry/tracing": "0.18.0",
     "@opentelemetry/web": "0.18.0",
-    "@uptrace/core": "^0.18.1"
+    "@uptrace/core": "0.18.1"
   },
   "devDependencies": {
     "@types/node": "14.14.35",
