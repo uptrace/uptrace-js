@@ -7,12 +7,13 @@ import { SpanExporter as ISpanExporter, ReadableSpan } from '@opentelemetry/trac
 import { parseDSN } from './config'
 import type { SpanData, EventData, LinkData } from './types'
 
-interface SpanExporterConfig {
+export interface SpanExporterConfig {
   dsn: string
   beforeSpanSend: (span: SpanData) => void
 }
 
 export class SpanExporter implements ISpanExporter {
+  private _cfg: SpanExporterConfig
   private _endpoint = ''
   private _headers: { [key: string]: string } = {}
 
