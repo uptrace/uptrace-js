@@ -12,7 +12,7 @@ export interface Config {
   // Any other resource attributes. They are merged with resource.
   resourceAttributes?: Record<string, any>
 
-  onBeforeSend?: (span: SpanData) => void
+  beforeSpanSend?: (span: SpanData) => void
 }
 
 export function createResource(

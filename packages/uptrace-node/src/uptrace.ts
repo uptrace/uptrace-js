@@ -60,13 +60,13 @@ function configureTracing(cfg: Config) {
 
   _CLIENT = createClient(dsn)
 
-  if (!cfg.onBeforeSend) {
-    cfg.onBeforeSend = () => {}
+  if (!cfg.beforeSpanSend) {
+    cfg.beforeSpanSend = () => {}
   }
 
   const exporter = new SpanExporter({
     dsn: cfg.dsn,
-    onBeforeSend: cfg.onBeforeSend,
+    beforeSpanSend: cfg.beforeSpanSend,
   })
   // TODO: spanProcessor is deprecated
   cfg.spanProcessor = new BatchSpanProcessor(exporter, {

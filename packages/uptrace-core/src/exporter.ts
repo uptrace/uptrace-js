@@ -9,7 +9,7 @@ import type { SpanData, EventData, LinkData } from './types'
 
 interface SpanExporterConfig {
   dsn: string
-  onBeforeSend: (span: SpanData) => void
+  beforeSpanSend: (span: SpanData) => void
 }
 
 export class SpanExporter implements ISpanExporter {
@@ -32,7 +32,7 @@ export class SpanExporter implements ISpanExporter {
 
     for (const span of spans) {
       const outSpan = _span(span)
-      this._cfg.onBeforeSend(outSpan)
+      this._cfg.beforeSpanSend(outSpan)
       outSpans.push(outSpan)
     }
 
