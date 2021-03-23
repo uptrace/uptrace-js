@@ -62,13 +62,22 @@ export function parseDSN(s: string): DSN {
   try {
     u = new URL(s)
   } catch (err) {
-    throw new Error(`can't parse DSN: ${JSON.stringify(s)}`)
+    throw new Error(`can't parse DSN=${JSON.stringify(s)}`)
   }
 
-  return {
+  const dsn = {
     scheme: u.protocol,
     host: u.host,
     projectId: u.pathname.slice(1),
     token: u.username,
   }
+
+  if (!dsn.projectId) {
+    throw new Error(`"DSN=${JSON.stringify(s)} does not have a project id`)
+  }
+  if (!dsn.token) {
+    throw new Error(`"DSN=${JSON.stringify(s)} does not have a token`)
+  }
+
+  return dsn
 }

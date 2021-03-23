@@ -4,14 +4,22 @@ import { hrTimeToTimeStamp, ExportResult, ExportResultCode } from '@opentelemetr
 import { SpanKind, Link, TimedEvent, SpanStatusCode } from '@opentelemetry/api'
 import { SpanExporter as ISpanExporter, ReadableSpan } from '@opentelemetry/tracing'
 
-import { DSN } from './config'
+import { parseDSN } from './config'
 import type { SpanData, EventData, LinkData } from './types'
+
+interface SpanExporterConfig {
+  dsn: string
+  onBeforeSend: (span: SpanData) => void
+}
 
 export class SpanExporter implements ISpanExporter {
   private _endpoint = ''
   private _headers: { [key: string]: string } = {}
 
-  constructor(dsn: DSN) {
+  constructor(cfg: SpanExporterConfig) {
+    this._cfg = cfg
+
+    const dsn = parseDSN(cfg.dsn)
     this._endpoint = `${dsn.scheme}//${dsn.host}/api/v1/tracing/${dsn.projectId}/spans`
     this._headers = {
       Authorization: 'Bearer ' + dsn.token,
@@ -23,7 +31,9 @@ export class SpanExporter implements ISpanExporter {
     const outSpans: SpanData[] = []
 
     for (const span of spans) {
-      outSpans.push(_span(span))
+      const outSpan = _span(span)
+      this._cfg.onBeforeSend(outSpan)
+      outSpans.push(outSpan)
     }
 
     const body = JSON.stringify({ spans: outSpans })

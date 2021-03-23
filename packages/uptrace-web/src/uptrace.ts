@@ -68,20 +68,27 @@ function configureTracing(cfg: Config) {
     const savedHook = cfg.onBeforeSend
 
     cfg.onBeforeSend = (span) => {
-      if (savedHook) {
-        savedHook(span)
-      }
-
       if (window.navigator && window.navigator.userAgent) {
         span.attrs['http.user_agent'] = String(window.navigator.userAgent)
       }
       if (window.location) {
         span.attrs['http.url'] = String(window.location)
       }
+
+      if (savedHook) {
+        savedHook(span)
+      }
     }
   }
 
-  const exporter = new SpanExporter(dsn)
+  if (!cfg.onBeforeSend) {
+    cfg.onBeforeSend = () => {}
+  }
+
+  const exporter = new SpanExporter({
+    dsn: cfg.dsn,
+    onBeforeSend: cfg.onBeforeSend,
+  })
   const spanProcessor = new BatchSpanProcessor(exporter, {
     maxExportBatchSize: 1000,
     maxQueueSize: 1000,
