@@ -21,6 +21,6 @@ describe('configureOpentelemetry', () => {
 
     spy.restore()
     assert.ok(spy.called)
-    assert.match(spy.args[0][1], /can't parse DSN: "foo bar"/)
+    assert.match(spy.args[0][1], /can't parse DSN="foo bar"/)
   })
 })
