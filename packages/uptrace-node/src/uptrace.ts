@@ -1,6 +1,7 @@
 import { Span, SpanAttributes } from '@opentelemetry/api'
 import { BatchSpanProcessor } from '@opentelemetry/tracing'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
+import { B3Propagator, B3InjectEncoding } from '@opentelemetry/propagator-b3'
 
 import {
   createClient,
@@ -30,6 +31,7 @@ export interface Config extends BaseConfig, Partial<NodeSDKConfiguration> {}
 export function configureOpentelemetry(cfg: Config): NodeSDK {
   configureResource(cfg)
   configureTracing(cfg)
+  configurePropagator(cfg)
 
   _SDK = new NodeSDK(cfg)
   return _SDK
@@ -74,6 +76,14 @@ function configureTracing(cfg: Config) {
     maxQueueSize: 1000,
     scheduledDelayMillis: 5 * 1000,
   })
+}
+
+function configurePropagator(cfg: Config) {
+  if (!cfg.textMapPropagator) {
+    cfg.textMapPropagator = new B3Propagator({
+      injectEncoding: B3InjectEncoding.MULTI_HEADER,
+    })
+  }
 }
 
 export function shutdown(): Promise<void> {

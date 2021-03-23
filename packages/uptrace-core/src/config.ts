@@ -16,7 +16,7 @@ export interface Config {
 }
 
 export function createResource(
-  resource: Resource | undefined,
+  otherResource: Resource | undefined,
   resourceAttributes: Record<string, any> | undefined,
   serviceName: string,
   serviceVersion: string,
@@ -34,13 +34,14 @@ export function createResource(
     attrs['service.version'] = serviceVersion
   }
 
-  if (!resource) {
-    return new Resource(attrs)
+  const resource = Resource.createTelemetrySDKResource()
+  if (otherResource) {
+    resource.merge(otherResource)
   }
-  if (!Object.keys(attrs).length) {
-    return resource
+  if (Object.keys(attrs).length) {
+    resource.merge(new Resource(attrs))
   }
-  return resource.merge(new Resource(attrs))
+  return resource
 }
 
 //------------------------------------------------------------------------------

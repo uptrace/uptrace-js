@@ -49,11 +49,9 @@
     "LICENSE",
     "README.md"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "dependencies": {
     "@opentelemetry/node": "0.18.0",
+    "@opentelemetry/propagator-b3": "0.18.0",
     "@opentelemetry/sdk-node": "0.18.0",
     "@uptrace/core": "^0.18.2"
   },

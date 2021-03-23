@@ -49,9 +49,6 @@
     "LICENSE",
     "README.md"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "dependencies": {
     "@opentelemetry/api": "0.18.1",
     "@opentelemetry/context-zone": "0.18.0",
