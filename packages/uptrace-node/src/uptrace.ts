@@ -1,7 +1,7 @@
+import { CompositePropagator, HttpBaggage, HttpTraceContext } from '@opentelemetry/core'
 import { Span, SpanAttributes } from '@opentelemetry/api'
 import { BatchSpanProcessor } from '@opentelemetry/tracing'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
-import { B3Propagator, B3InjectEncoding } from '@opentelemetry/propagator-b3'
 
 import {
   createClient,
@@ -28,6 +28,11 @@ let _SDK: NodeSDK | undefined
 
 export interface Config extends BaseConfig, Partial<NodeSDKConfiguration> {}
 
+// configureOpentelemetry configures OpenTelemetry to export data to Uptrace.
+// By default it:
+//   - Creates tracer provider.
+//   - Registers Uptrace span exporter.
+//   - Sets tracecontext + baggage composite context propagator.
 export function configureOpentelemetry(cfg: Config): NodeSDK {
   configureResource(cfg)
   configureTracing(cfg)
@@ -80,8 +85,8 @@ function configureTracing(cfg: Config) {
 
 function configurePropagator(cfg: Config) {
   if (!cfg.textMapPropagator) {
-    cfg.textMapPropagator = new B3Propagator({
-      injectEncoding: B3InjectEncoding.MULTI_HEADER,
+    cfg.textMapPropagator = new CompositePropagator({
+      propagators: [new HttpTraceContext(), new HttpBaggage()],
     })
   }
 }
