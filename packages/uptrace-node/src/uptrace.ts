@@ -30,9 +30,9 @@ export interface Config extends BaseConfig, Partial<NodeSDKConfiguration> {}
 
 // configureOpentelemetry configures OpenTelemetry to export data to Uptrace.
 // By default it:
-//   - Creates tracer provider.
-//   - Registers Uptrace span exporter.
-//   - Sets tracecontext + baggage composite context propagator.
+//   - creates tracer provider;
+//   - registers Uptrace span exporter;
+//   - sets tracecontext + baggage composite context propagator.
 export function configureOpentelemetry(cfg: Config): NodeSDK {
   configureResource(cfg)
   configureTracing(cfg)

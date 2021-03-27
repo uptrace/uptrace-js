@@ -10,8 +10,8 @@ const { CollectorTraceExporter } = require('@opentelemetry/exporter-collector')
 const exporter = new CollectorTraceExporter({
   url: 'https://otlp.uptrace.dev/v1/traces',
   headers: {
-    // Set the Uptrace token here or use UPTRACE_TOKEN env var.
-    'uptrace-token': process.env.UPTRACE_TOKEN,
+    // Set the Uptrace DSN here or use UPTRACE_DSN env var.
+    'uptrace-dsn': process.env.UPTRACE_DSN,
   },
 
   serviceName: 'myservice',
@@ -24,7 +24,7 @@ const bsp = new BatchSpanProcessor(exporter, {
 
 const provider = new NodeTracerProvider()
 provider.addSpanProcessor(bsp)
-provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()))
+//provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()))
 provider.register()
 
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
