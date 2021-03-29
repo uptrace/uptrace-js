@@ -49,7 +49,7 @@ otel.context.with(otel.setSpan(otel.context.active(), main), () => {
   console.log('trace id:', main.context().traceId)
 })
 
-// Flush the buffers.
+// Send buffered spans.
 setTimeout(async () => {
   await provider.shutdown()
 }, 1000)
