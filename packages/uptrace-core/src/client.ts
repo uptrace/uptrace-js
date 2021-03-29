@@ -39,11 +39,7 @@ export class Client {
     }
   }
 
-  public traceUrl(span?: Span): string {
-    if (!span) {
-      span = getSpan(context.active())
-    }
-
+  public traceUrl(span: Span): string {
     const dsn = this._dsn
     const host = dsn.host.slice(4)
     const traceId = span?.context().traceId

@@ -47,7 +47,7 @@ export class SpanExporter implements ISpanExporter {
       .then((resp: Response) => {
         if (resp.status !== 200) {
           resp.json().then((json) => {
-            console.error('uptrace send failed: ${json.message}')
+            console.error('uptrace send failed', json.message)
           })
         }
       })

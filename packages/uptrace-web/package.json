@@ -1,6 +1,6 @@
 {
   "name": "@uptrace/web",
-  "version": "0.18.3",
+  "version": "0.18.4",
   "description": "Uptrace JS exporter for browsers",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -55,7 +55,7 @@
     "@opentelemetry/plugin-document-load": "0.13.1",
     "@opentelemetry/tracing": "0.18.0",
     "@opentelemetry/web": "0.18.0",
-    "@uptrace/core": "^0.18.3"
+    "@uptrace/core": "^0.18.4"
   },
   "devDependencies": {
     "@types/node": "14.14.35",
