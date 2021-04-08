@@ -29,6 +29,7 @@ async function main() {
 
   const server = await new Hapi.Server({
     port: 9999,
+    host: 'localhost',
     state: { ignoreErrors: true }, // Ignore invalid cookie value
   });
 
