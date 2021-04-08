@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  hapi-server:
+    environment:
+      - UPTRACE_DSN
+    build:
+      dockerfile: $PWD/Dockerfile
+      context: ../..
+    ports:
+      - '9999:9999'
+    command:
+      - 'node'
+      - 'main.js'

@@ -1,7 +1,6 @@
 'use strict'
 
 const port = 9999
-const otel = require('@opentelemetry/api')
 const { getSpan, context } = require('@opentelemetry/api')
 const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express')
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
