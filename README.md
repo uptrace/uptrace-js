@@ -4,7 +4,7 @@
 [![Documentation](https://img.shields.io/badge/uptrace-documentation-informational)](https://docs.uptrace.dev/javascript/)
 
 <a href="https://docs.uptrace.dev/javascript/">
-  <img src="https://docs.uptrace.dev/devicons/javascript-original.svg" height="200px" />
+  <img src="https://docs.uptrace.dev/devicon/javascript-original.svg" height="200px" />
 </a>
 
 ## Introduction
