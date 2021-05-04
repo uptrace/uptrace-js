@@ -20,9 +20,13 @@ function main() {
 
 // This example shows how to start a span and set some attributes.
 function spanExample(tracer) {
-  const span = tracer.startSpan('span', { kind: otel.SpanKind.SERVER })
+  // Create a span with name "operation-name" and kind="server".
+  const span = tracer.startSpan('operation-name', { kind: otel.SpanKind.SERVER })
+
   // Activate the span.
   otel.context.with(otel.setSpan(otel.context.active(), span), () => {
+    // To avoid expensive computations, check that span is recording
+    // before setting any attributes.
     if (span.isRecording()) {
       span.setAttribute('key1', 'value1')
       span.setAttributes({ key2: 123.456, key3: [1, 2, 3] })
