@@ -1,7 +1,8 @@
 'use strict'
 
 const port = 9999
-const { getSpan, context } = require('@opentelemetry/api')
+
+const { trace, context } = require('@opentelemetry/api')
 const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express')
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
 const uptrace = require('@uptrace/node')
@@ -38,21 +39,21 @@ function main() {
 }
 
 function indexHandler(req, res) {
-  const traceUrl = uptrace.traceUrl(getSpan(context.active()))
+  const traceUrl = uptrace.traceUrl(trace.getSpan(context.active()))
   res.send(
     `<html>` +
-    `<p>Here are some routes for you:</p>` +
-    `<ul>` +
-    `<li><a href="/hello/world">Hello world</a></li>` +
-    `<li><a href="/hello/foo-bar">Hello foo-bar</a></li>` +
-    `<p><a href="${traceUrl}">${traceUrl}</a></p>` +
-    `</ul>` +
-    `</html>`,
+      `<p>Here are some routes for you:</p>` +
+      `<ul>` +
+      `<li><a href="/hello/world">Hello world</a></li>` +
+      `<li><a href="/hello/foo-bar">Hello foo-bar</a></li>` +
+      `<p><a href="${traceUrl}">${traceUrl}</a></p>` +
+      `</ul>` +
+      `</html>`,
   )
 }
 
 function helloHandler(req, res) {
-  const span = getSpan(context.active())
+  const span = trace.getSpan(context.active())
 
   const err = new Error('User not found')
   span.recordException(err)
@@ -61,8 +62,8 @@ function helloHandler(req, res) {
   const traceUrl = uptrace.traceUrl(span)
   res.send(
     `<html>` +
-    `<h3>Hello ${username}</h3>` +
-    `<p><a href="${traceUrl}">${traceUrl}</a></p>` +
-    `</html>`,
+      `<h3>Hello ${username}</h3>` +
+      `<p><a href="${traceUrl}">${traceUrl}</a></p>` +
+      `</html>`,
   )
 }
