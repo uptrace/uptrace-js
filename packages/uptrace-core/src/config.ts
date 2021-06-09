@@ -34,7 +34,7 @@ export function createResource(
     attrs['service.version'] = serviceVersion
   }
 
-  const resource = Resource.createTelemetrySDKResource()
+  const resource = Resource.default()
   if (otherResource) {
     resource.merge(otherResource)
   }

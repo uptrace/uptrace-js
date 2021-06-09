@@ -1,4 +1,8 @@
-import { CompositePropagator, HttpBaggage, HttpTraceContext } from '@opentelemetry/core'
+import {
+  CompositePropagator,
+  HttpBaggagePropagator,
+  HttpTraceContextPropagator,
+} from '@opentelemetry/core'
 import { Span, SpanAttributes } from '@opentelemetry/api'
 import { BatchSpanProcessor } from '@opentelemetry/tracing'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
@@ -86,7 +90,7 @@ function configureTracing(cfg: Config) {
 function configurePropagator(cfg: Config) {
   if (!cfg.textMapPropagator) {
     cfg.textMapPropagator = new CompositePropagator({
-      propagators: [new HttpTraceContext(), new HttpBaggage()],
+      propagators: [new HttpTraceContextPropagator(), new HttpBaggagePropagator()],
     })
   }
 }

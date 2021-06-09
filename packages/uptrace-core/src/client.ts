@@ -1,4 +1,4 @@
-import { trace, getSpan, context, Tracer, Span, SpanAttributes } from '@opentelemetry/api'
+import { trace, context, Tracer, Span, SpanAttributes } from '@opentelemetry/api'
 
 import { DSN } from './config'
 
@@ -17,7 +17,7 @@ export class Client {
     let startedSpan = false
 
     const tracer = this._internalTracer()
-    let span = getSpan(context.active())
+    let span = trace.getSpan(context.active())
 
     if (!span) {
       span = tracer.startSpan(DUMMY_SPAN_NAME)
@@ -42,7 +42,7 @@ export class Client {
   public traceUrl(span: Span): string {
     const dsn = this._dsn
     const host = dsn.host.slice(4)
-    const traceId = span?.context().traceId
+    const traceId = span?.spanContext().traceId
     return `${dsn.scheme}//${host}/search/${dsn.projectId}?q=${traceId}`
   }
 

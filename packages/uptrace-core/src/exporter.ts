@@ -1,8 +1,8 @@
 import fetch from 'cross-fetch'
 
 import { hrTimeToTimeStamp, ExportResult, ExportResultCode } from '@opentelemetry/core'
-import { SpanKind, Link, TimedEvent, SpanStatusCode } from '@opentelemetry/api'
-import { SpanExporter as ISpanExporter, ReadableSpan } from '@opentelemetry/tracing'
+import { SpanKind, Link, SpanStatusCode } from '@opentelemetry/api'
+import { SpanExporter as ISpanExporter, ReadableSpan, TimedEvent } from '@opentelemetry/tracing'
 
 import { parseDSN } from './config'
 import type { SpanData, EventData, LinkData } from './types'
@@ -67,9 +67,10 @@ export class SpanExporter implements ISpanExporter {
 }
 
 function _span(span: ReadableSpan): SpanData {
+  const spanCtx = span.spanContext()
   const out: SpanData = {
-    id: span.spanContext.spanId,
-    traceId: span.spanContext.traceId,
+    id: spanCtx.spanId,
+    traceId: spanCtx.traceId,
 
     name: span.name,
     kind: _kind(span.kind),

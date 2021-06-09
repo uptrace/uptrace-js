@@ -97,9 +97,10 @@ function configureTracing(cfg: Config) {
 
   const provider = new WebTracerProvider({
     sampler: cfg.sampler,
-    traceParams: cfg.traceParams,
+    spanLimits: cfg.spanLimits,
     resource: cfg.resource,
     idGenerator: cfg.idGenerator,
+    forceFlushTimeoutMillis: cfg.forceFlushTimeoutMillis,
   })
   provider.addSpanProcessor(spanProcessor)
   provider.register({
