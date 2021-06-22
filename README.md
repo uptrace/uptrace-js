@@ -25,7 +25,8 @@ Install uptrace-js:
 yarn add @uptrace/node --save
 ```
 
-Run the [basic example](example/basic-node) below using the DSN from the Uptrace project settings page.
+Run the [basic example](example/basic-node) below using the DSN from the Uptrace project settings
+page.
 
 ```js
 const otel = require('@opentelemetry/api')
@@ -70,4 +71,5 @@ function main() {
 }
 ```
 
-Please see [@uptrace/node documentation](https://docs.uptrace.dev/node/) for more details.
+For more details, please see [documentation](https://docs.uptrace.dev/node/) and
+[examples](example).
