@@ -1,15 +1,9 @@
 import { Span, SpanAttributes, ContextManager, TextMapPropagator } from '@opentelemetry/api'
-import { BatchSpanProcessor, TracerConfig } from '@opentelemetry/tracing'
-import { WebTracerProvider } from '@opentelemetry/web'
+import { BatchSpanProcessor, TracerConfig } from '@opentelemetry/sdk-trace-base'
+import { WebTracerProvider } from '@opentelemetry/sdk-trace-web'
+import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
 
-import {
-  createClient,
-  createResource,
-  parseDSN,
-  DSN,
-  Config as BaseConfig,
-  SpanExporter,
-} from '@uptrace/core'
+import { createClient, createResource, parseDSN, DSN, Config as BaseConfig } from '@uptrace/core'
 
 const hasWindow = typeof window !== undefined
 
@@ -64,30 +58,26 @@ function configureTracing(cfg: Config) {
 
   _CLIENT = createClient(dsn)
 
-  if (hasWindow) {
-    const savedHook = cfg.beforeSpanSend
+  // if (hasWindow) {
+  //   const savedHook = cfg.beforeSpanSend
 
-    cfg.beforeSpanSend = (span) => {
-      if (window.navigator && window.navigator.userAgent) {
-        span.attrs['http.user_agent'] = String(window.navigator.userAgent)
-      }
-      if (window.location) {
-        span.attrs['http.url'] = String(window.location)
-      }
+  //   cfg.beforeSpanSend = (span) => {
+  //     if (window.navigator && window.navigator.userAgent) {
+  //       span.attrs['http.user_agent'] = String(window.navigator.userAgent)
+  //     }
+  //     if (window.location) {
+  //       span.attrs['http.url'] = String(window.location)
+  //     }
 
-      if (savedHook) {
-        savedHook(span)
-      }
-    }
-  }
+  //     if (savedHook) {
+  //       savedHook(span)
+  //     }
+  //   }
+  // }
 
-  if (!cfg.beforeSpanSend) {
-    cfg.beforeSpanSend = () => {}
-  }
-
-  const exporter = new SpanExporter({
-    dsn: cfg.dsn,
-    beforeSpanSend: cfg.beforeSpanSend,
+  const exporter = new CollectorTraceExporter({
+    url: 'https://otlp.uptrace.dev/v1/traces',
+    headers: { 'uptrace-dsn': cfg.dsn },
   })
   const spanProcessor = new BatchSpanProcessor(exporter, {
     maxExportBatchSize: 1000,
