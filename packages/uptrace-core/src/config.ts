@@ -1,32 +1,37 @@
 import { Resource } from '@opentelemetry/resources'
 
-import type { SpanData } from './types'
-
 export interface Config {
   dsn: string
 
-  // `service.name` resource attribute. It is merged with resource.
+  // `service.name` resource attribute.
   serviceName?: string
-  // `service.version` resource attribute. It is merged with resource.
+  // `service.version` resource attribute.
   serviceVersion?: string
-  // Any other resource attributes. They are merged with resource.
+  // Any other resource attributes.
   resourceAttributes?: Record<string, any>
-
-  beforeSpanSend?: (span: SpanData) => void
+  // resource that describes an entity that produces telemetry, for example,
+  // such attributes as host.name and service.name. All produced spans and metrics
+  // will have these attributes.
+  //
+  // resource overrides and replaces any other resource attributes.
+  resource?: Resource
 }
 
 export function createResource(
-  otherResource: Resource | undefined,
+  resource: Resource | undefined,
   resourceAttributes: Record<string, any> | undefined,
   serviceName: string,
   serviceVersion: string,
 ): Resource {
+  if (resource) {
+    return resource
+  }
+
   const attrs: Record<string, any> = {}
 
   if (resourceAttributes) {
     Object.assign(attrs, resourceAttributes)
   }
-
   if (serviceName) {
     attrs['service.name'] = serviceName
   }
@@ -34,13 +39,12 @@ export function createResource(
     attrs['service.version'] = serviceVersion
   }
 
-  const resource = Resource.default()
-  if (otherResource) {
-    resource.merge(otherResource)
-  }
+  resource = Resource.default()
+
   if (Object.keys(attrs).length) {
-    resource.merge(new Resource(attrs))
+    return resource.merge(new Resource(attrs))
   }
+
   return resource
 }
 

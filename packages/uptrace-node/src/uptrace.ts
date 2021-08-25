@@ -4,17 +4,11 @@ import {
   HttpTraceContextPropagator,
 } from '@opentelemetry/core'
 import { Span, SpanAttributes } from '@opentelemetry/api'
-import { BatchSpanProcessor } from '@opentelemetry/tracing'
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
+import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
 
-import {
-  createClient,
-  createResource,
-  parseDSN,
-  DSN,
-  Config as BaseConfig,
-  SpanExporter,
-} from '@uptrace/core'
+import { createClient, createResource, parseDSN, DSN, Config as BaseConfig } from '@uptrace/core'
 
 let _CLIENT = createClient(parseDSN('https://TOKEN@api.uptrace.dev/PROJECT_ID'))
 
@@ -71,13 +65,9 @@ function configureTracing(cfg: Config) {
 
   _CLIENT = createClient(dsn)
 
-  if (!cfg.beforeSpanSend) {
-    cfg.beforeSpanSend = () => {}
-  }
-
-  const exporter = new SpanExporter({
-    dsn: cfg.dsn,
-    beforeSpanSend: cfg.beforeSpanSend,
+  const exporter = new CollectorTraceExporter({
+    url: 'https://otlp.uptrace.dev/v1/traces',
+    headers: { 'uptrace-dsn': cfg.dsn },
   })
   // TODO: spanProcessor is deprecated
   cfg.spanProcessor = new BatchSpanProcessor(exporter, {
