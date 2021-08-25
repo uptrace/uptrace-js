@@ -160,8 +160,10 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-0.25.0.tgz#c100d146957949608c6b9614267ae044cdcb5315"
   integrity sha512-V3N+MDBiv0TUlorbgiSqk6CvcP876CYUk/41Tg6s8OIyvniTwprE6vPvFQayuABiVkGlHOxv1Mlvp0w4qNdnVg==
 
-"@uptrace/core@file:../../packages/uptrace-core":
-  version "0.20.0"
+"@uptrace/core@^0.25.0":
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/@uptrace/core/-/core-0.25.0.tgz#15f9a172184309727c01077a9dd6f8c75f0643c4"
+  integrity sha512-oFssCpUleprTwjMoatKfcGCx88rg2dPokMnkufh4mEjOm+TFzs/X5ggZXXqDYdLvFsd5NKauZEhFarYLTo55LQ==
   dependencies:
     "@opentelemetry/api" "^1.0.2"
     "@opentelemetry/core" "0.25.0"
@@ -169,21 +171,15 @@
     "@opentelemetry/sdk-trace-base" "0.25.0"
     cross-fetch "^3.1.4"
 
-"@uptrace/node@file:../../packages/uptrace-node":
-  version "0.20.0"
+"@uptrace/node@0.25.0":
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/@uptrace/node/-/node-0.25.0.tgz#f9ea5eb95bcb4eb016e38e822894366b59c59894"
+  integrity sha512-TTu0MSgBN9EthHEnUzQ3eAjxImCSKzcLs5kOIL+iYWuTeRUW0RGJf0Jduq9RlDHqlGW8QgOZRa4oRlglyDaDpQ==
   dependencies:
     "@opentelemetry/api" "1.0.2"
     "@opentelemetry/exporter-collector" "0.25.0"
     "@opentelemetry/sdk-node" "0.25.0"
-    "@uptrace/core" "file:../../packages/uptrace-core"
-
-"@uptrace/node@file:/home/vmihailenco/workspace/uptrace-js/packages/uptrace-node":
-  version "0.20.0"
-  dependencies:
-    "@opentelemetry/api" "1.0.2"
-    "@opentelemetry/exporter-collector" "0.25.0"
-    "@opentelemetry/sdk-node" "0.25.0"
-    "@uptrace/core" "file:../../packages/uptrace-core"
+    "@uptrace/core" "^0.25.0"
 
 abort-controller@^3.0.0:
   version "3.0.0"
