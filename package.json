@@ -1,6 +1,6 @@
 {
   "name": "",
-  "version": "",
+  "version": "0.0.1",
   "description": "Uptrace JS exporter for OpenTelemetry",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
