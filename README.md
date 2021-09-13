@@ -1,9 +1,9 @@
-# Uptrace for JavaScript
+# Uptrace for Node.js and Web
 
 ![build workflow](https://github.com/uptrace/uptrace-js/actions/workflows/build.yml/badge.svg)
 [![Documentation](https://img.shields.io/badge/uptrace-documentation-informational)](https://docs.uptrace.dev/javascript/)
 
-<a href="https://docs.uptrace.dev/javascript/">
+<a href="https://docs.uptrace.dev/guide/node.html">
   <img src="https://docs.uptrace.dev/devicon/javascript-original.svg" height="200px" />
 </a>
 
@@ -14,8 +14,8 @@ uptrace-js is an OpenTelemery distribution configured to export
 
 uptrace-js comes in two flavors:
 
-- [@uptrace/node](https://docs.uptrace.dev/node/) - for Node.js.
-- [@uptrace/web](https://docs.uptrace.dev/javascript/) - for Web browsers.
+- [@uptrace/node](https://docs.uptrace.dev/guide/node.html) - for Node.js.
+- [@uptrace/web](https://docs.uptrace.dev/guide/javascript.html) - for Web browsers.
 
 ## Quickstart
 
