@@ -1,0 +1,15 @@
+{
+  "name": "redis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Uptrace",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@uptrace/node": "0.25.0",
+    "redis": "^4.0.0-rc.3"
+  }
+}
