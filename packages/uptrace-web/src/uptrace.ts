@@ -52,7 +52,7 @@ function configureTracing(cfg: Config) {
   try {
     dsn = parseDSN(cfg.dsn)
   } catch (err) {
-    console.error('Uptrace is disabled:', err.message ?? err)
+    console.error('Uptrace is disabled:', String(err))
     return
   }
 

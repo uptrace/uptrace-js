@@ -1,7 +1,7 @@
 import {
   CompositePropagator,
-  HttpBaggagePropagator,
-  HttpTraceContextPropagator,
+  W3CBaggagePropagator,
+  W3CTraceContextPropagator,
 } from '@opentelemetry/core'
 import { Span, SpanAttributes } from '@opentelemetry/api'
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
@@ -59,7 +59,7 @@ function configureTracing(cfg: Config) {
   try {
     dsn = parseDSN(cfg.dsn)
   } catch (err) {
-    console.error('Uptrace is disabled:', err.message ?? err)
+    console.error('Uptrace is disabled:', String(err))
     return
   }
 
@@ -80,7 +80,7 @@ function configureTracing(cfg: Config) {
 function configurePropagator(cfg: Config) {
   if (!cfg.textMapPropagator) {
     cfg.textMapPropagator = new CompositePropagator({
-      propagators: [new HttpTraceContextPropagator(), new HttpBaggagePropagator()],
+      propagators: [new W3CTraceContextPropagator(), new W3CBaggagePropagator()],
     })
   }
 }
