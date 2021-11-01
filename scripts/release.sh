@@ -15,12 +15,19 @@ yarn bump
 VERSION=$(node -pe "require('./packages/uptrace-core/package.json').version")
 
 yarn compile
+
+for dir in $(ls -d example/*/); do
+    pushd $dir
+    sed --in-place "s/\(\"\@uptrace\/.*\": \)\"[^\"]*\"/\1\"${VERSION}\"/" ./package.json
+    popd
+done
+
 git add -u
 git commit -m "Release v${VERSION} (release.sh)"
 git tag v${VERSION}
 
 for dir in $(ls -d packages/*/); do
-  pushd $dir
-  npm publish
-  popd
+    pushd $dir
+    npm publish
+    popd
 done
