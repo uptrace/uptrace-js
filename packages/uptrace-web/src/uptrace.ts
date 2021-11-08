@@ -2,9 +2,11 @@ import { Span, SpanAttributes, ContextManager, TextMapPropagator } from '@opente
 import { SpanProcessor, BatchSpanProcessor, TracerConfig } from '@opentelemetry/sdk-trace-base'
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web'
 import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
-import { ZoneContextManager } from '@opentelemetry/context-zone'
 import { registerInstrumentations, InstrumentationOption } from '@opentelemetry/instrumentation'
 import { getWebAutoInstrumentations } from '@opentelemetry/auto-instrumentations-web'
+
+import { ZoneContextManager } from '@opentelemetry/context-zone-peer-dep'
+import 'zone.js'
 
 import { createClient, createResource, parseDSN, Config as BaseConfig } from '@uptrace/core'
 

@@ -52,7 +52,7 @@
   "dependencies": {
     "@opentelemetry/api": "1.0.3",
     "@opentelemetry/auto-instrumentations-web": "0.26.0",
-    "@opentelemetry/context-zone": "1.0.0",
+    "@opentelemetry/context-zone-peer-dep": "1.0.0",
     "@opentelemetry/exporter-collector": "0.25.0",
     "@opentelemetry/sdk-trace-base": "1.0.0",
     "@opentelemetry/sdk-trace-web": "1.0.0",
