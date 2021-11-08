@@ -1,17 +1,16 @@
 import { Span, SpanAttributes, ContextManager, TextMapPropagator } from '@opentelemetry/api'
-import { BatchSpanProcessor, TracerConfig } from '@opentelemetry/sdk-trace-base'
+import { SpanProcessor, BatchSpanProcessor, TracerConfig } from '@opentelemetry/sdk-trace-base'
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web'
 import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
+import { ZoneContextManager } from '@opentelemetry/context-zone'
+import { registerInstrumentations, InstrumentationOption } from '@opentelemetry/instrumentation'
+import { getWebAutoInstrumentations } from '@opentelemetry/auto-instrumentations-web'
 
-import { createClient, createResource, parseDSN, DSN, Config as BaseConfig } from '@uptrace/core'
+import { createClient, createResource, parseDSN, Config as BaseConfig } from '@uptrace/core'
 
 const hasWindow = typeof window !== undefined
 
-let _CLIENT = createClient(parseDSN('https://TOKEN@api.uptrace.dev/PROJECT_ID'))
-
-export function traceUrl(span: Span): string {
-  return _CLIENT.traceUrl(span)
-}
+let _CLIENT = createClient()
 
 export function reportException(err: Error | string, attrs: SpanAttributes = {}) {
   _CLIENT.reportException(err, attrs)
@@ -22,6 +21,7 @@ export function reportException(err: Error | string, attrs: SpanAttributes = {})
 export interface Config extends BaseConfig, TracerConfig {
   contextManager?: ContextManager
   textMapPropagator?: TextMapPropagator
+  instrumentations?: InstrumentationOption[]
 }
 
 export function configureOpentelemetry(cfg: Config) {
@@ -47,33 +47,12 @@ function configureTracing(cfg: Config) {
     cfg.dsn = (window as any).UPTRACE_DSN
   }
 
-  let dsn: DSN
-
   try {
-    dsn = parseDSN(cfg.dsn)
+    parseDSN(cfg.dsn)
   } catch (err) {
     console.error('Uptrace is disabled:', String(err))
     return
   }
-
-  _CLIENT = createClient(dsn)
-
-  // if (hasWindow) {
-  //   const savedHook = cfg.beforeSpanSend
-
-  //   cfg.beforeSpanSend = (span) => {
-  //     if (window.navigator && window.navigator.userAgent) {
-  //       span.attrs['http.user_agent'] = String(window.navigator.userAgent)
-  //     }
-  //     if (window.location) {
-  //       span.attrs['http.url'] = String(window.location)
-  //     }
-
-  //     if (savedHook) {
-  //       savedHook(span)
-  //     }
-  //   }
-  // }
 
   const exporter = new CollectorTraceExporter({
     url: 'https://otlp.uptrace.dev/v1/traces',
@@ -92,10 +71,19 @@ function configureTracing(cfg: Config) {
     idGenerator: cfg.idGenerator,
     forceFlushTimeoutMillis: cfg.forceFlushTimeoutMillis,
   })
+
+  if (hasWindow) {
+    provider.addSpanProcessor(new WindowAttributesProcessor())
+  }
   provider.addSpanProcessor(spanProcessor)
+
   provider.register({
-    contextManager: cfg.contextManager,
+    contextManager: cfg.contextManager ?? new ZoneContextManager(),
     propagator: cfg.textMapPropagator,
+  })
+
+  registerInstrumentations({
+    instrumentations: cfg.instrumentations ?? [getWebAutoInstrumentations()],
   })
 }
 
@@ -135,5 +123,26 @@ function setupOnError(): void {
       attrs['code.colno'] = column
     }
     reportException(String(message), attrs)
+  }
+}
+
+export class WindowAttributesProcessor implements SpanProcessor {
+  forceFlush(): Promise<void> {
+    return Promise.resolve()
+  }
+
+  onStart(span: Span): void {
+    if (window.navigator && window.navigator.userAgent) {
+      span.setAttribute('http.user_agent', window.navigator.userAgent)
+    }
+    if (window.location && window.location.href) {
+      span.setAttribute('location.href', location.href)
+    }
+  }
+
+  onEnd(): void {}
+
+  shutdown(): Promise<void> {
+    return Promise.resolve()
   }
 }
