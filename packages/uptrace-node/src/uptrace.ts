@@ -3,18 +3,15 @@ import {
   W3CBaggagePropagator,
   W3CTraceContextPropagator,
 } from '@opentelemetry/core'
-import { Span, SpanAttributes } from '@opentelemetry/api'
+import { SpanAttributes } from '@opentelemetry/api'
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
 import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
 
-import { createClient, createResource, parseDSN, DSN, Config as BaseConfig } from '@uptrace/core'
+import { createClient, createResource, parseDSN, Config as BaseConfig } from '@uptrace/core'
 
-let _CLIENT = createClient(parseDSN('https://TOKEN@api.uptrace.dev/PROJECT_ID'))
-
-export function traceUrl(span: Span): string {
-  return _CLIENT.traceUrl(span)
-}
+let _CLIENT = createClient()
 
 export function reportException(err: Error | string, attrs: SpanAttributes = {}) {
   _CLIENT.reportException(err, attrs)
@@ -54,27 +51,24 @@ function configureTracing(cfg: Config) {
     cfg.dsn = process.env.UPTRACE_DSN
   }
 
-  let dsn: DSN
-
   try {
-    dsn = parseDSN(cfg.dsn)
+    parseDSN(cfg.dsn)
   } catch (err) {
     console.error('Uptrace is disabled:', String(err))
     return
   }
 
-  _CLIENT = createClient(dsn)
-
   const exporter = new CollectorTraceExporter({
     url: 'https://otlp.uptrace.dev/v1/traces',
     headers: { 'uptrace-dsn': cfg.dsn },
   })
-  // TODO: spanProcessor is deprecated
   cfg.spanProcessor = new BatchSpanProcessor(exporter, {
     maxExportBatchSize: 1000,
     maxQueueSize: 1000,
     scheduledDelayMillis: 5 * 1000,
   })
+
+  cfg.instrumentations ??= [getNodeAutoInstrumentations()]
 }
 
 function configurePropagator(cfg: Config) {
