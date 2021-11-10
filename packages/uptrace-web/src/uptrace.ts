@@ -3,14 +3,10 @@ import { SpanProcessor, BatchSpanProcessor, TracerConfig } from '@opentelemetry/
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web'
 import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
 import { registerInstrumentations, InstrumentationOption } from '@opentelemetry/instrumentation'
-import { getWebAutoInstrumentations } from '@opentelemetry/auto-instrumentations-web'
-
-import { ZoneContextManager } from '@opentelemetry/context-zone-peer-dep'
-import 'zone.js'
 
 import { createClient, createResource, parseDSN, Config as BaseConfig } from '@uptrace/core'
 
-const hasWindow = typeof window !== undefined
+const hasWindow = typeof window !== 'undefined'
 
 let _CLIENT = createClient()
 
@@ -80,12 +76,12 @@ function configureTracing(cfg: Config) {
   provider.addSpanProcessor(spanProcessor)
 
   provider.register({
-    contextManager: cfg.contextManager ?? new ZoneContextManager(),
+    contextManager: cfg.contextManager,
     propagator: cfg.textMapPropagator,
   })
 
   registerInstrumentations({
-    instrumentations: cfg.instrumentations ?? [getWebAutoInstrumentations()],
+    instrumentations: cfg.instrumentations,
   })
 }
 
