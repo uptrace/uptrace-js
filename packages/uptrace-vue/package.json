@@ -51,12 +51,13 @@
     "README.md"
   ],
   "dependencies": {
+    "@opentelemetry/api": "1.0.3",
     "@uptrace/web": "^1.0.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.176",
-    "@types/node": "16.11.6",
-    "@typescript-eslint/eslint-plugin": "5.3.0",
+    "@types/node": "16.11.7",
+    "@typescript-eslint/eslint-plugin": "5.3.1",
     "eslint": "8.2.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "4.0.0",
