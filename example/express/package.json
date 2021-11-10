@@ -11,7 +11,7 @@
   "dependencies": {
     "@opentelemetry/instrumentation-express": "0.25.0",
     "@opentelemetry/instrumentation-http": "0.25.0",
-    "@uptrace/node": "1.0.0",
+    "@uptrace/node": "1.0.1",
     "express": "^4.17.1"
   }
 }

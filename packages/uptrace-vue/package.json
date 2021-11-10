@@ -1,6 +1,6 @@
 {
   "name": "@uptrace/vue",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Vue instrumentation for OpenTelemetry",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -52,7 +52,7 @@
   ],
   "dependencies": {
     "@opentelemetry/api": "1.0.3",
-    "@uptrace/web": "^1.0.0"
+    "@uptrace/web": "^1.0.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.176",
