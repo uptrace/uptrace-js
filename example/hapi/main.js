@@ -1,8 +1,8 @@
 'use strict'
 
 const { trace, context } = require('@opentelemetry/api')
+const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node')
 const { HapiInstrumentation } = require('@opentelemetry/instrumentation-hapi')
-const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
 const uptrace = require('@uptrace/node')
 
 uptrace
@@ -13,11 +13,7 @@ uptrace
     serviceName: 'myservice',
     serviceVersion: '1.0.0',
 
-    plugins: {
-      http: { enabled: false, path: '@opentelemetry/plugin-http' },
-      https: { enabled: false, path: '@opentelemetry/plugin-https' },
-    },
-    instrumentations: [new HttpInstrumentation(), new HapiInstrumentation()],
+    instrumentations: [getNodeAutoInstrumentations(), new HapiInstrumentation()],
   })
   .start()
   .then(main)

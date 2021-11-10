@@ -45,6 +45,7 @@ export function createClient(): Client {
 }
 
 export function traceUrl(span: Span): string {
-  const traceId = span.spanContext().traceId
+  const ctx = span.spanContext()
+  const traceId = ctx?.traceId ?? '<no span>'
   return `https://app.uptrace.dev/traces/${traceId}`
 }

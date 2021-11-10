@@ -3,8 +3,6 @@
 const port = 9999
 
 const { trace, context } = require('@opentelemetry/api')
-const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express')
-const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
 const uptrace = require('@uptrace/node')
 
 uptrace
@@ -14,12 +12,6 @@ uptrace
 
     serviceName: 'myservice',
     serviceVersion: '1.0.0',
-
-    plugins: {
-      http: { enabled: false, path: '@opentelemetry/plugin-http' },
-      https: { enabled: false, path: '@opentelemetry/plugin-https' },
-    },
-    instrumentations: [new HttpInstrumentation(), new ExpressInstrumentation()],
   })
   .start()
   .then(main)
