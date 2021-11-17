@@ -68,7 +68,8 @@ function configureTracing(cfg: Config) {
     scheduledDelayMillis: 5 * 1000,
   })
 
-  cfg.instrumentations ??= [getNodeAutoInstrumentations()]
+  // FIXME
+  cfg.instrumentations ??= [getNodeAutoInstrumentations()] as any
 }
 
 function configurePropagator(cfg: Config) {
