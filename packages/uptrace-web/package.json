@@ -55,7 +55,8 @@
     "@opentelemetry/instrumentation": "^0.26.0",
     "@opentelemetry/sdk-trace-base": "1.0.0",
     "@opentelemetry/sdk-trace-web": "1.0.0",
-    "@uptrace/core": "^1.0.1"
+    "@opentelemetry/core": "1.0.1",
+    "@uptrace/core": "1.0.1"
   },
   "devDependencies": {
     "@types/node": "16.11.7",

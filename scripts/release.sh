@@ -23,8 +23,9 @@ for dir in $(ls -d example/*/); do
 done
 
 git add -u
-git commit -m "Release v${VERSION} (release.sh)"
+git commit -m "chore: release v${VERSION} (release.sh)"
 git tag v${VERSION}
+git push origin v${VERSION}
 
 for dir in $(ls -d packages/*/); do
     pushd $dir

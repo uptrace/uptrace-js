@@ -21,7 +21,7 @@ export function setupErrorHandler(app: Vue) {
     if (hasConsole) {
       const message = `Error in ${lifecycleHook}: "${err && err.toString()}"`
       // eslint-disable-next-line no-console
-      console.error(`[Vue warn]: ${message}${componentTrace}`)
+      console.error(`[Vue warn]: ${message}\n\n${componentTrace}`)
     }
   }
 }

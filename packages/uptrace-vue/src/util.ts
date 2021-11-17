@@ -38,7 +38,7 @@ export function formatComponentName(vm?: ViewModel, includeFile = false): string
 
 export function generateComponentTrace(vm: ViewModel | undefined): string {
   if (!vm || !vm._isVue || !vm.$parent) {
-    return `\n\n(found in ${formatComponentName(vm)})`
+    return `(found in ${formatComponentName(vm)})`
   }
 
   const tree = []
@@ -72,5 +72,5 @@ export function generateComponentTrace(vm: ViewModel | undefined): string {
     )
     .join('\n')
 
-  return `\n\nfound in\n\n${formattedTree}`
+  return `found in\n\n${formattedTree}`
 }
