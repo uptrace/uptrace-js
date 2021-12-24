@@ -1,9 +1,22 @@
 import { trace, context, Tracer, Span, SpanAttributes } from '@opentelemetry/api'
 
+import { Dsn } from './config'
+
 const DUMMY_SPAN_NAME = '__dummy__'
 
 export class Client {
+  private _dsn: Dsn
   private _tracer?: Tracer
+
+  constructor(dsn: Dsn) {
+    this._dsn = dsn
+  }
+
+  traceUrl(span: Span): string {
+    const ctx = span.spanContext()
+    const traceId = ctx?.traceId ?? '<no span>'
+    return `${this._dsn.appAddr()}/traces/${traceId}`
+  }
 
   // reportException reports an exception as a span event creating a dummy span if necessary.
   public reportException(err: Error | string, attrs: SpanAttributes = {}) {
@@ -40,12 +53,6 @@ export class Client {
   }
 }
 
-export function createClient(): Client {
-  return new Client()
-}
-
-export function traceUrl(span: Span): string {
-  const ctx = span.spanContext()
-  const traceId = ctx?.traceId ?? '<no span>'
-  return `https://app.uptrace.dev/traces/${traceId}`
+export function createClient(dsn: Dsn): Client {
+  return new Client(dsn)
 }

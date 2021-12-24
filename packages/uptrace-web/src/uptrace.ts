@@ -4,14 +4,18 @@ import { WebTracerProvider } from '@opentelemetry/sdk-trace-web'
 import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
 import { registerInstrumentations, InstrumentationOption } from '@opentelemetry/instrumentation'
 
-import { createClient, createResource, parseDSN, Config as BaseConfig } from '@uptrace/core'
+import { createClient, createResource, parseDsn, Dsn, Config as BaseConfig } from '@uptrace/core'
 
 const hasWindow = typeof window !== 'undefined'
 
-let _CLIENT = createClient()
+let _CLIENT = createClient(parseDsn('https://<key>@uptrace.dev/<project_id>'))
 
 export function reportException(err: Error | string, attrs: SpanAttributes = {}) {
   _CLIENT.reportException(err, attrs)
+}
+
+export function traceUrl(span: Span): string {
+  return _CLIENT.traceUrl(span)
 }
 
 //------------------------------------------------------------------------------
@@ -45,12 +49,16 @@ function configureTracing(cfg: Config) {
     cfg.dsn = (window as any).UPTRACE_DSN
   }
 
+  let dsn: Dsn
+
   try {
-    parseDSN(cfg.dsn)
+    dsn = parseDsn(cfg.dsn)
   } catch (err) {
     console.error('Uptrace is disabled:', String(err))
     return
   }
+
+  _CLIENT = createClient(dsn)
 
   const exporter = new CollectorTraceExporter({
     url: 'https://otlp.uptrace.dev/v1/traces',

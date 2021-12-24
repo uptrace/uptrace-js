@@ -50,39 +50,67 @@ export function createResource(
 
 //------------------------------------------------------------------------------
 
-export interface DSN {
-  scheme: string
-  host: string
-  projectId: string
-  token: string
+export class Dsn {
+  str = ''
+  scheme = ''
+  host = ''
+  projectId = ''
+  token = ''
+
+  constructor(s: string) {
+    if (!s) {
+      throw new Error('either dsn option or UPTRACE_DSN is required')
+    }
+
+    let u: URL
+
+    try {
+      u = new URL(s)
+    } catch (err) {
+      throw new Error(`can't parse DSN=${JSON.stringify(s)}`)
+    }
+
+    this.str = s
+    this.scheme = u.protocol
+    this.host = u.host
+    if (this.host === 'api.uptrace.dev') {
+      this.host = 'uptrace.dev'
+    }
+
+    if (this.host !== 'uptrace.dev') {
+      return
+    }
+
+    this.projectId = u.pathname.slice(1)
+    this.token = u.username
+
+    if (!this.projectId) {
+      throw new Error(`"DSN=${JSON.stringify(s)} does not have a project id`)
+    }
+    if (!this.token) {
+      throw new Error(`"DSN=${JSON.stringify(s)} does not have a token`)
+    }
+  }
+
+  toString(): string {
+    return this.str
+  }
+
+  appAddr(): string {
+    if (this.host === 'uptrace.dev') {
+      return 'https://app.uptrace.dev'
+    }
+    return `${this.scheme}//${this.host}`
+  }
+
+  otlpAddr(): string {
+    if (this.host === 'uptrace.dev') {
+      return 'https://otlp.uptrace.dev'
+    }
+    return `${this.scheme}//${this.host}`
+  }
 }
 
-export function parseDSN(s: string): DSN {
-  if (!s) {
-    throw new Error('either dsn option or UPTRACE_DSN is required')
-  }
-
-  let u: URL
-
-  try {
-    u = new URL(s)
-  } catch (err) {
-    throw new Error(`can't parse DSN=${JSON.stringify(s)}`)
-  }
-
-  const dsn = {
-    scheme: u.protocol,
-    host: u.host,
-    projectId: u.pathname.slice(1),
-    token: u.username,
-  }
-
-  if (!dsn.projectId) {
-    throw new Error(`"DSN=${JSON.stringify(s)} does not have a project id`)
-  }
-  if (!dsn.token) {
-    throw new Error(`"DSN=${JSON.stringify(s)} does not have a token`)
-  }
-
-  return dsn
+export function parseDsn(s: string): Dsn {
+  return new Dsn(s)
 }

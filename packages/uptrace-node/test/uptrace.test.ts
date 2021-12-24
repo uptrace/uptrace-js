@@ -1,6 +1,7 @@
 import * as assert from 'assert'
 import * as sinon from 'sinon'
 
+import { parseDsn } from '@uptrace/core'
 import { configureOpentelemetry } from '../src'
 
 describe('configureOpentelemetry', () => {
@@ -22,5 +23,17 @@ describe('configureOpentelemetry', () => {
     spy.restore()
     assert.ok(spy.called)
     assert.match(spy.args[0][1], /can't parse DSN="foo bar"/)
+  })
+})
+
+describe('configureOpentelemetry', () => {
+  it('supports app and otlp addr', () => {
+    let dsn = parseDsn('https://<key>@uptrace.dev/<project_id>')
+    assert.equal(dsn.appAddr(), 'https://app.uptrace.dev')
+    assert.equal(dsn.otlpAddr(), 'https://otlp.uptrace.dev')
+
+    dsn = parseDsn('http://localhost:14318')
+    assert.equal(dsn.appAddr(), 'http://localhost:14318')
+    assert.equal(dsn.otlpAddr(), 'http://localhost:14318')
   })
 })
