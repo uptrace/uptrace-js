@@ -1,9 +1,9 @@
 # Uptrace for Web browsers
 
-[![Documentation](https://img.shields.io/badge/docs-uptrace-brightgreen)](https://docs.uptrace.dev/javascript/)
+[![Documentation](https://img.shields.io/badge/docs-uptrace-brightgreen)](https://uptrace.dev/docs/js-browser.html)
 
-<a href="https://docs.uptrace.dev/javascript/">
-  <img src="https://docs.uptrace.dev/devicons/javascript-original.svg" height="200px" />
+<a href="https://uptrace.dev/docs/js-browser.html">
+  <img src="https://uptrace.dev/docs/devicons/javascript-original.svg" height="200px" />
 </a>
 
 ## Introduction

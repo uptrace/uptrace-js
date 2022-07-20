@@ -1,9 +1,9 @@
 # Uptrace for Node.js
 
-[![Documentation](https://img.shields.io/badge/docs-uptrace-brightgreen)](https://docs.uptrace.dev/node/)
+[![Documentation](https://img.shields.io/badge/docs-uptrace-brightgreen)](https://uptrace.dev/docs/js-node.html)
 
-<a href="https://docs.uptrace.dev/node/">
-  <img src="https://docs.uptrace.dev/devicons/nodejs-original.svg" height="200px" />
+<a href="https://uptrace.dev/docs/js-node.html">
+  <img src="https://uptrace.dev/docs/devicons/nodejs-original.svg" height="200px" />
 </a>
 
 ## Introduction
