@@ -1,7 +1,7 @@
 import { Span, SpanAttributes, ContextManager, TextMapPropagator } from '@opentelemetry/api'
 import { SpanProcessor, BatchSpanProcessor, TracerConfig } from '@opentelemetry/sdk-trace-base'
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web'
-import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { registerInstrumentations, InstrumentationOption } from '@opentelemetry/instrumentation'
 
 import { createClient, createResource, parseDsn, Dsn, Config as BaseConfig } from '@uptrace/core'
@@ -60,8 +60,8 @@ function configureTracing(cfg: Config) {
 
   _CLIENT = createClient(dsn)
 
-  const exporter = new CollectorTraceExporter({
-    url: 'https://otlp.uptrace.dev/v1/traces',
+  const exporter = new OTLPTraceExporter({
+    url: `${dsn.otlpAddr()}/v1/traces`,
     headers: { 'uptrace-dsn': cfg.dsn },
   })
   const spanProcessor = new BatchSpanProcessor(exporter, {

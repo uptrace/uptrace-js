@@ -6,7 +6,7 @@ import {
 import { Span, SpanAttributes } from '@opentelemetry/api'
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
-import { CollectorTraceExporter } from '@opentelemetry/exporter-collector'
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
 
 import { createClient, createResource, parseDsn, Dsn, Config as BaseConfig } from '@uptrace/core'
@@ -66,7 +66,7 @@ function configureTracing(cfg: Config) {
 
   _CLIENT = createClient(dsn)
 
-  const exporter = new CollectorTraceExporter({
+  const exporter = new OTLPTraceExporter({
     url: `${dsn.otlpAddr()}/v1/traces`,
     headers: { 'uptrace-dsn': cfg.dsn },
   })
@@ -76,7 +76,6 @@ function configureTracing(cfg: Config) {
     scheduledDelayMillis: 5 * 1000,
   })
 
-  // FIXME
   cfg.instrumentations ??= [getNodeAutoInstrumentations()] as any
 }
 
