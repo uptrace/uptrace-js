@@ -1,6 +1,6 @@
 {
   "name": "@uptrace/node",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Uptrace JS exporter for Node.js",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -55,7 +55,7 @@
     "@opentelemetry/core": "~1.3.0",
     "@opentelemetry/exporter-trace-otlp-http": "~0.30.0",
     "@opentelemetry/sdk-node": "~0.30.0",
-    "@uptrace/core": "^1.0.3"
+    "@uptrace/core": "^1.0.4"
   },
   "devDependencies": {
     "@types/mocha": "9.0.0",
