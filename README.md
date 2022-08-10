@@ -2,7 +2,7 @@
 
 ![build workflow](https://github.com/uptrace/uptrace-js/actions/workflows/build.yml/badge.svg)
 [![Documentation](https://img.shields.io/badge/uptrace-documentation-informational)](https://uptrace.dev/docs/js-node.html)
-[![Chat](https://img.shields.io/matrix/uptrace:matrix.org)](https://matrix.to/#/#uptrace:matrix.org)
+[![Chat](https://discordapp.com/api/guilds/1000404569202884628/widget.png)](https://discord.gg/YF8tdP8Pmk)
 
 <a href="https://uptrace.dev/docs/js-node.html">
   <img src="https://uptrace.dev/docs/devicon/javascript-original.svg" height="200px" />
