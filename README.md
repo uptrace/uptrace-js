@@ -1,22 +1,23 @@
 # Uptrace for Node.js and Web
 
 ![build workflow](https://github.com/uptrace/uptrace-js/actions/workflows/build.yml/badge.svg)
-[![Documentation](https://img.shields.io/badge/uptrace-documentation-informational)](https://uptrace.dev/docs/js-node.html)
-[![Chat](https://discordapp.com/api/guilds/1000404569202884628/widget.png)](https://discord.gg/YF8tdP8Pmk)
+[![Documentation](https://img.shields.io/badge/uptrace-documentation-informational)](https://uptrace.dev/get/uptrace-js-node.html)
+[![Chat](https://img.shields.io/badge/-telegram-red?color=white&logo=telegram&logoColor=black)](https://t.me/uptrace)
 
-<a href="https://uptrace.dev/docs/js-node.html">
-  <img src="https://uptrace.dev/docs/devicon/javascript-original.svg" height="200px" />
+<a href="https://uptrace.dev/get/uptrace-js-node.html">
+  <img src="https://uptrace.dev/get/devicon/javascript-original.svg" height="200px" />
 </a>
 
 ## Introduction
 
 uptrace-js is an OpenTelemery distribution configured to export
-[traces](https://uptrace.dev/opentelemetry/distributed-tracing.html) to Uptrace.
+[traces](https://uptrace.dev/opentelemetry/distributed-tracing.html) and
+[metrics](https://uptrace.dev/opentelemetry/metrics.html) to Uptrace.
 
 uptrace-js comes in two flavors:
 
-- [@uptrace/node](https://uptrace.dev/docs/js-node.html) - for Node.js.
-- [@uptrace/web](https://uptrace.dev/docs/js-browser.html) - for Web browsers.
+- [@uptrace/node](https://uptrace.dev/get/uptrace-js-node.html) - for Node.js.
+- [@uptrace/web](https://uptrace.dev/get/uptrace-js-browser.html) - for Web browsers.
 
 ## Quickstart
 
@@ -75,5 +76,5 @@ function main() {
 ## Links
 
 - [Examples](example)
-- [Documentation](https://uptrace.dev/docs/js-node.html)
+- [Documentation](https://uptrace.dev/get/uptrace-js-node.html)
 - [Instrumentations](https://uptrace.dev/opentelemetry/instrumentations/?lang=js)
