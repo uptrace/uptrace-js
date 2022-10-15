@@ -9,7 +9,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "@uptrace/node": "1.0.4",
+    "@uptrace/node": "1.2.0",
     "express": "^4.17.1"
   }
 }
