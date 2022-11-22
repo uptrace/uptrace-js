@@ -32,33 +32,34 @@ export interface Config extends BaseConfig, Partial<NodeSDKConfiguration> {}
 //   - creates tracer provider;
 //   - registers Uptrace span exporter;
 //   - sets tracecontext + baggage composite context propagator.
-export function configureOpentelemetry(cfg: Config): NodeSDK {
-  configureResource(cfg)
-  configureTracing(cfg)
-  configurePropagator(cfg)
+export function configureOpentelemetry(conf: Config): NodeSDK {
+  configureResource(conf)
+  configureTracing(conf)
+  configurePropagator(conf)
 
-  _SDK = new NodeSDK(cfg)
+  _SDK = new NodeSDK(conf)
   return _SDK
 }
 
-function configureResource(cfg: Config) {
-  cfg.resource = createResource(
-    cfg.resource,
-    cfg.resourceAttributes,
-    cfg.serviceName ?? '',
-    cfg.serviceVersion ?? '',
+function configureResource(conf: Config) {
+  conf.resource = createResource(
+    conf.resource,
+    conf.resourceAttributes,
+    conf.serviceName ?? '',
+    conf.serviceVersion ?? '',
+    conf.deploymentEnvironment ?? '',
   )
 }
 
-function configureTracing(cfg: Config) {
-  if (!cfg.dsn && process.env.UPTRACE_DSN) {
-    cfg.dsn = process.env.UPTRACE_DSN
+function configureTracing(conf: Config) {
+  if (!conf.dsn && process.env.UPTRACE_DSN) {
+    conf.dsn = process.env.UPTRACE_DSN
   }
 
   let dsn: Dsn
 
   try {
-    dsn = parseDsn(cfg.dsn)
+    dsn = parseDsn(conf.dsn)
   } catch (err) {
     console.error('Uptrace is disabled:', String(err))
     return
@@ -68,20 +69,20 @@ function configureTracing(cfg: Config) {
 
   const exporter = new OTLPTraceExporter({
     url: `${dsn.otlpAddr()}/v1/traces`,
-    headers: { 'uptrace-dsn': cfg.dsn },
+    headers: { 'uptrace-dsn': conf.dsn },
   })
-  cfg.spanProcessor = new BatchSpanProcessor(exporter, {
+  conf.spanProcessor = new BatchSpanProcessor(exporter, {
     maxExportBatchSize: 1000,
     maxQueueSize: 1000,
     scheduledDelayMillis: 5 * 1000,
   })
 
-  cfg.instrumentations ??= [getNodeAutoInstrumentations()] as any
+  conf.instrumentations ??= [getNodeAutoInstrumentations()] as any
 }
 
-function configurePropagator(cfg: Config) {
-  if (!cfg.textMapPropagator) {
-    cfg.textMapPropagator = new CompositePropagator({
+function configurePropagator(conf: Config) {
+  if (!conf.textMapPropagator) {
+    conf.textMapPropagator = new CompositePropagator({
       propagators: [new W3CTraceContextPropagator(), new W3CBaggagePropagator()],
     })
   }

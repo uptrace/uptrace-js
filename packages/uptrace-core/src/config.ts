@@ -7,6 +7,8 @@ export interface Config {
   serviceName?: string
   // `service.version` resource attribute.
   serviceVersion?: string
+  // `deployment.environment` resource attribute.
+  deploymentEnvironment?: string
   // Any other resource attributes.
   resourceAttributes?: Record<string, any>
   // resource that describes an entity that produces telemetry, for example,
@@ -22,6 +24,7 @@ export function createResource(
   resourceAttributes: Record<string, any> | undefined,
   serviceName: string,
   serviceVersion: string,
+  deploymentEnvironment: string,
 ): Resource {
   if (resource) {
     return resource
@@ -37,6 +40,9 @@ export function createResource(
   }
   if (serviceVersion) {
     attrs['service.version'] = serviceVersion
+  }
+  if (deploymentEnvironment) {
+    attrs['deployment.environment'] = deploymentEnvironment
   }
 
   resource = Resource.default()

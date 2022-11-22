@@ -26,33 +26,34 @@ export interface Config extends BaseConfig, TracerConfig {
   instrumentations?: InstrumentationOption[]
 }
 
-export function configureOpentelemetry(cfg: Config) {
-  configureResource(cfg)
-  configureTracing(cfg)
+export function configureOpentelemetry(conf: Config) {
+  configureResource(conf)
+  configureTracing(conf)
 
   if (hasWindow) {
     setupOnError()
   }
 }
 
-function configureResource(cfg: Config) {
-  cfg.resource = createResource(
-    cfg.resource,
-    cfg.resourceAttributes,
-    cfg.serviceName ?? '',
-    cfg.serviceVersion ?? '',
+function configureResource(conf: Config) {
+  conf.resource = createResource(
+    conf.resource,
+    conf.resourceAttributes,
+    conf.serviceName ?? '',
+    conf.serviceVersion ?? '',
+    conf.deploymentEnvironment ?? '',
   )
 }
 
-function configureTracing(cfg: Config) {
-  if (!cfg.dsn && hasWindow && (window as any).UPTRACE_DSN) {
-    cfg.dsn = (window as any).UPTRACE_DSN
+function configureTracing(conf: Config) {
+  if (!conf.dsn && hasWindow && (window as any).UPTRACE_DSN) {
+    conf.dsn = (window as any).UPTRACE_DSN
   }
 
   let dsn: Dsn
 
   try {
-    dsn = parseDsn(cfg.dsn)
+    dsn = parseDsn(conf.dsn)
   } catch (err) {
     console.error('Uptrace is disabled:', String(err))
     return
@@ -62,7 +63,7 @@ function configureTracing(cfg: Config) {
 
   const exporter = new OTLPTraceExporter({
     url: `${dsn.otlpAddr()}/v1/traces`,
-    headers: { 'uptrace-dsn': cfg.dsn },
+    headers: { 'uptrace-dsn': conf.dsn },
   })
   const spanProcessor = new BatchSpanProcessor(exporter, {
     maxExportBatchSize: 1000,
@@ -71,11 +72,11 @@ function configureTracing(cfg: Config) {
   })
 
   const provider = new WebTracerProvider({
-    sampler: cfg.sampler,
-    spanLimits: cfg.spanLimits,
-    resource: cfg.resource,
-    idGenerator: cfg.idGenerator,
-    forceFlushTimeoutMillis: cfg.forceFlushTimeoutMillis,
+    sampler: conf.sampler,
+    spanLimits: conf.spanLimits,
+    resource: conf.resource,
+    idGenerator: conf.idGenerator,
+    forceFlushTimeoutMillis: conf.forceFlushTimeoutMillis,
   })
 
   if (hasWindow) {
@@ -84,12 +85,12 @@ function configureTracing(cfg: Config) {
   provider.addSpanProcessor(spanProcessor)
 
   provider.register({
-    contextManager: cfg.contextManager,
-    propagator: cfg.textMapPropagator,
+    contextManager: conf.contextManager,
+    propagator: conf.textMapPropagator,
   })
 
   registerInstrumentations({
-    instrumentations: cfg.instrumentations,
+    instrumentations: conf.instrumentations,
   })
 }
 
