@@ -7,7 +7,7 @@
   "scripts": {
     "bench": "node benchmark",
     "clean": "lerna run clean",
-    "postinstall": "yarn run bootstrap",
+    "postinstall": "pnpm run bootstrap",
     "precompile": "tsc --version",
     "version:update": "lerna run version:update",
     "compile": "lerna run compile",
@@ -19,7 +19,7 @@
     "codecov": "lerna run codecov",
     "codecov:browser": "lerna run codecov:browser",
     "changelog": "lerna-changelog",
-    "predocs-test": "yarn run docs",
+    "predocs-test": "pnpm run docs",
     "docs-test": "lerna run docs-test",
     "docs": "lerna run docs",
     "docs-deploy": "lerna run docs-deploy",
@@ -42,12 +42,12 @@
   "author": "Uptrace Authors",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "5.40.0",
-    "@typescript-eslint/parser": "5.40.0",
-    "eslint": "8.25.0",
+    "@typescript-eslint/eslint-plugin": "5.44.0",
+    "@typescript-eslint/parser": "5.44.0",
+    "eslint": "8.28.0",
     "gts": "3.1.1",
-    "lerna": "6.0.1",
+    "lerna": "6.0.3",
     "markdownlint-cli": "0.32.2",
-    "typescript": "4.8.4"
+    "typescript": "4.9.3"
   }
 }

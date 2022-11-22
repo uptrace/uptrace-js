@@ -1,0 +1,14 @@
+{
+  "name": "metrics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Uptrace",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@uptrace/node": "1.2.0"
+  }
+}
