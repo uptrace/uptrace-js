@@ -1,8 +1,6 @@
 {
   "lerna": "3.13.4",
   "npmClient": "pnpm",
-  "packages": [
-    "packages/*"
-  ],
+  "useWorkspaces": true,
   "version": "1.8.0"
 }

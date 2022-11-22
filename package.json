@@ -7,13 +7,11 @@
   "scripts": {
     "bench": "node benchmark",
     "clean": "lerna run clean",
-    "postinstall": "pnpm run bootstrap",
     "precompile": "tsc --version",
     "version:update": "lerna run version:update",
     "compile": "lerna run compile",
     "test": "lerna run test",
     "test:browser": "lerna run test:browser",
-    "bootstrap": "lerna bootstrap",
     "bump": "lerna publish --skip-npm --no-git-tag-version --no-push",
     "publish": "./scripts/publish.sh",
     "codecov": "lerna run codecov",
