@@ -27,10 +27,7 @@ jobs:
           version: 7.9.5
 
       - name: Install dependencies
-        run: |
-          pnpm install
-          pnpm bootstrap
-          pnpm compile
+        run: pnpm install
 
       - name: Test
         run: pnpm test
