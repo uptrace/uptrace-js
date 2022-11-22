@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: ['node:14', 'node:16']
+        container: ['node:16', 'node:18']
     container:
       image: ${{ matrix.container }}
 
@@ -21,11 +21,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Install dependencies
         run: |
-          yarn install
-          yarn bootstrap
-          yarn compile
+          pnpm install
+          pnpm bootstrap
+          pnpm compile
 
       - name: Test
-        run: yarn test
+        run: pnpm test

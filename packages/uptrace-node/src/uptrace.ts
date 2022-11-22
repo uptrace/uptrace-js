@@ -9,7 +9,11 @@ import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
 
+import { PeriodicExportingMetricReader, AggregationTemporality } from '@opentelemetry/sdk-metrics'
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
+
 import { createClient, createResource, parseDsn, Dsn, Config as BaseConfig } from '@uptrace/core'
+//import { UptraceIdGenerator } from './idgen'
 
 let _CLIENT = createClient(parseDsn('https://<key>@uptrace.dev/<project_id>'))
 
@@ -33,9 +37,22 @@ export interface Config extends BaseConfig, Partial<NodeSDKConfiguration> {}
 //   - registers Uptrace span exporter;
 //   - sets tracecontext + baggage composite context propagator.
 export function configureOpentelemetry(conf: Config): NodeSDK {
-  configureResource(conf)
-  configureTracing(conf)
-  configurePropagator(conf)
+  if (!conf.dsn && process.env.UPTRACE_DSN) {
+    conf.dsn = process.env.UPTRACE_DSN
+  }
+
+  let dsn: Dsn
+
+  try {
+    dsn = parseDsn(conf.dsn)
+
+    configureResource(conf)
+    configurePropagator(conf)
+    configureTracing(conf, dsn)
+    configureMetrics(conf, dsn)
+  } catch (err) {
+    console.error('Uptrace is disabled:', String(err))
+  }
 
   _SDK = new NodeSDK(conf)
   return _SDK
@@ -51,20 +68,7 @@ function configureResource(conf: Config) {
   )
 }
 
-function configureTracing(conf: Config) {
-  if (!conf.dsn && process.env.UPTRACE_DSN) {
-    conf.dsn = process.env.UPTRACE_DSN
-  }
-
-  let dsn: Dsn
-
-  try {
-    dsn = parseDsn(conf.dsn)
-  } catch (err) {
-    console.error('Uptrace is disabled:', String(err))
-    return
-  }
-
+function configureTracing(conf: Config, dsn: Dsn) {
   _CLIENT = createClient(dsn)
 
   const exporter = new OTLPTraceExporter({
@@ -76,8 +80,20 @@ function configureTracing(conf: Config) {
     maxQueueSize: 1000,
     scheduledDelayMillis: 5 * 1000,
   })
+  //conf.idGenerator = new UptraceIdGenerator()
 
   conf.instrumentations ??= [getNodeAutoInstrumentations()] as any
+}
+
+function configureMetrics(conf: Config, dsn: Dsn) {
+  conf.metricReader = new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter({
+      url: `${dsn.otlpAddr()}/v1/metrics`,
+      headers: { 'uptrace-dsn': conf.dsn },
+      temporalityPreference: AggregationTemporality.DELTA,
+    }),
+    exportIntervalMillis: 15000,
+  })
 }
 
 function configurePropagator(conf: Config) {
