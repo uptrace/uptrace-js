@@ -11,10 +11,10 @@ fi
 
 git checkout master
 
-yarn bump
+pnpm bump
 VERSION=$(node -pe "require('./packages/uptrace-core/package.json').version")
 
-yarn compile
+pnpm compile
 
 for dir in $(ls -d example/*/); do
     pushd $dir
