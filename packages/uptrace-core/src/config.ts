@@ -89,13 +89,6 @@ export class Dsn {
 
     this.projectId = u.pathname.slice(1)
     this.token = u.username
-
-    if (!this.projectId) {
-      throw new Error(`"DSN=${JSON.stringify(s)} does not have a project id`)
-    }
-    if (!this.token) {
-      throw new Error(`"DSN=${JSON.stringify(s)} does not have a token`)
-    }
   }
 
   toString(): string {
