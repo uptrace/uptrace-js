@@ -1,6 +1,6 @@
 {
   "name": "@uptrace/core",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Uptrace JS core",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
