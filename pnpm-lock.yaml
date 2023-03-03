@@ -70,6 +70,7 @@ importers:
       '@opentelemetry/core': ~1.9.1
       '@opentelemetry/exporter-metrics-otlp-http': ~0.35.1
       '@opentelemetry/exporter-trace-otlp-http': ~0.35.1
+      '@opentelemetry/id-generator-aws-xray': ^1.1.1
       '@opentelemetry/sdk-metrics': ~1.9.1
       '@opentelemetry/sdk-node': ~0.35.1
       '@opentelemetry/sdk-trace-base': ~1.9.1
@@ -93,6 +94,7 @@ importers:
       '@opentelemetry/core': 1.9.1_@opentelemetry+api@1.4.0
       '@opentelemetry/exporter-metrics-otlp-http': 0.35.1_@opentelemetry+api@1.4.0
       '@opentelemetry/exporter-trace-otlp-http': 0.35.1_@opentelemetry+api@1.4.0
+      '@opentelemetry/id-generator-aws-xray': 1.1.1_@opentelemetry+api@1.4.0
       '@opentelemetry/sdk-metrics': 1.9.1_@opentelemetry+api@1.4.0
       '@opentelemetry/sdk-node': 0.35.1_@opentelemetry+api@1.4.0
       '@opentelemetry/sdk-trace-base': 1.9.1_@opentelemetry+api@1.4.0
@@ -1830,6 +1832,16 @@ packages:
       '@opentelemetry/resources': 1.9.1_@opentelemetry+api@1.4.0
       '@opentelemetry/sdk-trace-base': 1.9.1_@opentelemetry+api@1.4.0
       '@opentelemetry/semantic-conventions': 1.9.1
+    dev: false
+
+  /@opentelemetry/id-generator-aws-xray/1.1.1_@opentelemetry+api@1.4.0:
+    resolution: {integrity: sha512-G+zEv0M5N9f+vpD0BIlGFdBwAAYjHL/M9ByfF+6L53JUBZMSPUxb3n0e/OW5WRnlPml5KV3NULSMfMS/JdSJEQ==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@opentelemetry/api': ^1.0.0
+    dependencies:
+      '@opentelemetry/api': 1.4.0
+      '@opentelemetry/core': 1.9.1_@opentelemetry+api@1.4.0
     dev: false
 
   /@opentelemetry/instrumentation-amqplib/0.32.0_@opentelemetry+api@1.4.0:
