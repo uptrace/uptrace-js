@@ -1,5 +1,4 @@
 export * from './config'
-export * from './idgen'
 export * from './client'
 export * from './types'
 export * from './version'

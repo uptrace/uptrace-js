@@ -1,7 +1,7 @@
 import { Resource } from '@opentelemetry/resources'
 
 export interface Config {
-  dsn: string
+  dsn?: string
 
   // `service.name` resource attribute.
   serviceName?: string
@@ -63,7 +63,7 @@ export class Dsn {
   projectId = ''
   token = ''
 
-  constructor(s: string) {
+  constructor(s: string | undefined) {
     if (!s) {
       throw new Error('either dsn option or UPTRACE_DSN is required')
     }
@@ -110,6 +110,6 @@ export class Dsn {
   }
 }
 
-export function parseDsn(s: string): Dsn {
+export function parseDsn(s: string | undefined): Dsn {
   return new Dsn(s)
 }

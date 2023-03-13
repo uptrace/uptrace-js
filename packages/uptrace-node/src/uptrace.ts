@@ -8,13 +8,12 @@ import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
-import { AWSXRayIdGenerator } from '@opentelemetry/id-generator-aws-xray'
+//import { AWSXRayIdGenerator } from '@opentelemetry/id-generator-aws-xray'
 
 import { PeriodicExportingMetricReader, AggregationTemporality } from '@opentelemetry/sdk-metrics'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
 
 import { createClient, createResource, parseDsn, Dsn, Config as BaseConfig } from '@uptrace/core'
-//import { UptraceIdGenerator } from './idgen'
 
 let _CLIENT = createClient(parseDsn('https://<key>@uptrace.dev/<project_id>'))
 
@@ -81,7 +80,7 @@ function configureTracing(conf: Config, dsn: Dsn) {
     maxQueueSize: 1000,
     scheduledDelayMillis: 5 * 1000,
   })
-  conf.idGenerator = new AWSXRayIdGenerator()
+  //conf.idGenerator = new AWSXRayIdGenerator()
 
   conf.instrumentations ??= [getNodeAutoInstrumentations()] as any
 }
