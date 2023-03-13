@@ -82,7 +82,7 @@ function configureTracing(conf: Config, dsn: Dsn) {
   })
   //conf.idGenerator = new AWSXRayIdGenerator()
 
-  conf.instrumentations ??= [getNodeAutoInstrumentations()] as any
+  conf.instrumentations ??= [getNodeAutoInstrumentations()]
 }
 
 function configureMetrics(conf: Config, dsn: Dsn) {
