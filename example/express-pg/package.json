@@ -1,0 +1,19 @@
+{
+  "name": "express-pg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "docker:start": "docker run -d -p 54320:5432 -e POSTGRES_PASSWORD=postgres --name otpostgres postgres:alpine",
+    "docker:stop": "docker stop otpostgres & docker rm otpostgres",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@opentelemetry/instrumentation-pg": "^0.35.0",
+    "@uptrace/node": "1.9.0",
+    "express": "^4.17.1",
+    "pg": "^8.6.0"
+  }
+}
