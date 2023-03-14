@@ -9,7 +9,7 @@
   "author": "Uptrace",
   "license": "Apache-2.0",
   "dependencies": {
-    "@uptrace/node": "1.9.0",
+    "@uptrace/node": "1.10.0",
     "redis": "^4.0.0-rc.3"
   }
 }
