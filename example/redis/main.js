@@ -1,3 +1,5 @@
+'use strict'
+
 const { createClient } = require('redis')
 const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
@@ -11,12 +13,13 @@ uptrace
     serviceVersion: '1.0.0',
   })
   .start()
-  .then(main)
 
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
 const client = createClient()
 client.on('error', (err) => console.log('Redis Client Error', err))
+
+await main()
 
 async function main() {
   await client.connect()

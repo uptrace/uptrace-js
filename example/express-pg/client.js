@@ -1,6 +1,6 @@
 'use strict'
 
-require('./tracer')('postgres-client-service').then(main)
+require('./tracer')('postgres-client-service')
 const uptrace = require('@uptrace/node')
 const otel = require('@opentelemetry/api')
 // eslint-disable-next-line import/order
@@ -8,14 +8,12 @@ const http = require('http')
 
 const tracer = otel.trace.getTracer('example-postgres')
 
-function main() {
-  makeRequest()
+makeRequest()
 
-  setTimeout(async () => {
-    // Send buffered spans and free resources.
-    await uptrace.shutdown()
-  })
-}
+setTimeout(async () => {
+  // Send buffered spans and free resources.
+  await uptrace.shutdown()
+})
 
 function makeRequest() {
   const span = tracer.startActiveSpan('makeRequest', (span) => {

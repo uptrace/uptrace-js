@@ -1,3 +1,5 @@
+'use strict'
+
 const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
@@ -10,13 +12,11 @@ uptrace
   .start()
   .then(main)
 
-function main() {
-  const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
+const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
-  spanExample(tracer)
-  activeSpanExample(tracer)
-  contextExample(tracer)
-}
+spanExample(tracer)
+activeSpanExample(tracer)
+contextExample(tracer)
 
 // This example shows how to start a span and set some attributes.
 function spanExample(tracer) {

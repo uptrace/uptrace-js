@@ -1,3 +1,5 @@
+'use strict'
+
 const otel = require('@opentelemetry/api')
 const {
   ConsoleSpanExporter,
@@ -27,29 +29,27 @@ const sdk = new NodeSDK({
     'service.version': '1.0.0',
   }),
 })
-sdk.start().then(main)
+sdk.start()
 
-function main() {
-  const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
+const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
-  tracer.startActiveSpan('main', (main) => {
-    tracer.startActiveSpan('child1', (child1) => {
-      child1.setAttribute('key1', 'value1')
-      child1.recordException(new Error('error1'))
-      child1.end()
-    })
-
-    tracer.startActiveSpan('child2', (child2) => {
-      child2.setAttribute('key2', 42)
-      child2.end()
-    })
-
-    main.end()
-    console.log('trace id:', main.spanContext().traceId)
+tracer.startActiveSpan('main', (main) => {
+  tracer.startActiveSpan('child1', (child1) => {
+    child1.setAttribute('key1', 'value1')
+    child1.recordException(new Error('error1'))
+    child1.end()
   })
 
-  // Send buffered spans.
-  setTimeout(async () => {
-    await sdk.shutdown()
-  }, 1000)
-}
+  tracer.startActiveSpan('child2', (child2) => {
+    child2.setAttribute('key2', 42)
+    child2.end()
+  })
+
+  main.end()
+  console.log('trace id:', main.spanContext().traceId)
+})
+
+// Send buffered spans.
+setTimeout(async () => {
+  await sdk.shutdown()
+}, 1000)

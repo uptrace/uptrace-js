@@ -8,7 +8,7 @@ import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
-//import { AWSXRayIdGenerator } from '@opentelemetry/id-generator-aws-xray'
+import { AWSXRayIdGenerator } from '@opentelemetry/id-generator-aws-xray'
 
 import { PeriodicExportingMetricReader, AggregationTemporality } from '@opentelemetry/sdk-metrics'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
@@ -29,7 +29,7 @@ export function traceUrl(span: Span): string {
 
 let _SDK: NodeSDK | undefined
 
-export interface Config extends BaseConfig, Partial<NodeSDKConfiguration> {}
+export interface Config extends BaseConfig, Partial<Omit<NodeSDKConfiguration, 'resource'>> {}
 
 // configureOpentelemetry configures OpenTelemetry to export data to Uptrace.
 // By default it:
@@ -54,7 +54,7 @@ export function configureOpentelemetry(conf: Config): NodeSDK {
     console.error('Uptrace is disabled:', String(err))
   }
 
-  _SDK = new NodeSDK(conf)
+  _SDK = new NodeSDK(conf as unknown as NodeSDKConfiguration)
   return _SDK
 }
 
@@ -80,7 +80,7 @@ function configureTracing(conf: Config, dsn: Dsn) {
     maxQueueSize: 1000,
     scheduledDelayMillis: 5 * 1000,
   })
-  //conf.idGenerator = new AWSXRayIdGenerator()
+  conf.idGenerator = new AWSXRayIdGenerator()
 
   conf.instrumentations ??= [getNodeAutoInstrumentations()]
 }

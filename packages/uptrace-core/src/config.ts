@@ -1,4 +1,4 @@
-import { Resource } from '@opentelemetry/resources'
+import { Resource, IResource } from '@opentelemetry/resources'
 
 export interface Config {
   dsn?: string
@@ -16,16 +16,16 @@ export interface Config {
   // will have these attributes.
   //
   // resource overrides and replaces any other resource attributes.
-  resource?: Resource
+  resource?: IResource
 }
 
 export function createResource(
-  resource: Resource | undefined,
+  resource: IResource | undefined,
   resourceAttributes: Record<string, any> | undefined,
   serviceName: string,
   serviceVersion: string,
   deploymentEnvironment: string,
-): Resource {
+): IResource {
   if (resource) {
     return resource
   }
@@ -45,7 +45,7 @@ export function createResource(
     attrs['deployment.environment'] = deploymentEnvironment
   }
 
-  resource = Resource.default()
+  resource = Resource.default() as Resource
 
   if (Object.keys(attrs).length) {
     return resource.merge(new Resource(attrs))

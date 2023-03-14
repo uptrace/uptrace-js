@@ -14,21 +14,18 @@ uptrace
     serviceVersion: '1.0.0',
   })
   .start()
-  .then(main)
 
-function main() {
-  const otel = require('@opentelemetry/api')
-  const express = require('express')
-  const app = express()
-  const tracer = otel.trace.getTracer('express-example')
+const otel = require('@opentelemetry/api')
+const express = require('express')
+const app = express()
+const tracer = otel.trace.getTracer('express-example')
 
-  app.get('/', indexHandler)
-  app.get('/hello/:username', helloHandler)
+app.get('/', indexHandler)
+app.get('/hello/:username', helloHandler)
 
-  app.listen(9999, () => {
-    console.log(`listening at http://localhost:${port}`)
-  })
-}
+app.listen(9999, () => {
+  console.log(`listening at http://localhost:${port}`)
+})
 
 function indexHandler(req, res) {
   const traceUrl = uptrace.traceUrl(trace.getSpan(context.active()))

@@ -31,51 +31,52 @@ Run the [basic example](example/basic-node) below using the DSN from the Uptrace
 page.
 
 ```js
+// The very first import must be Uptrace/OpenTelemetry.
 const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
-uptrace
-  .configureOpentelemetry({
-    // Set dsn or UPTRACE_DSN env var.
-    dsn: '',
-    serviceName: 'myservice',
-    serviceVersion: '1.0.0',
-  })
-  .start()
-  .then(main)
+// Configure NodeSDK instance.
+const nodeSDK = uptrace.configureOpentelemetry({
+  // Set dsn or UPTRACE_DSN env var.
+  //dsn: '',
+  serviceName: 'myservice',
+  serviceVersion: '1.0.0',
+})
 
-function main() {
-  const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
+// Start OpenTelemetry SDK and invoke instrumentations to patch the code.
+nodeSDK.start()
 
-  const main = tracer.startSpan('main')
-  otel.context.with(otel.setSpan(otel.context.active(), main), () => {
-    const child1 = tracer.startSpan('child1')
-    otel.context.with(otel.setSpan(otel.context.active(), child1), () => {
-      child1.setAttribute('key1', 'value1')
-      child1.recordException(new Error('error1'))
-      child1.end()
-    })
+// Create a tracer. Usually, tracer is a global variable.
+const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
-    const child2 = tracer.startSpan('child2')
-    otel.context.with(otel.setSpan(otel.context.active(), child1), () => {
-      child2.setAttribute('key2', 42)
-      child2.end()
-    })
-
-    main.end()
-    console.log(uptrace.traceUrl(main))
+// Create a root span (a trace) to measure some operation.
+tracer.startActiveSpan('main-operation', (main) => {
+  tracer.startActiveSpan('child1-of-main', (child1) => {
+    child1.setAttribute('key1', 'value1')
+    child1.recordException(new Error('error1'))
+    child1.end()
   })
 
-  // Send buffered spans.
-  setTimeout(async () => {
-    await uptrace.shutdown()
+  tracer.startActiveSpan('child2-of-main', (child2) => {
+    child2.setAttribute('key2', 42)
+    child2.end()
   })
-}
+
+  // End the span when the operation we are measuring is done.
+  main.end()
+
+  console.log(uptrace.traceUrl(main))
+})
+
+setTimeout(async () => {
+  // Send buffered spans and free resources.
+  await uptrace.shutdown()
+})
 ```
 
 ## Links
 
 - [Examples](example)
-- [Documentation](https://uptrace.dev/get/opentelemetry-js-node.html)
+- [OpenTelemetry Node.js](https://uptrace.dev/get/opentelemetry-js-node.html)
 - [OpenTelemetry JS Instrumentations](https://uptrace.dev/opentelemetry/instrumentations/?lang=js)
 - [OpenTelemetry Express.js](https://uptrace.dev/opentelemetry/instrumentations/node-express.html)
