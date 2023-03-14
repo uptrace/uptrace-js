@@ -1,14 +1,14 @@
 'use strict'
 
-const { createClient } = require('redis')
-const otel = require('@opentelemetry/api')
-const uptrace = require('@uptrace/node')
+import { createClient } from 'redis'
+import otel from '@opentelemetry/api'
+import uptrace from '@uptrace/node'
 
 // Configure OpenTelemetry with sensible defaults.
 uptrace
   .configureOpentelemetry({
     // Set dsn or UPTRACE_DSN env var.
-    dsn: '',
+    //dsn: '',
     serviceName: 'myservice',
     serviceVersion: '1.0.0',
   })

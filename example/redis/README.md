@@ -4,5 +4,5 @@ To run this example:
 
 ```shell
 yarn install
-UPTRACE_DSN="https://<key>@uptrace.dev/<project_id>" node main.js
+UPTRACE_DSN="https://<key>@uptrace.dev/<project_id>" node main.mjs
 ```

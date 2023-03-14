@@ -1,6 +1,5 @@
 'use strict'
 
-require('./tracer')('postgres-client-service')
 const uptrace = require('@uptrace/node')
 const otel = require('@opentelemetry/api')
 // eslint-disable-next-line import/order

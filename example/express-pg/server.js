@@ -1,7 +1,5 @@
 'use strict'
 
-// eslint-disable-next-line import/order
-require('./tracer')('postgres-server-service')
 const otel = require('@opentelemetry/api')
 const { SpanKind, SpanStatusCode } = require('@opentelemetry/api')
 const { Pool } = require('pg')
