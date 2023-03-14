@@ -8,9 +8,9 @@ const {
 } = require('@opentelemetry/sdk-trace-base')
 const { Resource } = require('@opentelemetry/resources')
 const { NodeSDK } = require('@opentelemetry/sdk-node')
-const { CollectorTraceExporter } = require('@opentelemetry/exporter-collector')
+const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http')
 
-const exporter = new CollectorTraceExporter({
+const exporter = new OTLPTraceExporter({
   url: 'https://otlp.uptrace.dev/v1/traces',
   headers: {
     // Set the Uptrace DSN here or use UPTRACE_DSN env var.
