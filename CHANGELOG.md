@@ -21,8 +21,9 @@ With:
 const uptrace = require('@uptrace/node')
 
 uptrace.configureOpentelemetry({...})
-
 ```
+
+See [documentation](https://uptrace.dev/get/opentelemetry-js-node.html) for more details.
 
 ## v1.8.0
 
