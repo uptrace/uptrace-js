@@ -3,14 +3,11 @@
 const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
-uptrace
-  .configureOpentelemetry({
-    serviceName: 'myservice',
-    serviceVersion: '1.0.0',
-    //console: true,
-  })
-  .start()
-  .then(main)
+uptrace.configureOpentelemetry({
+  serviceName: 'myservice',
+  serviceVersion: '1.0.0',
+  //console: true,
+})
 
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 

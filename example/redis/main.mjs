@@ -5,14 +5,12 @@ import otel from '@opentelemetry/api'
 import uptrace from '@uptrace/node'
 
 // Configure OpenTelemetry with sensible defaults.
-uptrace
-  .configureOpentelemetry({
-    // Set dsn or UPTRACE_DSN env var.
-    //dsn: '',
-    serviceName: 'myservice',
-    serviceVersion: '1.0.0',
-  })
-  .start()
+uptrace.configureOpentelemetry({
+  // Set dsn or UPTRACE_DSN env var.
+  //dsn: '',
+  serviceName: 'myservice',
+  serviceVersion: '1.0.0',
+})
 
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 

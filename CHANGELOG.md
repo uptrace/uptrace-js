@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.10.0
+
+- Updated OpenTelemetry to
+  [v1.10.0](https://github.com/open-telemetry/opentelemetry-js/blob/main/CHANGELOG.md#180).
+
+OpenTelemetry JS v1.10 contains a
+[breaking change](https://github.com/open-telemetry/opentelemetry-js/pull/3460) in `NodeSDK` which
+requires replacing the following code:
+
+```js
+const uptrace = require('@uptrace/node')
+
+uptrace.configureOpentelemetry({...}).start().then(main)
+```
+
+With:
+
+```js
+const uptrace = require('@uptrace/node')
+
+uptrace.configureOpentelemetry({...})
+
+```
+
 ## v1.8.0
 
 - Updated OpenTelemetry to

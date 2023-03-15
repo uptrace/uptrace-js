@@ -5,17 +5,15 @@ const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumenta
 const { HapiInstrumentation } = require('@opentelemetry/instrumentation-hapi')
 const uptrace = require('@uptrace/node')
 
-uptrace
-  .configureOpentelemetry({
-    // Set dsn or UPTRACE_DSN env var.
-    dsn: '',
+uptrace.configureOpentelemetry({
+  // Set dsn or UPTRACE_DSN env var.
+  dsn: '',
 
-    serviceName: 'myservice',
-    serviceVersion: '1.0.0',
+  serviceName: 'myservice',
+  serviceVersion: '1.0.0',
 
-    instrumentations: [getNodeAutoInstrumentations(), new HapiInstrumentation()],
-  })
-  .start()
+  instrumentations: [getNodeAutoInstrumentations(), new HapiInstrumentation()],
+})
 
 const otel = require('@opentelemetry/api')
 const Hapi = require('@hapi/hapi')

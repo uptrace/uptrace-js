@@ -35,16 +35,13 @@ page.
 const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
-// Configure NodeSDK instance.
-const nodeSDK = uptrace.configureOpentelemetry({
+// Start OpenTelemetry SDK and invoke instrumentations to patch the code.
+uptrace.configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
   //dsn: '',
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
-
-// Start OpenTelemetry SDK and invoke instrumentations to patch the code.
-nodeSDK.start()
 
 // Create a tracer. Usually, tracer is a global variable.
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')

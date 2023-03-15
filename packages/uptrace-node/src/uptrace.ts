@@ -36,7 +36,7 @@ export interface Config extends BaseConfig, Partial<Omit<NodeSDKConfiguration, '
 //   - creates tracer provider;
 //   - registers Uptrace span exporter;
 //   - sets tracecontext + baggage composite context propagator.
-export function configureOpentelemetry(conf: Config): NodeSDK {
+export function configureOpentelemetry(conf: Config) {
   if (!conf.dsn && process.env.UPTRACE_DSN) {
     conf.dsn = process.env.UPTRACE_DSN
   }
@@ -55,7 +55,7 @@ export function configureOpentelemetry(conf: Config): NodeSDK {
   }
 
   _SDK = new NodeSDK(conf as unknown as NodeSDKConfiguration)
-  return _SDK
+  _SDK.start()
 }
 
 function configureResource(conf: Config) {

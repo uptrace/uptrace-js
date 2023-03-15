@@ -5,15 +5,13 @@ const port = 9999
 const { trace, context } = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
-uptrace
-  .configureOpentelemetry({
-    // Set dsn or UPTRACE_DSN env var.
-    dsn: '',
+uptrace.configureOpentelemetry({
+  // Set dsn or UPTRACE_DSN env var.
+  dsn: '',
 
-    serviceName: 'myservice',
-    serviceVersion: '1.0.0',
-  })
-  .start()
+  serviceName: 'myservice',
+  serviceVersion: '1.0.0',
+})
 
 const otel = require('@opentelemetry/api')
 const express = require('express')
