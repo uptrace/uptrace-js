@@ -1,9 +1,14 @@
 # Changelog
 
+## v1.11.0
+
+- Updated OpenTelemetry to
+  [v1.11.0](https://github.com/open-telemetry/opentelemetry-js/blob/main/CHANGELOG.md#1110).
+
 ## v1.10.0
 
 - Updated OpenTelemetry to
-  [v1.10.0](https://github.com/open-telemetry/opentelemetry-js/blob/main/CHANGELOG.md#180).
+  [v1.10.0](https://github.com/open-telemetry/opentelemetry-js/blob/main/CHANGELOG.md#1101).
 
 OpenTelemetry JS v1.10 contains a
 [breaking change](https://github.com/open-telemetry/opentelemetry-js/pull/3460) in `NodeSDK` which
@@ -15,7 +20,7 @@ const uptrace = require('@uptrace/node')
 uptrace.configureOpentelemetry({...}).start().then(main)
 ```
 
-With:
+With just:
 
 ```js
 const uptrace = require('@uptrace/node')
