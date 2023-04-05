@@ -6,7 +6,7 @@ const uptrace = require('@uptrace/node')
 // Configure OpenTelemetry with sensible defaults.
 uptrace.configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
-  dsn: '',
+  //dsn: '',
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
@@ -23,7 +23,7 @@ const upDownCounter = meter.createUpDownCounter('test_up_down_counter', {
 
 const attributes = { environment: 'staging' }
 
-interval = setInterval(() => {
+setInterval(() => {
   requestCounter.add(1, attributes)
   upDownCounter.add(Math.random() > 0.5 ? 1 : -1, attributes)
 }, 1000)
