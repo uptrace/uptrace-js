@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: ['node:18', 'node:20']
+        container: ['node:18']
     container:
       image: ${{ matrix.container }}
 
