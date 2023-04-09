@@ -6,6 +6,7 @@ import {
 import { Span, SpanAttributes } from '@opentelemetry/api'
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
+import { CompressionAlgorithm } from '@opentelemetry/otlp-exporter-base'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
 import { AWSXRayIdGenerator } from '@opentelemetry/id-generator-aws-xray'
@@ -74,7 +75,7 @@ function configureTracing(conf: Config, dsn: Dsn) {
   const exporter = new OTLPTraceExporter({
     url: `${dsn.otlpAddr()}/v1/traces`,
     headers: { 'uptrace-dsn': conf.dsn },
-    compression: 'gzip',
+    compression: CompressionAlgorithm.GZIP,
   })
   conf.spanProcessor = new BatchSpanProcessor(exporter, {
     maxExportBatchSize: 1000,
