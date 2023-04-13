@@ -29,6 +29,6 @@ git push origin v${VERSION}
 
 for dir in $(ls -d packages/*/); do
     pushd $dir
-    npm publish
+    pnpm publish
     popd
 done
