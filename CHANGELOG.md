@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.12.0
+
+- Updated OpenTelemetry to
+  [v1.12.0](https://github.com/open-telemetry/opentelemetry-js/blob/main/CHANGELOG.md#1120).
+
 ## v1.11.0
 
 - Updated OpenTelemetry to
