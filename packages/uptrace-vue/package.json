@@ -55,17 +55,17 @@
     "@uptrace/web": "workspace:*"
   },
   "devDependencies": {
-    "@types/lodash": "4.14.192",
+    "@types/lodash": "4.14.194",
     "@types/mocha": "10.0.1",
-    "@types/node": "18.15.11",
-    "@typescript-eslint/eslint-plugin": "5.57.1",
-    "eslint": "8.37.0",
+    "@types/node": "18.16.1",
+    "@typescript-eslint/eslint-plugin": "5.59.1",
+    "eslint": "8.39.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "4.2.1",
     "gts": "3.1.1",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
     "ts-mocha": "10.0.0",
-    "typescript": "5.0.3"
+    "typescript": "5.0.4"
   }
 }
