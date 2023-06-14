@@ -1,6 +1,6 @@
 {
   "name": "@uptrace/web",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Uptrace JS exporter for browsers",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
