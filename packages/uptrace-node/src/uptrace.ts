@@ -4,17 +4,12 @@ import {
   W3CTraceContextPropagator,
 } from '@opentelemetry/core'
 import { Span, SpanAttributes } from '@opentelemetry/api'
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node'
-import { CompressionAlgorithm } from '@opentelemetry/otlp-exporter-base'
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
-import { AWSXRayIdGenerator } from '@opentelemetry/id-generator-aws-xray'
 
-import { PeriodicExportingMetricReader, AggregationTemporality } from '@opentelemetry/sdk-metrics'
-import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
-
-import { createClient, createResource, parseDsn, Dsn, Config as BaseConfig } from '@uptrace/core'
+import { createClient, createResource, parseDsn, Dsn } from '@uptrace/core'
+import type { Config } from './config'
+import { configureTracing } from './tracing'
+import { configureMetrics } from './metrics'
 
 let _CLIENT = createClient(parseDsn('https://<key>@uptrace.dev/<project_id>'))
 
@@ -30,8 +25,6 @@ export function traceUrl(span: Span): string {
 
 let _SDK: NodeSDK | undefined
 
-export interface Config extends BaseConfig, Partial<Omit<NodeSDKConfiguration, 'resource'>> {}
-
 // configureOpentelemetry configures OpenTelemetry to export data to Uptrace.
 // By default it:
 //   - creates tracer provider;
@@ -46,6 +39,7 @@ export function configureOpentelemetry(conf: Config) {
 
   try {
     dsn = parseDsn(conf.dsn)
+    _CLIENT = createClient(dsn)
 
     configureResource(conf)
     configurePropagator(conf)
@@ -67,35 +61,6 @@ function configureResource(conf: Config) {
     conf.serviceVersion ?? '',
     conf.deploymentEnvironment ?? '',
   )
-}
-
-function configureTracing(conf: Config, dsn: Dsn) {
-  _CLIENT = createClient(dsn)
-
-  const exporter = new OTLPTraceExporter({
-    url: `${dsn.otlpAddr()}/v1/traces`,
-    headers: { 'uptrace-dsn': conf.dsn },
-    compression: CompressionAlgorithm.GZIP,
-  })
-  conf.spanProcessor = new BatchSpanProcessor(exporter, {
-    maxExportBatchSize: 1000,
-    maxQueueSize: 1000,
-    scheduledDelayMillis: 5 * 1000,
-  })
-  conf.idGenerator = new AWSXRayIdGenerator()
-
-  conf.instrumentations ??= [getNodeAutoInstrumentations()]
-}
-
-function configureMetrics(conf: Config, dsn: Dsn) {
-  conf.metricReader = new PeriodicExportingMetricReader({
-    exporter: new OTLPMetricExporter({
-      url: `${dsn.otlpAddr()}/v1/metrics`,
-      headers: { 'uptrace-dsn': conf.dsn },
-      temporalityPreference: AggregationTemporality.DELTA,
-    }),
-    exportIntervalMillis: 15000,
-  })
 }
 
 function configurePropagator(conf: Config) {
