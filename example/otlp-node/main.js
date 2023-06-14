@@ -1,11 +1,7 @@
 'use strict'
 
 const otel = require('@opentelemetry/api')
-const {
-  ConsoleSpanExporter,
-  SimpleSpanProcessor,
-  BatchSpanProcessor,
-} = require('@opentelemetry/sdk-trace-base')
+const { BatchSpanProcessor } = require('@opentelemetry/sdk-trace-base')
 const { Resource } = require('@opentelemetry/resources')
 const { NodeSDK } = require('@opentelemetry/sdk-node')
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http')
