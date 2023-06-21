@@ -15,7 +15,6 @@ const loggerProvider = new LoggerProvider()
 
 loggerProvider.addLogRecordProcessor(new BatchLogRecordProcessor(loggerExporter))
 
-// logging
 const logger = loggerProvider.getLogger('example-logger')
 logger.emit({
   severityNumber: SeverityNumber.INFO,
