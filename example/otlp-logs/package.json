@@ -1,0 +1,15 @@
+{
+  "name": "otlp-logs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@opentelemetry/exporter-logs-otlp-http": "^0.40.0",
+    "@opentelemetry/sdk-logs": "^0.40.0"
+  }
+}
