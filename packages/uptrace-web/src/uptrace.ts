@@ -89,9 +89,11 @@ function configureTracing(conf: Config) {
     propagator: conf.textMapPropagator,
   })
 
-  registerInstrumentations({
-    instrumentations: conf.instrumentations,
-  })
+  if (conf.instrumentations) {
+    registerInstrumentations({
+      instrumentations: conf.instrumentations,
+    })
+  }
 }
 
 function setupOnError(): void {
