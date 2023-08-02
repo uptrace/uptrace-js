@@ -1,4 +1,4 @@
-import { configureOpentelemetry, shutdown, VERSION } from '@uptrace/web'
+import { configureOpentelemetry, shutdown, reportException, traceUrl, VERSION } from '@uptrace/web'
 
 import { setupErrorHandler } from './vue'
 import { Vue, VueRouter } from './types'
@@ -12,11 +12,13 @@ function instrumentVue(opts: Options) {
   setupErrorHandler(opts.app)
 }
 
-export { configureOpentelemetry, shutdown, VERSION, instrumentVue }
+export { configureOpentelemetry, shutdown, reportException, traceUrl, VERSION, instrumentVue }
 
 export default {
   configureOpentelemetry,
   shutdown,
+  reportException,
+  traceUrl,
   VERSION,
 
   instrumentVue,
