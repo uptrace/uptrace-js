@@ -1,8 +1,11 @@
-export { configureOpentelemetry, shutdown } from './uptrace'
-export { VERSION } from './version'
+import { configureOpentelemetry, shutdown, reportException } from './uptrace'
+import { VERSION } from './version'
+
+export { configureOpentelemetry, shutdown, reportException, VERSION }
 
 export default {
   configureOpentelemetry,
   shutdown,
+  reportException,
   VERSION,
 }

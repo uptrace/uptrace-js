@@ -155,3 +155,8 @@ export class WindowAttributesProcessor implements SpanProcessor {
     return Promise.resolve()
   }
 }
+
+export function shutdown(): Promise<void> {
+  // TODO: provide shutdown
+  return Promise.resolve()
+}
