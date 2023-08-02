@@ -1,6 +1,6 @@
 {
   "name": "@uptrace/vue",
-  "version": "1.15.0",
+  "version": "1.15.1",
   "description": "Vue instrumentation for OpenTelemetry",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",

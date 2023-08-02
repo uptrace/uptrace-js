@@ -12,7 +12,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@opentelemetry/instrumentation-pg": "^0.35.0",
-    "@uptrace/node": "1.15.0",
+    "@uptrace/node": "1.15.1",
     "express": "^4.17.1",
     "pg": "^8.6.0"
   }
