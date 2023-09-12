@@ -51,21 +51,21 @@
     "README.md"
   ],
   "dependencies": {
-    "@opentelemetry/api": "~1.4.1",
+    "@opentelemetry/api": "~1.6.0",
     "@uptrace/web": "workspace:*"
   },
   "devDependencies": {
-    "@types/lodash": "4.14.196",
+    "@types/lodash": "4.14.198",
     "@types/mocha": "10.0.1",
-    "@types/node": "20.4.5",
-    "@typescript-eslint/eslint-plugin": "6.2.1",
-    "eslint": "8.46.0",
+    "@types/node": "20.6.0",
+    "@typescript-eslint/eslint-plugin": "6.7.0",
+    "eslint": "8.49.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "5.0.0",
-    "gts": "5.0.0",
+    "gts": "5.0.1",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
     "ts-mocha": "10.0.0",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   }
 }

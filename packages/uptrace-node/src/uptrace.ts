@@ -10,6 +10,7 @@ import { createClient, createResource, parseDsn, Dsn } from '@uptrace/core'
 import type { Config } from './config'
 import { configureTracing } from './tracing'
 import { configureMetrics } from './metrics'
+import { configureLogs } from './logs'
 
 let _CLIENT = createClient(parseDsn('https://<key>@uptrace.dev/<project_id>'))
 
@@ -45,11 +46,12 @@ export function configureOpentelemetry(conf: Config) {
     configurePropagator(conf)
     configureTracing(conf, dsn)
     configureMetrics(conf, dsn)
+    configureLogs(conf, dsn)
   } catch (err) {
     console.error('Uptrace is disabled:', String(err))
   }
 
-  _SDK = new NodeSDK(conf as unknown as NodeSDKConfiguration)
+  _SDK = new NodeSDK(conf as NodeSDKConfiguration)
   _SDK.start()
 }
 
