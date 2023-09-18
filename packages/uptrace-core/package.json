@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@types/mocha": "10.0.1",
-    "@types/node": "20.6.0",
+    "@types/node": "20.6.2",
     "@types/sinon": "10.0.16",
     "@typescript-eslint/eslint-plugin": "6.7.0",
     "eslint": "8.49.0",
@@ -68,7 +68,7 @@
     "gts": "5.0.1",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
-    "sinon": "15.2.0",
+    "sinon": "16.0.0",
     "ts-mocha": "10.0.0",
     "typescript": "5.2.2"
   }
