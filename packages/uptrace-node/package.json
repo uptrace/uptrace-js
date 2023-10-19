@@ -1,6 +1,6 @@
 {
   "name": "@uptrace/node",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "Uptrace JS exporter for Node.js",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
