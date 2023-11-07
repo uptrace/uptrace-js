@@ -24,7 +24,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8.6.1
+          version: 8.9.2
 
       - name: Install dependencies
         run: pnpm install
