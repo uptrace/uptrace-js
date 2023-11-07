@@ -14,8 +14,9 @@ export class Client {
 
   traceUrl(span: Span): string {
     const ctx = span.spanContext()
-    const traceId = ctx?.traceId ?? '<no span>'
-    return `${this._dsn.appAddr()}/traces/${traceId}`
+    const traceId = ctx?.traceId ?? '<no trace>'
+    const spanId = ctx?.spanId ?? '<no span>'
+    return `${this._dsn.siteUrl()}/traces/${traceId}?span_id=${spanId}`
   }
 
   // reportException reports an exception as a span event creating a dummy span if necessary.

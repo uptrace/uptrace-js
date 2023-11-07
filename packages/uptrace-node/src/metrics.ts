@@ -12,7 +12,7 @@ import { Config } from './config'
 export function configureMetrics(conf: Config, dsn: Dsn) {
   conf.metricReader = new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter({
-      url: `${dsn.otlpAddr()}/v1/metrics`,
+      url: `${dsn.otlpHttpEndpoint()}/v1/metrics`,
       headers: { 'uptrace-dsn': conf.dsn },
       temporalityPreference: AggregationTemporality.DELTA,
     }),

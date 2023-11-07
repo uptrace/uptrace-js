@@ -7,7 +7,7 @@ import { Config } from './config'
 
 export function configureLogs(conf: Config, dsn: Dsn) {
   const exporter = new OTLPLogExporter({
-    url: `${dsn.otlpAddr()}/v1/logs`,
+    url: `${dsn.otlpHttpEndpoint()}/v1/logs`,
     headers: { 'uptrace-dsn': conf.dsn },
     compression: CompressionAlgorithm.GZIP,
   })

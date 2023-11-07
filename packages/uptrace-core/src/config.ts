@@ -60,8 +60,6 @@ export class Dsn {
   str = ''
   scheme = ''
   host = ''
-  projectId = ''
-  token = ''
 
   constructor(s: string | undefined) {
     if (!s) {
@@ -82,27 +80,20 @@ export class Dsn {
     if (this.host === 'api.uptrace.dev') {
       this.host = 'uptrace.dev'
     }
-
-    if (this.host !== 'uptrace.dev') {
-      return
-    }
-
-    this.projectId = u.pathname.slice(1)
-    this.token = u.username
   }
 
   toString(): string {
     return this.str
   }
 
-  appAddr(): string {
+  siteUrl(): string {
     if (this.host === 'uptrace.dev') {
       return 'https://app.uptrace.dev'
     }
     return `${this.scheme}//${this.host}`
   }
 
-  otlpAddr(): string {
+  otlpHttpEndpoint(): string {
     if (this.host === 'uptrace.dev') {
       return 'https://otlp.uptrace.dev'
     }

@@ -9,7 +9,7 @@ import { Config } from './config'
 
 export function configureTracing(conf: Config, dsn: Dsn) {
   const exporter = new OTLPTraceExporter({
-    url: `${dsn.otlpAddr()}/v1/traces`,
+    url: `${dsn.otlpHttpEndpoint()}/v1/traces`,
     headers: { 'uptrace-dsn': conf.dsn },
     compression: CompressionAlgorithm.GZIP,
   })
