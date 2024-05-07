@@ -1,3 +1,4 @@
+import { CompressionAlgorithm } from '@opentelemetry/otlp-exporter-base'
 import {
   PeriodicExportingMetricReader,
   //InstrumentType,
@@ -14,6 +15,7 @@ export function configureMetrics(conf: Config, dsn: Dsn) {
     exporter: new OTLPMetricExporter({
       url: `${dsn.otlpHttpEndpoint()}/v1/metrics`,
       headers: { 'uptrace-dsn': conf.dsn },
+      compression: CompressionAlgorithm.GZIP,
       temporalityPreference: AggregationTemporality.DELTA,
     }),
     exportIntervalMillis: 15000,
