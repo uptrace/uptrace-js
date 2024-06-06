@@ -2,7 +2,7 @@ import { Span, SpanAttributes, ContextManager, TextMapPropagator } from '@opente
 import { SpanProcessor, BatchSpanProcessor, TracerConfig } from '@opentelemetry/sdk-trace-base'
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
-import { registerInstrumentations, InstrumentationOption } from '@opentelemetry/instrumentation'
+import { registerInstrumentations, Instrumentation } from '@opentelemetry/instrumentation'
 
 import { createClient, createResource, parseDsn, Dsn, Config as BaseConfig } from '@uptrace/core'
 
@@ -23,7 +23,7 @@ export function traceUrl(span: Span): string {
 export interface Config extends BaseConfig, TracerConfig {
   contextManager?: ContextManager
   textMapPropagator?: TextMapPropagator
-  instrumentations?: InstrumentationOption[]
+  instrumentations?: (Instrumentation | Instrumentation[])[]
 }
 
 export function configureOpentelemetry(conf: Config) {
