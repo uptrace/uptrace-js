@@ -1,8 +1,8 @@
 'use strict'
 
-const port = 9999
-
 const { trace, context } = require('@opentelemetry/api')
+const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
+const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express')
 const uptrace = require('@uptrace/node')
 
 uptrace.configureOpentelemetry({
@@ -11,6 +11,13 @@ uptrace.configureOpentelemetry({
 
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
+
+  instrumentations: [
+    new HttpInstrumentation({}),
+    new ExpressInstrumentation({
+      ignoreLayersType: ['middleware'],
+    }),
+  ],
 })
 
 const otel = require('@opentelemetry/api')
@@ -21,7 +28,8 @@ const tracer = otel.trace.getTracer('express-example')
 app.get('/', indexHandler)
 app.get('/hello/:username', helloHandler)
 
-app.listen(9999, () => {
+const port = 9999
+app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
 })
 
