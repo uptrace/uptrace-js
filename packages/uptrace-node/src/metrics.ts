@@ -14,7 +14,7 @@ export function configureMetrics(conf: Config, dsn: Dsn) {
   conf.metricReader = new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter({
       url: `${dsn.otlpHttpEndpoint()}/v1/metrics`,
-      headers: { 'uptrace-dsn': conf.dsn },
+      headers: { 'uptrace-dsn': conf.dsn! },
       compression: CompressionAlgorithm.GZIP,
       temporalityPreference: AggregationTemporality.DELTA,
     }),

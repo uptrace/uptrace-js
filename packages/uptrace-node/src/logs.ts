@@ -8,7 +8,7 @@ import { Config } from './config'
 export function configureLogs(conf: Config, dsn: Dsn) {
   const exporter = new OTLPLogExporter({
     url: `${dsn.otlpHttpEndpoint()}/v1/logs`,
-    headers: { 'uptrace-dsn': conf.dsn },
+    headers: { 'uptrace-dsn': conf.dsn! },
     compression: CompressionAlgorithm.GZIP,
   })
   conf.logRecordProcessor = new BatchLogRecordProcessor(exporter)

@@ -10,7 +10,7 @@ import { Config } from './config'
 export function configureTracing(conf: Config, dsn: Dsn) {
   const exporter = new OTLPTraceExporter({
     url: `${dsn.otlpHttpEndpoint()}/v1/traces`,
-    headers: { 'uptrace-dsn': conf.dsn },
+    headers: { 'uptrace-dsn': conf.dsn! },
     compression: CompressionAlgorithm.GZIP,
   })
   conf.spanProcessor = new BatchSpanProcessor(exporter, {

@@ -63,7 +63,7 @@ function configureTracing(conf: Config) {
 
   const exporter = new OTLPTraceExporter({
     url: `${dsn.otlpHttpEndpoint()}/v1/traces`,
-    headers: { 'uptrace-dsn': conf.dsn },
+    headers: { 'uptrace-dsn': conf.dsn! },
   })
   const spanProcessor = new BatchSpanProcessor(exporter, {
     maxExportBatchSize: 1000,
