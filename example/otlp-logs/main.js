@@ -7,7 +7,7 @@ const dsn = process.env.UPTRACE_DSN
 console.log('using dsn:', dsn)
 
 const loggerExporter = new OTLPLogExporter({
-  url: `https://otlp.uptrace.dev/v1/logs`,
+  url: `https://api.uptrace.dev/v1/logs`,
   headers: { 'uptrace-dsn': dsn },
   compression: CompressionAlgorithm.GZIP,
 })

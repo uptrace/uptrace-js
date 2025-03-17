@@ -95,7 +95,7 @@ export class Dsn {
 
   otlpHttpEndpoint(): string {
     if (this.host === 'uptrace.dev') {
-      return 'https://otlp.uptrace.dev'
+      return 'https://api.uptrace.dev'
     }
     return `${this.scheme}//${this.host}`
   }

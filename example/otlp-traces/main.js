@@ -11,7 +11,7 @@ const dsn = process.env.UPTRACE_DSN
 console.log('using dsn:', dsn)
 
 const exporter = new OTLPTraceExporter({
-  url: 'https://otlp.uptrace.dev/v1/traces',
+  url: 'https://api.uptrace.dev/v1/traces',
   headers: { 'uptrace-dsn': dsn },
   compression: 'gzip',
 })

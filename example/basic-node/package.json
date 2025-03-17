@@ -9,6 +9,6 @@
   "author": "Uptrace",
   "license": "Apache-2.0",
   "dependencies": {
-    "@uptrace/node": "1.22.0"
+    "@uptrace/node": "1.23.0"
   }
 }
