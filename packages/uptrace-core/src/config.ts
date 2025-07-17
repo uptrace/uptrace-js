@@ -1,8 +1,19 @@
-import { Resource, IResource } from '@opentelemetry/resources'
+import {
+  defaultResource,
+  detectResources,
+  resourceFromAttributes,
+  Resource,
+  ResourceDetector,
+  DetectedResourceAttributes,
+} from '@opentelemetry/resources'
 
 export interface Config {
   dsn?: string
 
+  // resource that describes an entity that produces telemetry, for example,
+  // such attributes as host.name and service.name. All produced spans and metrics
+  // will have these attributes.
+  resource?: Resource
   // `service.name` resource attribute.
   serviceName?: string
   // `service.version` resource attribute.
@@ -11,44 +22,41 @@ export interface Config {
   deploymentEnvironment?: string
   // Any other resource attributes.
   resourceAttributes?: Record<string, any>
-  // resource that describes an entity that produces telemetry, for example,
-  // such attributes as host.name and service.name. All produced spans and metrics
-  // will have these attributes.
-  //
-  // resource overrides and replaces any other resource attributes.
-  resource?: IResource
+  // Optional resource detectors.
+  resourceDetectors?: ResourceDetector[]
 }
 
-export function createResource(
-  resource: IResource | undefined,
-  resourceAttributes: Record<string, any> | undefined,
-  serviceName: string,
-  serviceVersion: string,
-  deploymentEnvironment: string,
-): IResource {
-  if (resource) {
-    return resource
+export function createResource(conf: Config): Resource {
+  let resource = defaultResource()
+  if (conf.resource) {
+    resource = resource.merge(conf.resource)
   }
 
-  const attrs: Record<string, any> = {}
-
-  if (resourceAttributes) {
-    Object.assign(attrs, resourceAttributes)
-  }
-  if (serviceName) {
-    attrs['service.name'] = serviceName
-  }
-  if (serviceVersion) {
-    attrs['service.version'] = serviceVersion
-  }
-  if (deploymentEnvironment) {
-    attrs['deployment.environment'] = deploymentEnvironment
+  if (conf.resourceDetectors) {
+    resource = resource.merge(
+      detectResources({
+        detectors: conf.resourceDetectors,
+      }),
+    )
   }
 
-  resource = Resource.default() as Resource
+  const attrs: DetectedResourceAttributes = {}
+
+  if (conf.resourceAttributes) {
+    Object.assign(attrs, conf.resourceAttributes)
+  }
+  if (conf.serviceName) {
+    attrs['service.name'] = conf.serviceName
+  }
+  if (conf.serviceVersion) {
+    attrs['service.version'] = conf.serviceVersion
+  }
+  if (conf.deploymentEnvironment) {
+    attrs['deployment.environment.name'] = conf.deploymentEnvironment
+  }
 
   if (Object.keys(attrs).length) {
-    return resource.merge(new Resource(attrs))
+    resource = resource.merge(resourceFromAttributes(attrs))
   }
 
   return resource
