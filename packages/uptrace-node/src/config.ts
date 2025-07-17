@@ -12,6 +12,9 @@ import { Config as BaseConfig } from '@uptrace/core'
 export interface Config extends BaseConfig, Partial<NodeSDKConfiguration> {}
 
 export function initConfig(conf: Config) {
+  if (!conf.dsn && process.env.UPTRACE_DSN) {
+    conf.dsn = process.env.UPTRACE_DSN
+  }
   conf.instrumentations ??= [getNodeAutoInstrumentations()]
   conf.spanProcessors ??= []
   conf.textMapPropagator ??= new CompositePropagator({

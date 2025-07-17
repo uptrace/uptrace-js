@@ -5,11 +5,14 @@ import { SessionProvider } from '@opentelemetry/web-common'
 import { browserDetector } from '@opentelemetry/opentelemetry-browser-detector'
 
 import { Config as BaseConfig } from '@uptrace/core'
+import { OnerrorInstrumentation } from './onerror'
 
 export function initConfig(conf: Config) {
   if (!conf.resourceDetectors) {
     conf.resourceDetectors = [browserDetector]
   }
+  conf.instrumentations ??= []
+  conf.instrumentations.push(new OnerrorInstrumentation())
 
   if (!conf.sessionProvider) {
     conf.sessionProvider = defaultSessionProvider

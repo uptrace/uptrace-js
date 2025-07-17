@@ -9,7 +9,7 @@ import { BaggageSpanProcessor, WindowAttributesProcessor } from './processors'
 
 const hasWindow = typeof window !== 'undefined'
 
-export function configureTracing(conf: Config, dsn: Dsn) {
+export function configureTracing(conf: Config, dsn: Dsn): WebTracerProvider {
   const exporter = new OTLPTraceExporter({
     url: `${dsn.otlpHttpEndpoint()}/v1/traces`,
     headers: { 'uptrace-dsn': conf.dsn! },
@@ -41,4 +41,6 @@ export function configureTracing(conf: Config, dsn: Dsn) {
     contextManager: conf.contextManager,
     propagator: conf.textMapPropagator,
   })
+
+  return provider
 }

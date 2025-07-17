@@ -173,60 +173,23 @@ importers:
         specifier: 5.8.3
         version: 5.8.3
 
-  packages/uptrace-vue:
-    dependencies:
-      '@opentelemetry/api':
-        specifier: ~1.9.0
-        version: 1.9.0
-      '@uptrace/web':
-        specifier: workspace:*
-        version: link:../uptrace-web
-    devDependencies:
-      '@types/lodash':
-        specifier: 4.17.20
-        version: 4.17.20
-      '@types/mocha':
-        specifier: 10.0.10
-        version: 10.0.10
-      '@types/node':
-        specifier: 24.0.14
-        version: 24.0.14
-      '@typescript-eslint/eslint-plugin':
-        specifier: 8.37.0
-        version: 8.37.0(@typescript-eslint/parser@8.14.0(eslint@9.31.0)(typescript@5.8.3))(eslint@9.31.0)(typescript@5.8.3)
-      eslint:
-        specifier: 9.31.0
-        version: 9.31.0
-      eslint-plugin-node:
-        specifier: 11.1.0
-        version: 11.1.0(eslint@9.31.0)
-      eslint-plugin-prettier:
-        specifier: 5.5.1
-        version: 5.5.1(eslint-config-prettier@9.1.0(eslint@9.31.0))(eslint@9.31.0)(prettier@3.3.3)
-      gts:
-        specifier: 6.0.2
-        version: 6.0.2(typescript@5.8.3)
-      mocha:
-        specifier: 11.7.1
-        version: 11.7.1
-      nyc:
-        specifier: 17.1.0
-        version: 17.1.0
-      ts-mocha:
-        specifier: 11.1.0
-        version: 11.1.0(mocha@11.7.1)(ts-node@7.0.1)
-      typescript:
-        specifier: 5.8.3
-        version: 5.8.3
-
   packages/uptrace-web:
     dependencies:
       '@opentelemetry/api':
         specifier: ~1.9.0
         version: 1.9.0
+      '@opentelemetry/api-logs':
+        specifier: ~0.203.0
+        version: 0.203.0
       '@opentelemetry/core':
         specifier: ~2.0.1
         version: 2.0.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/exporter-logs-otlp-http':
+        specifier: ~0.203.0
+        version: 0.203.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/exporter-metrics-otlp-http':
+        specifier: ~0.203.0
+        version: 0.203.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/exporter-trace-otlp-http':
         specifier: ~0.203.0
         version: 0.203.0(@opentelemetry/api@1.9.0)
@@ -236,7 +199,16 @@ importers:
       '@opentelemetry/opentelemetry-browser-detector':
         specifier: ~0.203.0
         version: 0.203.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/otlp-exporter-base':
+        specifier: ~0.203.0
+        version: 0.203.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/resources':
+        specifier: ~2.0.1
+        version: 2.0.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/sdk-logs':
+        specifier: ~0.203.0
+        version: 0.203.0(@opentelemetry/api@1.9.0)
+      '@opentelemetry/sdk-metrics':
         specifier: ~2.0.1
         version: 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base':
@@ -245,6 +217,9 @@ importers:
       '@opentelemetry/sdk-trace-web':
         specifier: ~2.0.1
         version: 2.0.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/semantic-conventions':
+        specifier: ~1.36.0
+        version: 1.36.0
       '@opentelemetry/web-common':
         specifier: ~0.203.0
         version: 0.203.0(@opentelemetry/api@1.9.0)
@@ -1143,9 +1118,6 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
-
-  '@types/lodash@4.17.20':
-    resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
 
   '@types/memcached@2.2.9':
     resolution: {integrity: sha512-3WVct68tDdjQ0lkOim8PcULZCoPtpYeh41J6IoAV/cTjh0LXD2DThDGLaWRPLtmLoDQ6sO390hgfrcKwYUD52A==}
@@ -4339,8 +4311,6 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
-  '@types/lodash@4.17.20': {}
-
   '@types/memcached@2.2.9':
     dependencies:
       '@types/node': 24.0.14
@@ -5044,7 +5014,7 @@ snapshots:
       resolve: 1.22.8
       semver: 6.3.1
 
-  eslint-plugin-prettier@5.2.1(eslint-config-prettier@9.1.0(eslint@9.15.0))(eslint@8.57.1)(prettier@3.3.3):
+  eslint-plugin-prettier@5.2.1(eslint-config-prettier@9.1.0(eslint@8.57.1))(eslint@8.57.1)(prettier@3.3.3):
     dependencies:
       eslint: 8.57.1
       prettier: 3.3.3
@@ -5475,7 +5445,7 @@ snapshots:
       eslint: 8.57.1
       eslint-config-prettier: 9.1.0(eslint@8.57.1)
       eslint-plugin-n: 15.7.0(eslint@8.57.1)
-      eslint-plugin-prettier: 5.2.1(eslint-config-prettier@9.1.0(eslint@9.15.0))(eslint@8.57.1)(prettier@3.3.3)
+      eslint-plugin-prettier: 5.2.1(eslint-config-prettier@9.1.0(eslint@8.57.1))(eslint@8.57.1)(prettier@3.3.3)
       execa: 5.1.1
       inquirer: 7.3.3
       json5: 2.2.3
