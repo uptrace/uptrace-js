@@ -62,6 +62,7 @@
     "@opentelemetry/sdk-metrics": "~2.0.1",
     "@opentelemetry/sdk-node": "~0.203.0",
     "@opentelemetry/sdk-trace-base": "~2.0.1",
+    "@opentelemetry/baggage-span-processor": "~0.4.0",
     "@uptrace/core": "workspace:*"
   },
   "devDependencies": {

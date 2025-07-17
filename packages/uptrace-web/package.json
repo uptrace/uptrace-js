@@ -66,6 +66,7 @@
     "@opentelemetry/web-common": "~0.203.0",
     "@opentelemetry/opentelemetry-browser-detector": "~0.203.0",
     "@opentelemetry/semantic-conventions": "~1.36.0",
+    "@opentelemetry/baggage-span-processor": "~0.4.0",
     "@uptrace/core": "workspace:*"
   },
   "devDependencies": {

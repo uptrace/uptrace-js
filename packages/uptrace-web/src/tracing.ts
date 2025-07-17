@@ -1,13 +1,12 @@
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { SpanProcessor, BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
+import { ALLOW_ALL_BAGGAGE_KEYS, BaggageSpanProcessor } from '@opentelemetry/baggage-span-processor'
 import { createSessionSpanProcessor } from '@opentelemetry/web-common'
 
 import { Dsn } from '@uptrace/core'
 import { Config } from './config'
-import { BaggageSpanProcessor, WindowAttributesProcessor } from './processors'
-
-const hasWindow = typeof window !== 'undefined'
+import { WindowAttributesProcessor } from './processors'
 
 export function configureTracing(conf: Config, dsn: Dsn): WebTracerProvider {
   const exporter = new OTLPTraceExporter({
@@ -22,10 +21,10 @@ export function configureTracing(conf: Config, dsn: Dsn): WebTracerProvider {
 
   const spanProcessors: SpanProcessor[] = [
     bsp,
-    new BaggageSpanProcessor(),
+    new BaggageSpanProcessor(ALLOW_ALL_BAGGAGE_KEYS),
     createSessionSpanProcessor(conf.sessionProvider!),
   ]
-  if (hasWindow) {
+  if (window) {
     spanProcessors.push(new WindowAttributesProcessor())
   }
 
