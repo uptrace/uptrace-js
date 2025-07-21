@@ -1,16 +1,26 @@
 import { ContextManager, TextMapPropagator } from '@opentelemetry/api'
-import { Sampler, SpanLimits, IdGenerator, RandomIdGenerator } from '@opentelemetry/sdk-trace-base'
+import {
+  Sampler,
+  SpanLimits,
+  IdGenerator,
+  RandomIdGenerator,
+  SpanProcessor,
+} from '@opentelemetry/sdk-trace-base'
 import { Instrumentation } from '@opentelemetry/instrumentation'
-import { SessionProvider } from '@opentelemetry/web-common'
 import { browserDetector } from '@opentelemetry/opentelemetry-browser-detector'
+import { createSessionSpanProcessor, SessionProvider } from '@opentelemetry/web-common'
+import { ALLOW_ALL_BAGGAGE_KEYS, BaggageSpanProcessor } from '@opentelemetry/baggage-span-processor'
 
 import { Config as BaseConfig } from '@uptrace/core'
+import { WindowAttributesProcessor } from './processors'
 import { OnerrorInstrumentation } from './onerror'
 
 export function initConfig(conf: Config) {
-  if (!conf.resourceDetectors) {
-    conf.resourceDetectors = [browserDetector]
-  }
+  conf.dsn ??= (window as any)?.UPTRACE_DSN
+
+  conf.resourceDetectors ??= []
+  conf.resourceDetectors.push(browserDetector)
+
   conf.instrumentations ??= []
   conf.instrumentations.push(new OnerrorInstrumentation())
 
@@ -29,6 +39,15 @@ export function initConfig(conf: Config) {
       search: false,
     }
   }
+
+  conf.spanProcessors ??= []
+  conf.spanProcessors.push(
+    new BaggageSpanProcessor(ALLOW_ALL_BAGGAGE_KEYS),
+    createSessionSpanProcessor(conf.sessionProvider!),
+  )
+  if (window) {
+    conf.spanProcessors.push(new WindowAttributesProcessor())
+  }
 }
 
 export interface Config extends BaseConfig {
@@ -36,6 +55,7 @@ export interface Config extends BaseConfig {
   spanLimits: SpanLimits
   idGenerator: IdGenerator
 
+  spanProcessors?: SpanProcessor[]
   contextManager?: ContextManager
   textMapPropagator?: TextMapPropagator
   instrumentations?: (Instrumentation | Instrumentation[])[]
@@ -49,7 +69,7 @@ export interface Config extends BaseConfig {
 // Configuration options for selecting which fields to include
 // in the `entry_page` resource attributes.
 //
-// By default, potentially sensitive fields—such as full URLs or query parameters—are excluded.
+// By default, potentially sensitive fields such as full URLs or query parameters—are excluded.
 export type EntryPageConfig = {
   // Include the URL path segment of the page.
   //

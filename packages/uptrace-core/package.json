@@ -54,8 +54,7 @@
     "@opentelemetry/core": "~2.0.1",
     "@opentelemetry/instrumentation": "~0.203.0",
     "@opentelemetry/resources": "~2.0.1",
-    "@opentelemetry/sdk-trace-base": "~2.0.1",
-    "cross-fetch": "4.1.0"
+    "@opentelemetry/sdk-trace-base": "~2.0.1"
   },
   "devDependencies": {
     "@types/mocha": "10.0.10",

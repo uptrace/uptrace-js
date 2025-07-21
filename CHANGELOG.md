@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.0.0
+
+Updated to OpenTelemetry v2.0.0.
+
+**Breaking** changes:
+
+- `configurureOpentelemetry` now returns a configured SDK instance (either `NodeSDK` or `WebSDK`)
+  which you must start to actually setup OpenTelemetry:
+
+```js
+const uptrace = require('@uptrace/node')
+const sdk = uptrace.configureOpentelemetry({})
+sdk.start()
+```
+
+- `uptrace.shutdown` is replaced with `sdk.shutdown`.
+- `uptrace.traceUrl` is replaced with `sdk.traceUrl`.
+- `uptrace.reportException` is replaced with `sdk.reportException`.
+
 ## v1.12.0
 
 - Updated OpenTelemetry to

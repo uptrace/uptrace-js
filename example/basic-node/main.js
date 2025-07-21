@@ -5,12 +5,13 @@ const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
 // Start OpenTelemetry SDK and invoke instrumentations to patch the code.
-uptrace.configureOpentelemetry({
+const sdk = uptrace.configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
   //dsn: '',
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
+sdk.start()
 
 // Create a tracer. Usually, tracer is a global variable.
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
@@ -35,10 +36,10 @@ tracer.startActiveSpan('main-operation', (main) => {
   // End the span when the operation we are measuring is done.
   main.end()
 
-  console.log(uptrace.traceUrl(main))
+  console.log(sdk.traceUrl(main))
 })
 
 setTimeout(async () => {
   // Send buffered spans and free resources.
-  await uptrace.shutdown()
+  await sdk.shutdown()
 })

@@ -13,56 +13,39 @@ const instrumName = 'uptrace/onerror'
 export class OnerrorInstrumentation extends InstrumentationBase {
   constructor(conf: InstrumentationConfig = {}) {
     super(instrumName, VERSION, conf)
-    if (conf.enabled) {
-      this.enable()
-    }
   }
 
   init() {}
 
   disable(): void {
-    if (!this.getConfig().enabled) {
-      this._diag.debug(`Instrumentation already disabled`)
-      return
-    }
-    this.getConfig().enabled = false
     window.removeEventListener('error', this.onError)
     window.removeEventListener('unhandledrejection', this.onError)
     this._diag.debug(`Instrumentation disabled`)
   }
 
   enable(): void {
-    if (this.getConfig().enabled) {
-      this._diag.debug(`Instrumentation already enabled`)
-      return
-    }
-    this.getConfig().enabled = true
-    window.addEventListener('error', this.onError)
-    window.addEventListener('unhandledrejection', this.onError)
+    window.addEventListener('error', this.onError.bind(this))
+    window.addEventListener('unhandledrejection', this.onError.bind(this))
     this._diag.debug(`Instrumentation enabled`)
   }
 
   private onError(event: ErrorEvent | PromiseRejectionEvent) {
     const error: Error | undefined = 'reason' in event ? event.reason : event.error
     if (error) {
-      this.recordException(error)
+      this._recordException(error)
     }
   }
 
-  private recordException(error: Error) {
-    const message = error.message
-    const type = error.name
-    const attributes = {
-      [ATTR_EXCEPTION_TYPE]: type,
-      [ATTR_EXCEPTION_MESSAGE]: message,
-      [ATTR_EXCEPTION_STACKTRACE]: error.stack,
-    }
-
+  private _recordException(err: Error) {
     this.logger.emit({
       severityNumber: SeverityNumber.ERROR,
       severityText: 'ERROR',
-      body: message,
-      attributes,
+      body: err.message,
+      attributes: {
+        [ATTR_EXCEPTION_TYPE]: err.name,
+        [ATTR_EXCEPTION_MESSAGE]: err.message,
+        [ATTR_EXCEPTION_STACKTRACE]: err.stack,
+      },
     })
   }
 }
