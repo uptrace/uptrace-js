@@ -10,6 +10,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@opentelemetry/api": "~1.9.0",
-    "@uptrace/node": "link:../../packages/uptrace-node"
+    "@uptrace/node": "2.0.0"
   }
 }
