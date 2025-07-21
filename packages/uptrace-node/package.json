@@ -51,6 +51,7 @@
   ],
   "dependencies": {
     "@opentelemetry/api": "~1.9.0",
+    "@opentelemetry/api-logs": "~0.203.0",
     "@opentelemetry/auto-instrumentations-node": "~0.62.0",
     "@opentelemetry/core": "~2.0.1",
     "@opentelemetry/exporter-logs-otlp-http": "~0.203.0",
@@ -63,6 +64,7 @@
     "@opentelemetry/sdk-node": "~0.203.0",
     "@opentelemetry/sdk-trace-base": "~2.0.1",
     "@opentelemetry/baggage-span-processor": "~0.4.0",
+    "@opentelemetry/semantic-conventions": "~1.36.0",
     "@uptrace/core": "workspace:*"
   },
   "devDependencies": {

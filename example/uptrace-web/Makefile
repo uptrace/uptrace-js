@@ -1,0 +1,2 @@
+all:
+	pnpm start

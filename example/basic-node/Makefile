@@ -1,2 +1,2 @@
 all:
-	node main.js
+	node --trace-deprecation main.js
