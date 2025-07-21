@@ -27,21 +27,22 @@ Install uptrace-js:
 yarn add @uptrace/node --save
 ```
 
-Run the [basic example](example/basic-node) below using the DSN from the Uptrace project settings
-page.
+Run the [basic example](example/basic-node) below using the DSN from the Uptrace project
+settings page.
 
 ```js
 // The very first import must be Uptrace/OpenTelemetry.
 const otel = require('@opentelemetry/api')
-const uptrace = require('@uptrace/node')
+const { configureOpentelemetry } = require('@uptrace/node')
 
 // Start OpenTelemetry SDK and invoke instrumentations to patch the code.
-uptrace.configureOpentelemetry({
+const sdk = configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
   //dsn: '',
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
+sdk.start()
 
 // Create a tracer. Usually, tracer is a global variable.
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
@@ -62,12 +63,12 @@ tracer.startActiveSpan('main-operation', (main) => {
   // End the span when the operation we are measuring is done.
   main.end()
 
-  console.log(uptrace.traceUrl(main))
+  console.log(sdk.traceUrl(main))
 })
 
 setTimeout(async () => {
   // Send buffered spans and free resources.
-  await uptrace.shutdown()
+  await sdk.shutdown()
 })
 ```
 
