@@ -7,7 +7,7 @@ import {
   ATTR_EXCEPTION_TYPE,
 } from '@opentelemetry/semantic-conventions'
 
-import { createResource, parseDsn, Dsn } from '@uptrace/core'
+import { createResource, parseDsn, Dsn, DEFAULT_DSN } from '@uptrace/core'
 import { initConfig, Config } from './config'
 import { configureTracing } from './tracing'
 import { configureMetrics } from './metrics'
@@ -15,21 +15,27 @@ import { configureLogs } from './logs'
 import { VERSION } from './version'
 
 export class NodeSDK extends BaseNodeSDK {
+  private _conf: Config
   private _dsn: Dsn
   private _logger: Logger
 
   public constructor(conf: Config) {
     initConfig(conf)
-    const dsn = parseDsn(conf.dsn)
-
-    configureResource(conf)
-    configureTracing(conf, dsn)
-    configureMetrics(conf, dsn)
-    configureLogs(conf, dsn)
-
     super(conf)
-    this._dsn = parseDsn(conf.dsn)
+    this._conf = conf
+    this._dsn = DEFAULT_DSN
     this._logger = logs.getLogger('uptrace-js', VERSION)
+  }
+
+  public start(): void {
+    this._dsn = parseDsn(this._conf.dsn)
+
+    configureResource(this._conf)
+    configureTracing(this._conf, this._dsn)
+    configureMetrics(this._conf, this._dsn)
+    configureLogs(this._conf, this._dsn)
+
+    super.start()
   }
 
   public traceUrl(span: Span): string {

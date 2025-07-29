@@ -112,3 +112,5 @@ export class Dsn {
 export function parseDsn(s: string | undefined): Dsn {
   return new Dsn(s)
 }
+
+export const DEFAULT_DSN = parseDsn('https://api.uptrace.dev?grpc=4317')

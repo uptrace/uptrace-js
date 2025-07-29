@@ -10,7 +10,7 @@ import {
   ATTR_EXCEPTION_TYPE,
 } from '@opentelemetry/semantic-conventions'
 
-import { createResource, parseDsn, Dsn } from '@uptrace/core'
+import { createResource, parseDsn, Dsn, DEFAULT_DSN } from '@uptrace/core'
 import { initConfig, Config } from './config'
 import { browserAttributes, entryPageAttributes } from './resources'
 import { configureTracing } from './tracing'
@@ -30,11 +30,13 @@ export class WebSDK {
   public constructor(conf: Config) {
     initConfig(conf)
     this._conf = conf
-    this._dsn = parseDsn(conf.dsn)
+    this._dsn = DEFAULT_DSN
     this._logger = logs.getLogger('uptrace-js', VERSION)
   }
 
   public start(): void {
+    this._dsn = parseDsn(this._conf.dsn)
+
     configureResource(this._conf)
     if (this._conf.instrumentations) {
       registerInstrumentations({

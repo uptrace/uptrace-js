@@ -9,7 +9,10 @@ import {
 import { Instrumentation } from '@opentelemetry/instrumentation'
 import { browserDetector } from '@opentelemetry/opentelemetry-browser-detector'
 import { createSessionSpanProcessor, SessionProvider } from '@opentelemetry/web-common'
-import { ALLOW_ALL_BAGGAGE_KEYS, BaggageSpanProcessor } from '@opentelemetry/baggage-span-processor'
+import {
+  ALLOW_ALL_BAGGAGE_KEYS,
+  BaggageSpanProcessor,
+} from '@opentelemetry/baggage-span-processor'
 
 import { Config as BaseConfig } from '@uptrace/core'
 import { WindowAttributesProcessor } from './processors'
@@ -51,9 +54,9 @@ export function initConfig(conf: Config) {
 }
 
 export interface Config extends BaseConfig {
-  sampler: Sampler
-  spanLimits: SpanLimits
-  idGenerator: IdGenerator
+  sampler?: Sampler
+  spanLimits?: SpanLimits
+  idGenerator?: IdGenerator
 
   spanProcessors?: SpanProcessor[]
   contextManager?: ContextManager
