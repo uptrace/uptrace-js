@@ -1,5 +1,13 @@
 # @uptrace/node
 
+## 2.0.2
+
+### Patch Changes
+
+- fix: allow to set DSN via config
+- Updated dependencies
+  - @uptrace/core@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes
