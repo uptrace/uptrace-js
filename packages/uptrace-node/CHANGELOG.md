@@ -1,5 +1,16 @@
 # @uptrace/node
 
+## 2.1.0
+
+### Minor Changes
+
+- update
+
+### Patch Changes
+
+- Updated dependencies
+  - @uptrace/core@2.1.0
+
 ## 2.0.2
 
 ### Patch Changes

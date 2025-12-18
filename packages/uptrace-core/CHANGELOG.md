@@ -1,5 +1,11 @@
 # @uptrace/core
 
+## 2.1.0
+
+### Minor Changes
+
+- update
+
 ## 2.0.2
 
 ### Patch Changes
