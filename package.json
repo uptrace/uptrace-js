@@ -20,12 +20,12 @@
   "author": "Uptrace Authors",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@changesets/cli": "^2.29.6",
-    "@typescript-eslint/eslint-plugin": "8.41.0",
-    "@typescript-eslint/parser": "8.41.0",
-    "eslint": "9.34.0",
-    "gts": "6.0.2",
-    "markdownlint-cli": "0.45.0",
-    "typescript": "5.9.2"
+    "@changesets/cli": "^2.29.8",
+    "@typescript-eslint/eslint-plugin": "8.50.0",
+    "@typescript-eslint/parser": "8.50.0",
+    "eslint": "9.39.2",
+    "gts": "7.0.0",
+    "markdownlint-cli": "0.47.0",
+    "typescript": "5.9.3"
   }
 }
