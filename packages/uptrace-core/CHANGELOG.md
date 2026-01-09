@@ -1,5 +1,11 @@
 # @uptrace/core
 
+## 2.2.0
+
+### Minor Changes
+
+- update OpenTelemetry
+
 ## 2.1.0
 
 ### Minor Changes
