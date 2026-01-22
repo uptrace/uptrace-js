@@ -8,6 +8,7 @@ const common = {
   mode: 'development',
   entry: {
     fetch: 'examples/fetch/index.js',
+    'load-testing': 'examples/load-testing/index.js',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

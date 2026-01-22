@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Load Testing Example - Continuous Spans, Metrics, and Logs</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      h1 {
+        color: #333;
+      }
+      .controls {
+        margin: 20px 0;
+      }
+      button {
+        padding: 10px 24px;
+        font-size: 16px;
+        margin-right: 10px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      #startBtn {
+        background: #4caf50;
+        color: white;
+      }
+      #stopBtn {
+        background: #f44336;
+        color: white;
+      }
+      .stats {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+      }
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .stat-row:last-child {
+        border-bottom: none;
+      }
+      .stat-label {
+        color: #666;
+      }
+      .stat-value {
+        font-weight: bold;
+        font-size: 18px;
+      }
+      #status {
+        color: #f44336;
+      }
+      #status.running {
+        color: #4caf50;
+      }
+      .config {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+      }
+      .config h3 {
+        margin-top: 0;
+        color: #333;
+      }
+      .config-row {
+        display: flex;
+        align-items: center;
+        margin: 12px 0;
+        gap: 10px;
+      }
+      .config-row label {
+        min-width: 140px;
+        color: #666;
+      }
+      .config-row input {
+        width: 100px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .config-row .unit {
+        color: #999;
+        font-size: 14px;
+      }
+      .info {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
+      .info p {
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Load Testing Example</h1>
+    <p>Continuously generates OpenTelemetry spans, metrics, and logs for load testing.</p>
+
+    <div class="info">
+      <p><strong>Telemetry Generated:</strong></p>
+      <p>
+        - Spans: HTTP requests to simulated API endpoints with nested database queries
+      </p>
+      <p>
+        - Metrics: Request counters, duration histograms, active span gauges, error
+        counters
+      </p>
+      <p>- Logs: Request lifecycle events at various severity levels</p>
+    </div>
+
+    <div class="config">
+      <h3>Configuration</h3>
+      <div class="config-row">
+        <label for="minInterval">Min Interval:</label>
+        <input type="number" id="minInterval" min="10" max="60000" value="100" />
+        <span class="unit">ms</span>
+      </div>
+      <div class="config-row">
+        <label for="maxInterval">Max Interval:</label>
+        <input type="number" id="maxInterval" min="10" max="60000" value="1000" />
+        <span class="unit">ms</span>
+      </div>
+      <div class="config-row">
+        <label for="batchSize">Batch Size:</label>
+        <input type="number" id="batchSize" min="1" max="100" value="1" />
+        <span class="unit">spans per interval</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="startBtn">Start</button>
+      <button id="stopBtn" disabled>Stop</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-row">
+        <span class="stat-label">Status:</span>
+        <span class="stat-value" id="status">Stopped</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Total Spans Generated:</span>
+        <span class="stat-value" id="counter">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Active Spans:</span>
+        <span class="stat-value" id="activeSpans">0</span>
+      </div>
+    </div>
+
+    <p>Open the browser console to see trace URLs and detailed output.</p>
+
+    <script type="text/javascript" src="load-testing.js"></script>
+  </body>
+</html>
