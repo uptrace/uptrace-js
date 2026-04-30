@@ -17,6 +17,7 @@ import {
 import { Config as BaseConfig } from '@uptrace/core'
 import { WindowAttributesProcessor } from './processors'
 import { OnerrorInstrumentation } from './onerror'
+import { SessionReplayConfig } from './replay/types'
 
 export function initConfig(conf: Config) {
   conf.dsn ??= (window as any)?.UPTRACE_DSN
@@ -67,6 +68,8 @@ export interface Config extends BaseConfig {
   sessionProvider?: SessionProvider
 
   entryPage?: EntryPageConfig | false
+
+  sessionReplay?: SessionReplayConfig
 }
 
 // Configuration options for selecting which fields to include

@@ -17,6 +17,13 @@ import { configureTracing } from './tracing'
 import { configureMetrics } from './metrics'
 import { configureLogs } from './logs'
 import { VERSION } from './version'
+import {
+  clearIdentity as clearReplayIdentity,
+  identify as identifyReplay,
+} from './replay/identity'
+import { flushReplay, startReplay, stopReplay } from './replay/session'
+import { SessionReplaySpanProcessor } from './replay/span_processor'
+import { UserIdentity } from './replay/types'
 
 export class WebSDK {
   private _conf: Config
@@ -26,8 +33,11 @@ export class WebSDK {
   private _tracerProvider?: WebTracerProvider
   private _meterProvider?: MeterProvider
   private _loggerProvider?: LoggerProvider
+  private _replaySpanProcessor = new SessionReplaySpanProcessor()
 
   public constructor(conf: Config) {
+    conf.spanProcessors ??= []
+    conf.spanProcessors.push(this._replaySpanProcessor)
     initConfig(conf)
     this._conf = conf
     this._dsn = DEFAULT_DSN
@@ -47,10 +57,12 @@ export class WebSDK {
     this._tracerProvider = configureTracing(this._conf, this._dsn)
     this._meterProvider = configureMetrics(this._conf, this._dsn)
     this._loggerProvider = configureLogs(this._conf, this._dsn)
+    startReplay(this._conf.sessionReplay, this._dsn, this._conf.dsn!, this._replaySpanProcessor)
   }
 
   public forceFlush(): Promise<void> {
     const promises: Promise<unknown>[] = []
+    promises.push(flushReplay())
     if (this._tracerProvider) {
       promises.push(this._tracerProvider.forceFlush())
     }
@@ -70,6 +82,7 @@ export class WebSDK {
 
   public shutdown(): Promise<void> {
     const promises: Promise<unknown>[] = []
+    stopReplay()
     if (this._tracerProvider) {
       promises.push(this._tracerProvider.shutdown())
     }
@@ -127,6 +140,14 @@ export class WebSDK {
         [ATTR_EXCEPTION_STACKTRACE]: err.stack,
       },
     })
+  }
+
+  public identify(user: UserIdentity): void {
+    identifyReplay(user)
+  }
+
+  public clearIdentity(): void {
+    clearReplayIdentity()
   }
 }
 
