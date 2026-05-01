@@ -4,6 +4,7 @@ import { ReplayBufferChunk } from './buffer'
 import { ReplayChunkEnvelope } from './types'
 
 const DEFAULT_KEEPALIVE_LIMIT_BYTES = 52 * 1024
+const DEFAULT_MAX_ENVELOPE_BYTES = 10 * 1024 * 1024
 
 interface UploadReplayChunkParams {
   sessionID: string
@@ -15,6 +16,7 @@ interface UploadReplayChunkParams {
 interface EncodedReplayBody {
   body: BodyInit
   byteLength: number
+  jsonByteLength: number
   compressed: boolean
 }
 
@@ -23,18 +25,25 @@ export class SessionReplayUploader {
     private readonly _dsn: Dsn,
     private readonly _dsnHeader: string,
     private readonly _keepaliveLimitBytes = DEFAULT_KEEPALIVE_LIMIT_BYTES,
+    private readonly _maxEnvelopeBytes = DEFAULT_MAX_ENVELOPE_BYTES,
   ) {}
 
   async upload(params: UploadReplayChunkParams, keepalive = false): Promise<boolean> {
     const envelope = this.envelope(params)
     const encoded = await encodeEnvelope(envelope)
 
+    if (encoded.jsonByteLength > this._maxEnvelopeBytes) {
+      return true
+    }
     if (keepalive && encoded.byteLength > this._keepaliveLimitBytes) {
       return false
     }
 
     const resp = await this.send(encoded, keepalive)
     if (resp.ok) {
+      return true
+    }
+    if (resp.status === 413) {
       return true
     }
     if (resp.status >= 500 && !keepalive) {
@@ -92,17 +101,20 @@ export class SessionReplayUploader {
 
 async function encodeEnvelope(envelope: ReplayChunkEnvelope): Promise<EncodedReplayBody> {
   const body = JSON.stringify(envelope)
-  const compressed = await gzipString(body)
+  const bodyBytes = new TextEncoder().encode(body)
+  const compressed = await gzipBytes(bodyBytes)
   if (compressed) {
     return {
       body: new Blob([arrayBufferFromBytes(compressed)]),
       byteLength: compressed.byteLength,
+      jsonByteLength: bodyBytes.byteLength,
       compressed: true,
     }
   }
   return {
     body,
-    byteLength: new TextEncoder().encode(body).byteLength,
+    byteLength: bodyBytes.byteLength,
+    jsonByteLength: bodyBytes.byteLength,
     compressed: false,
   }
 }
@@ -113,39 +125,45 @@ function arrayBufferFromBytes(bytes: Uint8Array): ArrayBuffer {
   return copy.buffer
 }
 
-async function gzipString(body: string): Promise<Uint8Array | undefined> {
+async function gzipBytes(body: Uint8Array): Promise<Uint8Array | undefined> {
   if (typeof CompressionStream === 'undefined') {
     return undefined
   }
 
   try {
     const stream = new CompressionStream('gzip')
+    const reader = stream.readable.getReader()
+    const readPromise = readBytes(reader)
+
     const writer = stream.writable.getWriter()
-    await writer.write(new TextEncoder().encode(body))
+    await writer.write(arrayBufferFromBytes(body))
     await writer.close()
 
-    const reader = stream.readable.getReader()
-    const chunks: Uint8Array[] = []
-    let totalLength = 0
-    for (;;) {
-      const result = await reader.read()
-      if (result.done) {
-        break
-      }
-      chunks.push(result.value)
-      totalLength += result.value.byteLength
-    }
-
-    const compressed = new Uint8Array(totalLength)
-    let offset = 0
-    for (const chunk of chunks) {
-      compressed.set(chunk, offset)
-      offset += chunk.byteLength
-    }
-    return compressed
+    return await readPromise
   } catch {
     return undefined
   }
+}
+
+async function readBytes(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<Uint8Array> {
+  const chunks: Uint8Array[] = []
+  let totalLength = 0
+  for (;;) {
+    const result = await reader.read()
+    if (result.done) {
+      break
+    }
+    chunks.push(result.value)
+    totalLength += result.value.byteLength
+  }
+
+  const bytes = new Uint8Array(totalLength)
+  let offset = 0
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+  return bytes
 }
 
 function browserName(): string {

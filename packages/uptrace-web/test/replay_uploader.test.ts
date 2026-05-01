@@ -70,6 +70,30 @@ describe('SessionReplayUploader', () => {
     assert.equal(requests[0].init?.body instanceof Blob, true)
   })
 
+  it('reads gzip output while closing to avoid browser stream backpressure', async () => {
+    const requests: RequestLog[] = []
+    setGlobal('CompressionStream', BackpressureCompressionStream)
+    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+      requests.push({input, init})
+      return response(200)
+    })
+
+    const uploader = new SessionReplayUploader(dsn, 'dsn-value')
+    const uploaded = await withTimeout(
+      uploader.upload({
+        sessionID: 'session-1',
+        startedAt: 1000,
+        chunkSeq: 2,
+        chunk,
+      }),
+    )
+
+    assert.equal(uploaded, true)
+    assert.equal(requests.length, 1)
+    const headers = requests[0].init?.headers as Record<string, string>
+    assert.equal(headers['content-encoding'], 'gzip')
+  })
+
   it('falls back to plain JSON without a content-encoding header', async () => {
     const requests: RequestLog[] = []
     restoreGlobal('CompressionStream', undefined)
@@ -115,6 +139,46 @@ describe('SessionReplayUploader', () => {
     assert.equal(requests.length, 0)
   })
 
+  it('drops chunks larger than the JSON envelope cap without sending', async () => {
+    const requests: RequestLog[] = []
+    restoreGlobal('CompressionStream', undefined)
+    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+      requests.push({input, init})
+      return response(200)
+    })
+
+    const uploader = new SessionReplayUploader(dsn, 'dsn-value', 52 * 1024, 16)
+    const uploaded = await uploader.upload({
+      sessionID: 'session-1',
+      startedAt: 1000,
+      chunkSeq: 2,
+      chunk,
+    })
+
+    assert.equal(uploaded, true)
+    assert.equal(requests.length, 0)
+  })
+
+  it('drops server rejected oversized chunks instead of retrying', async () => {
+    const requests: RequestLog[] = []
+    restoreGlobal('CompressionStream', undefined)
+    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+      requests.push({input, init})
+      return response(413)
+    })
+
+    const uploader = new SessionReplayUploader(dsn, 'dsn-value')
+    const uploaded = await uploader.upload({
+      sessionID: 'session-1',
+      startedAt: 1000,
+      chunkSeq: 2,
+      chunk,
+    })
+
+    assert.equal(uploaded, true)
+    assert.equal(requests.length, 1)
+  })
+
   it('retries non-keepalive server failures once', async () => {
     const requests: RequestLog[] = []
     restoreGlobal('CompressionStream', undefined)
@@ -158,11 +222,51 @@ class FakeCompressionStream {
   }
 }
 
+class BackpressureCompressionStream {
+  readonly readable: ReadableStream<Uint8Array>
+  readonly writable: WritableStream<Uint8Array>
+  private readonly pulled: Promise<void>
+  private resolvePulled!: () => void
+
+  constructor(_format: string) {
+    this.pulled = new Promise((resolve) => {
+      this.resolvePulled = resolve
+    })
+
+    let controller!: ReadableStreamDefaultController<Uint8Array>
+    this.readable = new ReadableStream<Uint8Array>({
+      start(value) {
+        controller = value
+      },
+      pull: () => {
+        this.resolvePulled()
+      },
+    })
+    this.writable = new WritableStream<Uint8Array>({
+      write() {},
+      close: async () => {
+        await this.pulled
+        controller.enqueue(new Uint8Array([31, 139]))
+        controller.close()
+      },
+    })
+  }
+}
+
 function response(status: number): Response {
   return {
     ok: status >= 200 && status < 300,
     status,
   } as Response
+}
+
+function withTimeout<T>(promise: Promise<T>): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error('operation timed out')), 1000)
+    }),
+  ])
 }
 
 function setGlobal(name: string, value: unknown): void {
