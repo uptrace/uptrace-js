@@ -11,7 +11,7 @@ import {
 } from '@opentelemetry/semantic-conventions'
 
 import { createResource, parseDsn, Dsn, DEFAULT_DSN } from '@uptrace/core'
-import { initConfig, Config } from './config'
+import { getDefaultSessionProvider, initConfig, Config } from './config'
 import { browserAttributes, entryPageAttributes } from './resources'
 import { configureTracing } from './tracing'
 import { configureMetrics } from './metrics'
@@ -57,7 +57,14 @@ export class WebSDK {
     this._tracerProvider = configureTracing(this._conf, this._dsn)
     this._meterProvider = configureMetrics(this._conf, this._dsn)
     this._loggerProvider = configureLogs(this._conf, this._dsn)
-    startReplay(this._conf.sessionReplay, this._dsn, this._conf.dsn!, this._replaySpanProcessor)
+    startReplay(
+      this._conf.sessionReplay,
+      this._dsn,
+      this._conf.dsn!,
+      this._replaySpanProcessor,
+      this._conf.sessionProvider,
+      getDefaultSessionProvider(this._conf),
+    )
   }
 
   public forceFlush(): Promise<void> {

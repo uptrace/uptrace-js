@@ -5,12 +5,10 @@ import {
   SessionReplayConfig,
   SessionReplaySamplingConfig,
 } from './types'
+import { DEFAULT_MAX_SESSION_AGE_MS, DEFAULT_SESSION_TIMEOUT_MS } from '../session_provider'
 
 const BUILT_IN_BLOCK_SELECTORS = ['.rr-block', '[data-rr-block]']
 const BUILT_IN_MASK_SELECTORS = ['.rr-mask', '[data-rr-mask]']
-const DEFAULT_SESSION_TIMEOUT_MS = 15 * 60 * 1000
-const DEFAULT_MAX_SESSION_AGE_MS = 24 * 60 * 60 * 1000
-
 let cachedPolicy: {expiresAt: number; policy: RemoteReplayPolicy} | undefined
 
 export async function fetchReplayPolicy(dsn: Dsn, dsnHeader: string): Promise<RemoteReplayPolicy> {

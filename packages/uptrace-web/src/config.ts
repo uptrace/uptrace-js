@@ -3,7 +3,6 @@ import {
   Sampler,
   SpanLimits,
   IdGenerator,
-  RandomIdGenerator,
   SpanProcessor,
 } from '@opentelemetry/sdk-trace-base'
 import { Instrumentation } from '@opentelemetry/instrumentation'
@@ -18,6 +17,9 @@ import { Config as BaseConfig } from '@uptrace/core'
 import { WindowAttributesProcessor } from './processors'
 import { OnerrorInstrumentation } from './onerror'
 import { SessionReplayConfig } from './replay/types'
+import { BrowserSessionProvider } from './session_provider'
+
+const sessionProviders = new WeakMap<Config, BrowserSessionProvider>()
 
 export function initConfig(conf: Config) {
   conf.dsn ??= (window as any)?.UPTRACE_DSN
@@ -28,9 +30,8 @@ export function initConfig(conf: Config) {
   conf.instrumentations ??= []
   conf.instrumentations.push(new OnerrorInstrumentation())
 
-  if (!conf.sessionProvider) {
-    conf.sessionProvider = defaultSessionProvider
-  }
+  const defaultSessionProvider = getDefaultSessionProvider(conf)
+  conf.sessionProvider ??= defaultSessionProvider
 
   if (conf.entryPage === undefined) {
     // Default configuration for entry page resource.
@@ -52,6 +53,21 @@ export function initConfig(conf: Config) {
   if (window) {
     conf.spanProcessors.push(new WindowAttributesProcessor())
   }
+}
+
+export function getDefaultSessionProvider(conf: Config): BrowserSessionProvider {
+  let provider = sessionProviders.get(conf)
+  if (provider) {
+    return provider
+  }
+
+  provider = new BrowserSessionProvider({
+    storageKey: `uptrace:session:${conf.dsn ?? ''}`,
+    sessionTimeoutMs: conf.sessionReplay?.sessionTimeoutMs,
+    maxSessionAgeMs: conf.sessionReplay?.maxSessionAgeMs,
+  })
+  sessionProviders.set(conf, provider)
+  return provider
 }
 
 export interface Config extends BaseConfig {
@@ -118,10 +134,3 @@ export type EntryPageConfig = {
 }
 
 //------------------------------------------------------------------------------
-
-const generator = new RandomIdGenerator()
-const sessionId = generator.generateTraceId()
-
-const defaultSessionProvider = {
-  getSessionId: () => sessionId,
-}

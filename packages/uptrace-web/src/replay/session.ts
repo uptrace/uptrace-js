@@ -1,4 +1,5 @@
 import { Dsn } from '@uptrace/core'
+import { SessionProvider } from '@opentelemetry/web-common'
 import { replayIdentity } from './identity'
 import { domainAllowed, effectiveReplayConfig, fetchReplayPolicy } from './remote_config'
 import { ReplayBuffer } from './buffer'
@@ -6,6 +7,7 @@ import { SessionReplayRecorder } from './recorder'
 import { SessionReplaySpanProcessor } from './span_processor'
 import { EffectiveReplayConfig, SessionReplayConfig } from './types'
 import { SessionReplayUploader } from './uploader'
+import { BrowserSession, BrowserSessionProvider, isUUID } from '../session_provider'
 
 const FLUSH_INTERVAL_MS = 5000
 const TARGET_EVENT_COUNT = 1000
@@ -18,11 +20,20 @@ export function startReplay(
   dsn: Dsn,
   dsnHeader: string,
   spanProcessor: SessionReplaySpanProcessor,
+  sessionProvider: SessionProvider | undefined,
+  fallbackSessionProvider: BrowserSessionProvider,
 ): void {
   if (!localConfig) {
     return
   }
-  activeController = new SessionReplayController(localConfig, dsn, dsnHeader, spanProcessor)
+  activeController = new SessionReplayController(
+    localConfig,
+    dsn,
+    dsnHeader,
+    spanProcessor,
+    sessionProvider,
+    fallbackSessionProvider,
+  )
   activeController.start()
 }
 
@@ -57,6 +68,8 @@ class SessionReplayController {
     private readonly _dsn: Dsn,
     private readonly _dsnHeader: string,
     private readonly _spanProcessor: SessionReplaySpanProcessor,
+    private readonly _sessionProvider: SessionProvider | undefined,
+    private readonly _fallbackSessionProvider: BrowserSessionProvider,
   ) {
     this._uploader = new SessionReplayUploader(_dsn, _dsnHeader)
   }
@@ -94,8 +107,12 @@ class SessionReplayController {
 
   private async flushOnce(keepalive: boolean): Promise<void> {
     const effective = this._effective
+    if (!effective) {
+      return
+    }
+    this.syncSession()
     const window = this._buffer.eventWindow()
-    if (!window || !effective) {
+    if (!window) {
       return
     }
 
@@ -154,7 +171,7 @@ class SessionReplayController {
       return
     }
     this._effective = effective
-    this.restoreSession(effective)
+    this.restoreSession()
 
     this._recorder = new SessionReplayRecorder(effective, (event: unknown) => {
       this.pushEvent(event)
@@ -184,6 +201,7 @@ class SessionReplayController {
   }
 
   private pushEvent(event: unknown): void {
+    this.syncSession()
     this._buffer.push(event, location.href)
     this.saveSession()
     if (this._buffer.isFull()) {
@@ -191,25 +209,30 @@ class SessionReplayController {
     }
   }
 
-  private restoreSession(effective: EffectiveReplayConfig): void {
-    const key = this.storageKey()
-    const now = Date.now()
-    const saved = parseSavedSession(localStorage.getItem(key))
-    if (
-      saved &&
-      now - saved.lastSeenAt <= effective.sessionTimeoutMs &&
-      now - saved.startedAt <= effective.maxSessionAgeMs
-    ) {
-      this._sessionID = saved.sessionID
-      this._startedAt = saved.startedAt
-      this._chunkSeq = saved.chunkSeq
-      this.saveSession()
-      return
-    }
+  private restoreSession(): void {
+    this.syncSession(parseSavedSession(this.storageKey()))
+  }
 
-    this._sessionID = newSessionID()
-    this._startedAt = now
-    this._chunkSeq = 0
+  private syncSession(saved = parseSavedSession(this.storageKey())): void {
+    const browserSession = resolveReplayBrowserSession(
+      this._sessionProvider,
+      this._fallbackSessionProvider,
+      saved,
+    )
+    const state = resolveReplaySessionState(
+      browserSession,
+      saved,
+      this._sessionID
+        ? {
+            sessionID: this._sessionID,
+            startedAt: this._startedAt,
+            chunkSeq: this._chunkSeq,
+          }
+        : undefined,
+    )
+    this._sessionID = state.sessionID
+    this._startedAt = state.startedAt
+    this._chunkSeq = state.chunkSeq
     this.saveSession()
   }
 
@@ -232,7 +255,7 @@ class SessionReplayController {
   }
 }
 
-function parseSavedSession(value: string | null):
+function parseSavedSession(storageKey: string):
   | {
       sessionID: string
       startedAt: number
@@ -240,23 +263,71 @@ function parseSavedSession(value: string | null):
       lastSeenAt: number
     }
   | undefined {
+  let value: string | null
+  try {
+    value = localStorage.getItem(storageKey)
+  } catch {
+    return undefined
+  }
   if (!value) {
     return undefined
   }
   try {
     const parsed = JSON.parse(value)
-    if (parsed.sessionID && parsed.startedAt && parsed.lastSeenAt) {
+    if (
+      typeof parsed.sessionID === 'string' &&
+      isUUID(parsed.sessionID) &&
+      typeof parsed.startedAt === 'number' &&
+      Number.isFinite(parsed.startedAt) &&
+      typeof parsed.chunkSeq === 'number' &&
+      Number.isFinite(parsed.chunkSeq) &&
+      parsed.chunkSeq >= 0 &&
+      typeof parsed.lastSeenAt === 'number' &&
+      Number.isFinite(parsed.lastSeenAt)
+    ) {
       return parsed
     }
   } catch {}
   return undefined
 }
 
-function newSessionID(): string {
-  if (crypto.randomUUID) {
-    return crypto.randomUUID()
+export function resolveReplayBrowserSession(
+  sessionProvider: SessionProvider | undefined,
+  fallbackSessionProvider: BrowserSessionProvider,
+  saved?: {sessionID: string; startedAt: number},
+): BrowserSession {
+  if (sessionProvider instanceof BrowserSessionProvider) {
+    return sessionProvider.getSession()
   }
-  return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
-    (Number(c) ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))).toString(16),
-  )
+
+  const sessionID = sessionProvider?.getSessionId()
+  if (sessionID && isUUID(sessionID)) {
+    return {
+      id: sessionID,
+      startedAt: saved?.sessionID === sessionID ? saved.startedAt : Date.now(),
+      lastSeenAt: Date.now(),
+    }
+  }
+
+  return fallbackSessionProvider.getSession()
+}
+
+export function resolveReplaySessionState(
+  browserSession: BrowserSession,
+  saved?: {sessionID: string; startedAt: number; chunkSeq: number},
+  current?: {sessionID: string; startedAt: number; chunkSeq: number},
+): {sessionID: string; startedAt: number; chunkSeq: number} {
+  if (current?.sessionID === browserSession.id) {
+    return {
+      sessionID: browserSession.id,
+      startedAt: browserSession.startedAt,
+      chunkSeq: current.chunkSeq,
+    }
+  }
+
+  return {
+    sessionID: browserSession.id,
+    startedAt: browserSession.startedAt,
+    chunkSeq: saved?.sessionID === browserSession.id ? saved.chunkSeq : 0,
+  }
 }
