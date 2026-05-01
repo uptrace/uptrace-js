@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "module": "es2020",
+    "moduleResolution": "node",
+    "outDir": "build/esm",
+    "tsBuildInfoFile": "build/esm/tsconfig.tsbuildinfo"
+  }
+}

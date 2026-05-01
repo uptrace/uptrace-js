@@ -3,6 +3,7 @@
   "version": "2.3.0",
   "description": "Uptrace JS core",
   "main": "build/src/index.js",
+  "module": "build/esm/src/index.js",
   "types": "build/src/index.d.ts",
   "repository": {
     "type": "git",
@@ -19,7 +20,7 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "precompile": "tsc --version",
     "version:update": "node ../../scripts/version-update.js",
-    "compile": "rm -rf ./build && pnpm run version:update && tsc -p .",
+    "compile": "rm -rf ./build && pnpm run version:update && tsc -p . && tsc -p tsconfig.esm.json",
     "docs-test": "linkinator docs/out --silent",
     "docs": "typedoc --tsconfig tsconfig.json --exclude test/**/*.ts",
     "prepare": "pnpm run compile",
@@ -45,6 +46,9 @@
     "build/src/**/*.js",
     "build/src/**/*.js.map",
     "build/src/**/*.d.ts",
+    "build/esm/src/**/*.js",
+    "build/esm/src/**/*.js.map",
+    "build/esm/src/**/*.d.ts",
     "doc",
     "LICENSE",
     "README.md"
