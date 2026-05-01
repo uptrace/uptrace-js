@@ -13,12 +13,12 @@ const dsn = {
 } as Dsn
 
 const chunk: ReplayBufferChunk = {
-  events: [{timestamp: 100, type: 'event'}],
+  events: [{ timestamp: 100, type: 'event' }],
   firstTs: 100,
   lastTs: 100,
   pageURLs: ['https://example.com/page'],
   traceIDs: ['trace-1'],
-  identity: {id: 'user-1', email: 'user@example.com'},
+  identity: { id: 'user-1', email: 'user@example.com' },
   frontendErrorCount: 1,
 }
 
@@ -27,10 +27,12 @@ describe('SessionReplayUploader', () => {
 
   beforeEach(() => {
     originals.fetch = (globalThis as Record<string, unknown>).fetch
-    originals.CompressionStream = (globalThis as Record<string, unknown>).CompressionStream
+    originals.CompressionStream = (
+      globalThis as Record<string, unknown>
+    ).CompressionStream
     originals.location = (globalThis as Record<string, unknown>).location
     originals.navigator = (globalThis as Record<string, unknown>).navigator
-    setGlobal('location', {href: 'https://example.com/page'})
+    setGlobal('location', { href: 'https://example.com/page' })
     setGlobal('navigator', {
       platform: 'MacIntel',
       userAgent: 'Mozilla/5.0 Chrome/120.0 Safari/537.36',
@@ -47,10 +49,13 @@ describe('SessionReplayUploader', () => {
   it('sends gzip JSON on the existing endpoint when native compression succeeds', async () => {
     const requests: RequestLog[] = []
     setGlobal('CompressionStream', FakeCompressionStream)
-    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      requests.push({input, init})
-      return response(200)
-    })
+    setGlobal(
+      'fetch',
+      async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        requests.push({ input, init })
+        return response(200)
+      },
+    )
 
     const uploader = new SessionReplayUploader(dsn, 'dsn-value')
     const uploaded = await uploader.upload({
@@ -73,10 +78,13 @@ describe('SessionReplayUploader', () => {
   it('reads gzip output while closing to avoid browser stream backpressure', async () => {
     const requests: RequestLog[] = []
     setGlobal('CompressionStream', BackpressureCompressionStream)
-    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      requests.push({input, init})
-      return response(200)
-    })
+    setGlobal(
+      'fetch',
+      async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        requests.push({ input, init })
+        return response(200)
+      },
+    )
 
     const uploader = new SessionReplayUploader(dsn, 'dsn-value')
     const uploaded = await withTimeout(
@@ -97,10 +105,13 @@ describe('SessionReplayUploader', () => {
   it('falls back to plain JSON without a content-encoding header', async () => {
     const requests: RequestLog[] = []
     restoreGlobal('CompressionStream', undefined)
-    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      requests.push({input, init})
-      return response(200)
-    })
+    setGlobal(
+      'fetch',
+      async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        requests.push({ input, init })
+        return response(200)
+      },
+    )
 
     const uploader = new SessionReplayUploader(dsn, 'dsn-value')
     const uploaded = await uploader.upload({
@@ -112,6 +123,22 @@ describe('SessionReplayUploader', () => {
 
     assert.equal(uploaded, true)
     assert.equal(typeof requests[0].init?.body, 'string')
+    const body = JSON.parse(requests[0].init?.body as string)
+    assert.equal(body.protocolVersion, 1)
+    assert.equal(body.sessionId, 'session-1')
+    assert.equal(body.startedAt, '1970-01-01T00:00:01.000Z')
+    assert.equal(body.chunkSeq, 2)
+    assert.deepEqual(body.eventsWindow, {
+      firstEventAt: '1970-01-01T00:00:00.100Z',
+      lastEventAt: '1970-01-01T00:00:00.100Z',
+    })
+    assert.deepEqual(body.pageUrls, ['https://example.com/page'])
+    assert.deepEqual(body.traceIds, ['trace-1'])
+    assert.deepEqual(body.userIds, ['user-1'])
+    assert.deepEqual(body.userEmails, ['user@example.com'])
+    assert.equal(body.frontendErrorCount, 1)
+    assert.equal(typeof body.metadata.sdkVersion, 'string')
+    assert.equal(objectHasUnderscoreKey(body), false)
     const headers = requests[0].init?.headers as Record<string, string>
     assert.equal(headers['content-encoding'], undefined)
   })
@@ -119,10 +146,13 @@ describe('SessionReplayUploader', () => {
   it('does not send oversized keepalive chunks', async () => {
     const requests: RequestLog[] = []
     restoreGlobal('CompressionStream', undefined)
-    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      requests.push({input, init})
-      return response(200)
-    })
+    setGlobal(
+      'fetch',
+      async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        requests.push({ input, init })
+        return response(200)
+      },
+    )
 
     const uploader = new SessionReplayUploader(dsn, 'dsn-value', 16)
     const uploaded = await uploader.upload(
@@ -142,10 +172,13 @@ describe('SessionReplayUploader', () => {
   it('drops chunks larger than the JSON envelope cap without sending', async () => {
     const requests: RequestLog[] = []
     restoreGlobal('CompressionStream', undefined)
-    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      requests.push({input, init})
-      return response(200)
-    })
+    setGlobal(
+      'fetch',
+      async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        requests.push({ input, init })
+        return response(200)
+      },
+    )
 
     const uploader = new SessionReplayUploader(dsn, 'dsn-value', 52 * 1024, 16)
     const uploaded = await uploader.upload({
@@ -162,10 +195,13 @@ describe('SessionReplayUploader', () => {
   it('drops server rejected oversized chunks instead of retrying', async () => {
     const requests: RequestLog[] = []
     restoreGlobal('CompressionStream', undefined)
-    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      requests.push({input, init})
-      return response(413)
-    })
+    setGlobal(
+      'fetch',
+      async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        requests.push({ input, init })
+        return response(413)
+      },
+    )
 
     const uploader = new SessionReplayUploader(dsn, 'dsn-value')
     const uploaded = await uploader.upload({
@@ -182,10 +218,13 @@ describe('SessionReplayUploader', () => {
   it('retries non-keepalive server failures once', async () => {
     const requests: RequestLog[] = []
     restoreGlobal('CompressionStream', undefined)
-    setGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      requests.push({input, init})
-      return response(requests.length === 1 ? 500 : 200)
-    })
+    setGlobal(
+      'fetch',
+      async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        requests.push({ input, init })
+        return response(requests.length === 1 ? 500 : 200)
+      },
+    )
 
     const uploader = new SessionReplayUploader(dsn, 'dsn-value')
     const uploaded = await uploader.upload({
@@ -267,6 +306,18 @@ function withTimeout<T>(promise: Promise<T>): Promise<T> {
       setTimeout(() => reject(new Error('operation timed out')), 1000)
     }),
   ])
+}
+
+function objectHasUnderscoreKey(value: unknown): boolean {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+  if (Array.isArray(value)) {
+    return value.some(objectHasUnderscoreKey)
+  }
+  return Object.entries(value).some(([key, item]) => {
+    return key.includes('_') || objectHasUnderscoreKey(item)
+  })
 }
 
 function setGlobal(name: string, value: unknown): void {

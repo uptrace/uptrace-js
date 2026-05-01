@@ -5,13 +5,19 @@ import {
   SessionReplayConfig,
   SessionReplaySamplingConfig,
 } from './types'
-import { DEFAULT_MAX_SESSION_AGE_MS, DEFAULT_SESSION_TIMEOUT_MS } from '../session_provider'
+import {
+  DEFAULT_MAX_SESSION_AGE_MS,
+  DEFAULT_SESSION_TIMEOUT_MS,
+} from '../session_provider'
 
 const BUILT_IN_BLOCK_SELECTORS = ['.rr-block', '[data-rr-block]']
 const BUILT_IN_MASK_SELECTORS = ['.rr-mask', '[data-rr-mask]']
-let cachedPolicy: {expiresAt: number; policy: RemoteReplayPolicy} | undefined
+let cachedPolicy: { expiresAt: number; policy: RemoteReplayPolicy } | undefined
 
-export async function fetchReplayPolicy(dsn: Dsn, dsnHeader: string): Promise<RemoteReplayPolicy> {
+export async function fetchReplayPolicy(
+  dsn: Dsn,
+  dsnHeader: string,
+): Promise<RemoteReplayPolicy> {
   if (cachedPolicy && cachedPolicy.expiresAt > Date.now()) {
     return cachedPolicy.policy
   }
@@ -30,7 +36,7 @@ export async function fetchReplayPolicy(dsn: Dsn, dsnHeader: string): Promise<Re
   const policy = validateRemotePolicy(await resp.json())
   cachedPolicy = {
     policy,
-    expiresAt: Date.now() + policy.cache_ttl_sec * 1000,
+    expiresAt: Date.now() + policy.cacheTtlSec * 1000,
   }
   return policy
 }
@@ -44,22 +50,22 @@ export function effectiveReplayConfig(
 
   return {
     enabled: local.enabled !== false && remote.enabled,
-    sampleRate: Math.min(localRate, remote.sample_rate),
-    allowedDomains: remote.allowed_domains.length
-      ? remote.allowed_domains
+    sampleRate: Math.min(localRate, remote.sampleRate),
+    allowedDomains: remote.allowedDomains.length
+      ? remote.allowedDomains
       : unique(local.allowedDomains ?? []),
     blockSelectors: unique([
       ...BUILT_IN_BLOCK_SELECTORS,
-      ...(remote.block_selectors ?? []),
+      ...(remote.blockSelectors ?? []),
       ...(local.blockSelectors ?? []),
       ...(local.recordIframes ? [] : ['iframe']),
     ]),
     maskSelectors: unique([
       ...BUILT_IN_MASK_SELECTORS,
-      ...(remote.mask_selectors ?? []),
+      ...(remote.maskSelectors ?? []),
       ...(local.maskSelectors ?? []),
     ]),
-    maskAllText: Boolean(remote.mask_all_text || local.maskAllText),
+    maskAllText: Boolean(remote.maskAllText || local.maskAllText),
     recordIframes: Boolean(local.recordIframes),
     sampling: normalizeSampling(local.sampling),
     sessionTimeoutMs: clampSessionTimeout(local.sessionTimeoutMs),
@@ -85,19 +91,19 @@ export function domainAllowed(allowedDomains: string[], hostname: string): boole
 
 function validateRemotePolicy(value: unknown): RemoteReplayPolicy {
   const policy = value as RemoteReplayPolicy
-  if (!policy || policy.schema_version !== 1) {
+  if (!policy || policy.schemaVersion !== 1) {
     throw new Error('unsupported session replay policy')
   }
-  validateSampleRate(policy.sample_rate, 'sample_rate')
+  validateSampleRate(policy.sampleRate, 'sampleRate')
   return {
-    schema_version: 1,
+    schemaVersion: 1,
     enabled: Boolean(policy.enabled),
-    sample_rate: policy.sample_rate,
-    allowed_domains: cleanStringArray(policy.allowed_domains),
-    block_selectors: cleanStringArray(policy.block_selectors),
-    mask_selectors: cleanStringArray(policy.mask_selectors),
-    mask_all_text: Boolean(policy.mask_all_text),
-    cache_ttl_sec: Math.max(10, Math.min(600, Number(policy.cache_ttl_sec) || 60)),
+    sampleRate: policy.sampleRate,
+    allowedDomains: cleanStringArray(policy.allowedDomains),
+    blockSelectors: cleanStringArray(policy.blockSelectors),
+    maskSelectors: cleanStringArray(policy.maskSelectors),
+    maskAllText: Boolean(policy.maskAllText),
+    cacheTtlSec: Math.max(10, Math.min(600, Number(policy.cacheTtlSec) || 60)),
   }
 }
 
@@ -111,7 +117,10 @@ function cleanStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return []
   }
-  return value.map((item) => String(item).trim()).filter(Boolean).slice(0, 50)
+  return value
+    .map((item) => String(item).trim())
+    .filter(Boolean)
+    .slice(0, 50)
 }
 
 function normalizeSampling(

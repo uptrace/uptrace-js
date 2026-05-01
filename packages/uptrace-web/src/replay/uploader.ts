@@ -56,26 +56,26 @@ export class SessionReplayUploader {
   private envelope(params: UploadReplayChunkParams): ReplayChunkEnvelope {
     const identity = params.chunk.identity
     return {
-      protocol_version: 1,
-      session_id: params.sessionID,
-      started_at: new Date(params.startedAt).toISOString(),
-      chunk_seq: params.chunkSeq,
+      protocolVersion: 1,
+      sessionId: params.sessionID,
+      startedAt: new Date(params.startedAt).toISOString(),
+      chunkSeq: params.chunkSeq,
       events: params.chunk.events,
-      events_window: {
-        first_event_at: new Date(params.chunk.firstTs).toISOString(),
-        last_event_at: new Date(params.chunk.lastTs).toISOString(),
+      eventsWindow: {
+        firstEventAt: new Date(params.chunk.firstTs).toISOString(),
+        lastEventAt: new Date(params.chunk.lastTs).toISOString(),
       },
       url: location.href,
-      page_urls: params.chunk.pageURLs,
-      trace_ids: params.chunk.traceIDs,
+      pageUrls: params.chunk.pageURLs,
+      traceIds: params.chunk.traceIDs,
       user: identity,
-      user_ids: identity.id ? [identity.id] : [],
-      user_emails: identity.email ? [identity.email] : [],
-      frontend_error_count: params.chunk.frontendErrorCount,
+      userIds: identity.id ? [identity.id] : [],
+      userEmails: identity.email ? [identity.email] : [],
+      frontendErrorCount: params.chunk.frontendErrorCount,
       metadata: {
         browser: browserName(),
         os: navigator.platform,
-        sdk_version: VERSION,
+        sdkVersion: VERSION,
       },
     }
   }
@@ -145,7 +145,9 @@ async function gzipBytes(body: Uint8Array): Promise<Uint8Array | undefined> {
   }
 }
 
-async function readBytes(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<Uint8Array> {
+async function readBytes(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+): Promise<Uint8Array> {
   const chunks: Uint8Array[] = []
   let totalLength = 0
   for (;;) {

@@ -23,14 +23,14 @@ export interface SessionReplayConfig {
 }
 
 export interface RemoteReplayPolicy {
-  schema_version: number
+  schemaVersion: number
   enabled: boolean
-  sample_rate: number
-  allowed_domains: string[]
-  block_selectors: string[]
-  mask_selectors: string[]
-  mask_all_text: boolean
-  cache_ttl_sec: number
+  sampleRate: number
+  allowedDomains: string[]
+  blockSelectors: string[]
+  maskSelectors: string[]
+  maskAllText: boolean
+  cacheTtlSec: number
 }
 
 export interface EffectiveReplayConfig {
@@ -55,27 +55,27 @@ export interface TraceWindow {
 }
 
 export interface ReplayChunkEnvelope {
-  protocol_version: 1
-  session_id: string
-  started_at: string
-  chunk_seq: number
+  protocolVersion: 1
+  sessionId: string
+  startedAt: string
+  chunkSeq: number
   events: unknown[]
-  events_window?: {
-    first_event_at: string
-    last_event_at: string
+  eventsWindow?: {
+    firstEventAt: string
+    lastEventAt: string
   }
   url?: string
-  page_urls?: string[]
-  trace_ids?: string[]
+  pageUrls?: string[]
+  traceIds?: string[]
   user?: UserIdentity
-  user_ids?: string[]
-  user_emails?: string[]
-  frontend_error_count?: number
+  userIds?: string[]
+  userEmails?: string[]
+  frontendErrorCount?: number
   metadata?: {
     browser?: string
     os?: string
     device?: string
     release?: string
-    sdk_version?: string
+    sdkVersion?: string
   }
 }
