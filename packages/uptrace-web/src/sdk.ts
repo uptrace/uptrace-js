@@ -21,7 +21,7 @@ import {
   clearIdentity as clearReplayIdentity,
   identify as identifyReplay,
 } from './replay/identity'
-import { flushReplay, startReplay, stopReplay } from './replay/session'
+import { flushReplay, shutdownReplay, startReplay } from './replay/session'
 import { SessionReplaySpanProcessor } from './replay/span_processor'
 import { UserIdentity } from './replay/types'
 
@@ -82,7 +82,7 @@ export class WebSDK {
 
   public shutdown(): Promise<void> {
     const promises: Promise<unknown>[] = []
-    stopReplay()
+    promises.push(shutdownReplay())
     if (this._tracerProvider) {
       promises.push(this._tracerProvider.shutdown())
     }

@@ -1,13 +1,14 @@
 import { Dsn } from '@uptrace/core'
-import { VERSION } from '../version'
 import { replayIdentity } from './identity'
 import { domainAllowed, effectiveReplayConfig, fetchReplayPolicy } from './remote_config'
+import { ReplayBuffer } from './buffer'
+import { SessionReplayRecorder } from './recorder'
 import { SessionReplaySpanProcessor } from './span_processor'
-import { EffectiveReplayConfig, ReplayChunkEnvelope, SessionReplayConfig } from './types'
+import { EffectiveReplayConfig, SessionReplayConfig } from './types'
+import { SessionReplayUploader } from './uploader'
 
 const FLUSH_INTERVAL_MS = 5000
 const TARGET_EVENT_COUNT = 1000
-const KEEPALIVE_LIMIT_BYTES = 52 * 1024
 const SESSION_STORAGE_PREFIX = 'uptrace:replay:'
 
 let activeController: SessionReplayController | undefined
@@ -30,19 +31,25 @@ export function flushReplay(): Promise<void> {
 }
 
 export function stopReplay(): void {
-  activeController?.stop()
+  void shutdownReplay()
+}
+
+export function shutdownReplay(): Promise<void> {
+  const controller = activeController
   activeController = undefined
+  return controller?.stop() ?? Promise.resolve()
 }
 
 class SessionReplayController {
   private _effective?: EffectiveReplayConfig
-  private _events: unknown[] = []
-  private _pageURLs = new Set<string>()
+  private _buffer = new ReplayBuffer(TARGET_EVENT_COUNT)
   private _sessionID = ''
   private _startedAt = 0
   private _chunkSeq = 0
   private _flushTimer?: ReturnType<typeof setInterval>
-  private _stopRecorder?: () => void
+  private _recorder?: SessionReplayRecorder
+  private _uploader: SessionReplayUploader
+  private _flushing?: Promise<void>
   private _started = false
 
   constructor(
@@ -50,7 +57,9 @@ class SessionReplayController {
     private readonly _dsn: Dsn,
     private readonly _dsnHeader: string,
     private readonly _spanProcessor: SessionReplaySpanProcessor,
-  ) {}
+  ) {
+    this._uploader = new SessionReplayUploader(_dsn, _dsnHeader)
+  }
 
   start(): void {
     if (this._started) {
@@ -60,87 +69,73 @@ class SessionReplayController {
     void this.startAsync()
   }
 
-  stop(): void {
+  stop(): Promise<void> {
     if (this._flushTimer) {
       clearInterval(this._flushTimer)
       this._flushTimer = undefined
     }
-    if (this._stopRecorder) {
-      this._stopRecorder()
-      this._stopRecorder = undefined
+    if (this._recorder) {
+      this._recorder.stop()
+      this._recorder = undefined
     }
-    void this.flush()
+    return this.flush()
   }
 
   async flush(keepalive = false): Promise<void> {
-    if (!this._events.length || !this._effective) {
+    if (this._flushing) {
+      return this._flushing
+    }
+
+    this._flushing = this.flushOnce(keepalive).finally(() => {
+      this._flushing = undefined
+    })
+    return this._flushing
+  }
+
+  private async flushOnce(keepalive: boolean): Promise<void> {
+    const effective = this._effective
+    const window = this._buffer.eventWindow()
+    if (!window || !effective) {
       return
     }
 
-    const events = this._events
-    this._events = []
-
-    const firstTs = eventTimestamp(events[0])
-    const lastTs = eventTimestamp(events[events.length - 1])
-    const identity = replayIdentity()
-    const traceIDs = new Set(this._spanProcessor.traceIDsForWindow(firstTs, lastTs))
-    const fallbackTraceID = this._effective.getTraceId?.()
+    const traceIDs = new Set(this._spanProcessor.traceIDsForWindow(window.firstTs, window.lastTs))
+    const fallbackTraceID = effective.getTraceId?.()
     if (fallbackTraceID) {
       traceIDs.add(fallbackTraceID)
     }
 
-    const envelope: ReplayChunkEnvelope = {
-      protocol_version: 1,
-      session_id: this._sessionID,
-      started_at: new Date(this._startedAt).toISOString(),
-      chunk_seq: this._chunkSeq++,
-      events,
-      events_window: {
-        first_event_at: new Date(firstTs).toISOString(),
-        last_event_at: new Date(lastTs).toISOString(),
-      },
-      url: location.href,
-      page_urls: [...this._pageURLs].slice(0, 100),
-      trace_ids: [...traceIDs].slice(0, 100),
-      user: identity,
-      user_ids: identity.id ? [identity.id] : [],
-      user_emails: identity.email ? [identity.email] : [],
-      frontend_error_count: this._spanProcessor.errorCountForWindow(firstTs, lastTs),
-      metadata: {
-        browser: browserName(),
-        os: navigator.platform,
-        sdk_version: VERSION,
-      },
-    }
-    this._pageURLs.clear()
-
-    const body = JSON.stringify(envelope)
-    if (keepalive && body.length > KEEPALIVE_LIMIT_BYTES) {
-      this._events.unshift(...events)
+    const chunk = this._buffer.drain({
+      identity: replayIdentity(),
+      traceIDs: [...traceIDs],
+      frontendErrorCount: this._spanProcessor.errorCountForWindow(window.firstTs, window.lastTs),
+    })
+    if (!chunk) {
       return
     }
 
-    const resp = await fetch(`${this._dsn.otlpHttpEndpoint()}/api/v1/session-replays`, {
-      method: 'POST',
-      credentials: 'omit',
-      keepalive,
-      headers: {
-        'content-type': 'application/json',
-        'uptrace-dsn': this._dsnHeader,
-      },
-      body,
-    })
-    if (!resp.ok && resp.status >= 500 && !keepalive) {
-      await fetch(`${this._dsn.otlpHttpEndpoint()}/api/v1/session-replays`, {
-        method: 'POST',
-        credentials: 'omit',
-        headers: {
-          'content-type': 'application/json',
-          'uptrace-dsn': this._dsnHeader,
+    let uploaded = false
+    try {
+      uploaded = await this._uploader.upload(
+        {
+          sessionID: this._sessionID,
+          startedAt: this._startedAt,
+          chunkSeq: this._chunkSeq,
+          chunk,
         },
-        body,
-      })
+        keepalive,
+      )
+    } catch {
+      uploaded = false
     }
+
+    if (!uploaded) {
+      this._buffer.restore(chunk)
+      return
+    }
+
+    this._chunkSeq++
+    this.saveSession()
   }
 
   private async startAsync(): Promise<void> {
@@ -161,27 +156,20 @@ class SessionReplayController {
     this._effective = effective
     this.restoreSession(effective)
 
-    const rrweb = await import('rrweb')
-    this._stopRecorder = rrweb.record({
-      emit: (event: unknown) => {
-        this.pushEvent(event)
-      },
-      checkoutEveryNms: 5 * 60 * 1000,
-      checkoutEveryNth: 50,
-      maskAllInputs: true,
-      blockSelector: effective.blockSelectors.join(','),
-      maskTextSelector: effective.maskSelectors.join(','),
-      maskTextFn: maskReplayText,
-      recordCanvas: false,
-      inlineImages: false,
-      collectFonts: false,
-      plugins: [],
-      recordCrossOriginIframes: false,
-      keepIframeSrcFn: () => false,
-      sampling: samplingOptions(effective),
-    } as any) as () => void
+    this._recorder = new SessionReplayRecorder(effective, (event: unknown) => {
+      this.pushEvent(event)
+    })
+    try {
+      const recording = await this._recorder.start()
+      if (!recording) {
+        this._recorder = undefined
+        return
+      }
+    } catch {
+      this._recorder = undefined
+      return
+    }
 
-    rrweb.addCustomEvent('uptrace_url_change', {url: location.href})
     this._flushTimer = setInterval(() => {
       void this.flush()
     }, FLUSH_INTERVAL_MS)
@@ -196,10 +184,9 @@ class SessionReplayController {
   }
 
   private pushEvent(event: unknown): void {
-    this._events.push(event)
-    this._pageURLs.add(location.href)
+    this._buffer.push(event, location.href)
     this.saveSession()
-    if (this._events.length >= TARGET_EVENT_COUNT) {
+    if (this._buffer.isFull()) {
       void this.flush()
     }
   }
@@ -272,50 +259,4 @@ function newSessionID(): string {
   return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
     (Number(c) ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))).toString(16),
   )
-}
-
-function eventTimestamp(event: unknown): number {
-  const timestamp = (event as {timestamp?: unknown})?.timestamp
-  if (typeof timestamp === 'number' && Number.isFinite(timestamp)) {
-    return timestamp
-  }
-  return Date.now()
-}
-
-function samplingOptions(effective: EffectiveReplayConfig): Record<string, unknown> {
-  if (effective.sampling.mousemoveMs === false) {
-    return {mousemove: false}
-  }
-  return {
-    mousemove: effective.sampling.mousemoveMs,
-    mousemoveCallback: effective.sampling.mousemoveCallbackMs,
-  }
-}
-
-function maskReplayText(text: string): string {
-  return text
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, maskToken)
-    .replace(/\b(?:\d[ -]*?){13,19}\b/g, maskToken)
-    .replace(/[^\s]/g, '*')
-}
-
-function maskToken(value: string): string {
-  return value.replace(/[^\s]/g, '*')
-}
-
-function browserName(): string {
-  const ua = navigator.userAgent
-  if (ua.includes('Firefox/')) {
-    return 'firefox'
-  }
-  if (ua.includes('Edg/')) {
-    return 'edge'
-  }
-  if (ua.includes('Chrome/')) {
-    return 'chrome'
-  }
-  if (ua.includes('Safari/')) {
-    return 'safari'
-  }
-  return ''
 }
