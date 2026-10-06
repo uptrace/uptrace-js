@@ -21,6 +21,8 @@ export class NodeSDK extends BaseNodeSDK {
 
   public constructor(conf: Config) {
     initConfig(conf)
+    // NodeSDK reads the resource in its constructor.
+    configureResource(conf)
     super(conf)
     this._conf = conf
     this._dsn = DEFAULT_DSN
@@ -30,7 +32,6 @@ export class NodeSDK extends BaseNodeSDK {
   public start(): void {
     this._dsn = parseDsn(this._conf.dsn)
 
-    configureResource(this._conf)
     configureTracing(this._conf, this._dsn)
     configureMetrics(this._conf, this._dsn)
     configureLogs(this._conf, this._dsn)
