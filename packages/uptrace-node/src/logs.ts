@@ -11,5 +11,5 @@ export function configureLogs(conf: Config, dsn: Dsn) {
     headers: { 'uptrace-dsn': conf.dsn! },
     compression: CompressionAlgorithm.GZIP,
   })
-  conf.logRecordProcessor = new BatchLogRecordProcessor(exporter)
+  conf.logRecordProcessors!.push(new BatchLogRecordProcessor({ exporter }))
 }

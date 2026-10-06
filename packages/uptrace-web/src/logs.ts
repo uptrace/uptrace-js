@@ -12,7 +12,7 @@ export function configureLogs(conf: Config, dsn: Dsn): LoggerProvider {
     headers: { 'uptrace-dsn': conf.dsn! },
     compression: CompressionAlgorithm.GZIP,
   })
-  const blp = new BatchLogRecordProcessor(exporter)
+  const blp = new BatchLogRecordProcessor({ exporter })
   const provider = new LoggerProvider({
     resource: conf.resource,
     processors: [blp],

@@ -24,6 +24,25 @@ export function initConfig(conf: Config) {
   })
   conf.idGenerator ??= new AWSXRayIdGenerator()
 
+  // NodeSDK reads these arrays in its constructor and keeps references to them,
+  // so processors and readers pushed in NodeSDK.start are still picked up.
   conf.spanProcessors ??= []
+  conf.metricReaders ??= []
+  conf.logRecordProcessors ??= []
+
+  // Deprecated singular options are ignored by NodeSDK when the plural ones are set.
+  if (conf.spanProcessor) {
+    conf.spanProcessors.push(conf.spanProcessor)
+    delete conf.spanProcessor
+  }
+  if (conf.metricReader) {
+    conf.metricReaders.push(conf.metricReader)
+    delete conf.metricReader
+  }
+  if (conf.logRecordProcessor) {
+    conf.logRecordProcessors.push(conf.logRecordProcessor)
+    delete conf.logRecordProcessor
+  }
+
   conf.spanProcessors.push(new BaggageSpanProcessor(ALLOW_ALL_BAGGAGE_KEYS))
 }
