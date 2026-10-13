@@ -10,9 +10,10 @@ This guide explains how to build, test, and release the Uptrace JavaScript packa
 For experienced developers, here’s the release flow in short:
 
 ```sh
-pnpm -r exec ncu -u        # Update dependencies
+pnpm -r exec ncu -u --filter '/^@opentelemetry\//'  # Update OpenTelemetry (see section 1)
 pnpm install               # Install and build
 pnpm -r run build          # Build all packages
+pnpm -r test               # Run tests
 
 pnpm changeset             # Create changesets
 git commit -am "chore: changesets"
@@ -20,9 +21,12 @@ git commit -am "chore: changesets"
 pnpm changeset version     # Bump versions
 pnpm install
 git commit -am "chore: version bump"
+git push origin master
 
-pnpm publish -r --no-git-checks
+pnpm publish -r --no-git-checks --otp=<code>  # npm requires 2FA
 ```
+
+Then verify the release (section 4, step 4) and check whether the docs need updating (section 5).
 
 ---
 
@@ -41,7 +45,34 @@ pnpm -r exec ncu -u
 ```sh
 pnpm install
 pnpm -r run build
+pnpm -r test
 ```
+
+### Updating OpenTelemetry
+
+Most releases are OpenTelemetry updates. To bump only the `@opentelemetry/*` packages:
+
+```sh
+pnpm -r exec ncu -u --filter '/^@opentelemetry\//'
+```
+
+- OpenTelemetry JS releases two version lines together: stable packages (`2.x`, e.g. `core`,
+  `resources`, `sdk-trace-base`, `sdk-metrics`) and experimental packages (`0.x`, e.g. `sdk-node`,
+  `sdk-logs`, `exporter-*-otlp-http`, `instrumentation`). Keep every package in `packages/*` on the
+  same pair, e.g. `~2.12.0` / `~0.223.0`.
+- Packages with their own release cycle (`auto-instrumentations-node`, `id-generator-aws-xray`,
+  `baggage-span-processor`, `semantic-conventions`) are updated by the same command.
+- `@opentelemetry/api` stays on `1.x`.
+- Update the examples that pin OpenTelemetry packages, using the same filter in each directory:
+
+```sh
+for d in example/*/; do (cd $d && npx npm-check-updates -u --filter '/^@opentelemetry\//'); done
+```
+
+- Read the [OpenTelemetry JS changelog](https://github.com/open-telemetry/opentelemetry-js/blob/main/CHANGELOG.md)
+  and the [experimental changelog](https://github.com/open-telemetry/opentelemetry-js/blob/main/experimental/CHANGELOG.md)
+  for deprecations and breaking changes, then build and run an example against the local packages
+  (section 3).
 
 ---
 
@@ -121,12 +152,15 @@ git add .
 git commit -m "chore: version bump"
 ```
 
+If a version was bumped but never published, don't create another version on top of it. Update
+the existing changelog entries in `packages/*/CHANGELOG.md` instead.
+
 ### Step 3 – Publish to npm
 
-Publish all updated packages:
+Publish all updated packages. npm requires a 2FA one-time password:
 
 ```sh
-pnpm publish -r --no-git-checks
+pnpm publish -r --no-git-checks --otp=<code>
 ```
 
 **Notes:**
@@ -138,6 +172,41 @@ pnpm publish -r --no-git-checks
 pnpm -r run build
 ```
 
+### Step 4 – Verify the Release
+
+Check that every package is published with the new version. `npm view` can return stale data for a
+few minutes after publishing, so query the registry directly:
+
+```sh
+for p in core node web; do
+  curl -s "https://registry.npmjs.org/@uptrace%2f$p" | node -pe \
+    "d=JSON.parse(require('fs').readFileSync(0));'@uptrace/$p '+d['dist-tags'].latest"
+done
+```
+
+---
+
+## 5. Updating Documentation
+
+After a release, check whether these docs need updating:
+
+- This repository: `README.md` files and examples, especially `example/otlp-*`, which are
+  reproduced on the Uptrace site.
+- The Uptrace site (`uptrace/site` repository): `content/get/opentelemetry-js/*.md`,
+  `content/guides/opentelemetry-{node-lambda,express,nestjs,nextjs}.md`, and the `@uptrace/web`
+  version in `package.json`.
+
+Look for:
+
+- Code snippets that use APIs deprecated or removed by the new OpenTelemetry version. For example,
+  OpenTelemetry 2.0 removed `new Resource()` in favor of `resourceFromAttributes()`, and `NodeSDK`
+  deprecated `spanProcessor`/`metricReader`/`logRecordProcessor` in favor of the plural array
+  options.
+- Option descriptions that no longer match the code, e.g. `deploymentEnvironment` sets
+  `deployment.environment.name`.
+
+Run any snippet you change against the new packages.
+
 ---
 
 ## Troubleshooting
@@ -148,3 +217,10 @@ pnpm -r run build
   `pnpm changeset version`.
 
 - **Authentication issues on publish?** Log in with `npm login` and ensure you have publish rights.
+
+- **`403 Forbidden ... Two-factor authentication ... is required`?** Pass a current 2FA code with
+  `--otp=<code>`.
+
+- **`403 Forbidden ... You cannot publish over the previously published versions`?** The version is
+  already published. If `npm view` doesn't show it, it's a registry caching delay; see section 4,
+  step 4.

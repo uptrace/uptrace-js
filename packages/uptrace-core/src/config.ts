@@ -18,7 +18,7 @@ export interface Config {
   serviceName?: string
   // `service.version` resource attribute.
   serviceVersion?: string
-  // `deployment.environment` resource attribute.
+  // `deployment.environment.name` resource attribute.
   deploymentEnvironment?: string
   // Any other resource attributes.
   resourceAttributes?: Record<string, any>

@@ -1,7 +1,7 @@
 'use strict'
 
 const otel = require('@opentelemetry/api')
-const { Resource } = require('@opentelemetry/resources')
+const { resourceFromAttributes } = require('@opentelemetry/resources')
 const { NodeSDK } = require('@opentelemetry/sdk-node')
 const { OTLPMetricExporter } = require('@opentelemetry/exporter-metrics-otlp-http')
 const {
@@ -23,8 +23,8 @@ const metricReader = new PeriodicExportingMetricReader({
 })
 
 const sdk = new NodeSDK({
-  metricReader: metricReader,
-  resource: new Resource({
+  metricReaders: [metricReader],
+  resource: resourceFromAttributes({
     'service.name': 'myservice',
     'service.version': '1.0.0',
   }),
