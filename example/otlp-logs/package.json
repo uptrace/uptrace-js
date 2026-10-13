@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@opentelemetry/exporter-logs-otlp-http": "0.48.0",
-    "@opentelemetry/sdk-logs": "0.48.0"
+    "@opentelemetry/api-logs": "~0.223.0",
+    "@opentelemetry/exporter-logs-otlp-http": "~0.223.0",
+    "@opentelemetry/sdk-logs": "~0.223.0"
   }
 }

@@ -207,6 +207,22 @@ Look for:
 
 Run any snippet you change against the new packages.
 
+### Updating Examples
+
+After publishing, point the examples at the new version and check that they still run:
+
+```sh
+sed -i 's/"@uptrace\/\(node\|web\)": "[^"]*"/"@uptrace\/\1": "<version>"/' example/*/package.json
+for d in example/*/; do (cd $d && rm -rf node_modules && npm install); done
+```
+
+- Commit the updated `package-lock.json` files. Make sure none of them contains `"link": true`,
+  which means the lockfile was generated against the local packages instead of npm.
+- Run each example with `UPTRACE_DSN` set (see each example's `README.md`). The `express-pg` and
+  `redis` examples need PostgreSQL and Redis.
+- `configureOpentelemetry()` returns a `NodeSDK` that the caller must `start()`; examples use
+  `sdk.traceUrl()` and `sdk.shutdown()` on that instance.
+
 ---
 
 ## Troubleshooting

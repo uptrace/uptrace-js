@@ -3,17 +3,23 @@
 const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
-uptrace.configureOpentelemetry({
+const sdk = uptrace.configureOpentelemetry({
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
   //console: true,
 })
+sdk.start()
 
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
 spanExample(tracer)
 activeSpanExample(tracer)
 contextExample(tracer)
+
+setTimeout(async () => {
+  // Send buffered spans and free resources.
+  await sdk.shutdown()
+})
 
 // This example shows how to start a span and set some attributes.
 function spanExample(tracer) {

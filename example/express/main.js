@@ -5,9 +5,9 @@ const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
 const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express')
 const uptrace = require('@uptrace/node')
 
-uptrace.configureOpentelemetry({
+const sdk = uptrace.configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
-  dsn: '',
+  //dsn: '',
 
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
@@ -19,6 +19,7 @@ uptrace.configureOpentelemetry({
     }),
   ],
 })
+sdk.start()
 
 const otel = require('@opentelemetry/api')
 const express = require('express')
@@ -34,7 +35,7 @@ app.listen(port, () => {
 })
 
 function indexHandler(req, res) {
-  const traceUrl = uptrace.traceUrl(trace.getSpan(context.active()))
+  const traceUrl = sdk.traceUrl(trace.getSpan(context.active()))
   res.send(
     `<html>` +
       `<p>Here are some routes for you:</p>` +
@@ -54,7 +55,7 @@ function helloHandler(req, res) {
   span.recordException(err)
 
   const username = req.params.username
-  const traceUrl = uptrace.traceUrl(span)
+  const traceUrl = sdk.traceUrl(span)
   res.send(
     `<html>` +
       `<h3>Hello ${username}</h3>` +

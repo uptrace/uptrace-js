@@ -1,16 +1,15 @@
-'use strict'
-
 import { createClient } from 'redis'
 import otel from '@opentelemetry/api'
 import uptrace from '@uptrace/node'
 
 // Configure OpenTelemetry with sensible defaults.
-uptrace.configureOpentelemetry({
+const sdk = uptrace.configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
   //dsn: '',
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
+sdk.start()
 
 const tracer = otel.trace.getTracer('app_or_package_name', '1.0.0')
 
@@ -30,14 +29,14 @@ async function main() {
     } finally {
       main.end()
     }
-    console.log(uptrace.traceUrl(main))
+    console.log(sdk.traceUrl(main))
   })
 
   setTimeout(async () => {
     await client.disconnect()
 
     // Send buffered spans and free resources.
-    await uptrace.shutdown()
+    await sdk.shutdown()
   })
 }
 

@@ -1,6 +1,7 @@
 'use strict'
 
-const uptrace = require('@uptrace/node')
+// Started by `node --require ./tracing.js`.
+const sdk = require('./tracing')
 const otel = require('@opentelemetry/api')
 // eslint-disable-next-line import/order
 const http = require('http')
@@ -11,7 +12,7 @@ makeRequest()
 
 setTimeout(async () => {
   // Send buffered spans and free resources.
-  await uptrace.shutdown()
+  await sdk.shutdown()
 })
 
 function makeRequest() {

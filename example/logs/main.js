@@ -5,12 +5,13 @@ const { logs, SeverityNumber } = require('@opentelemetry/api-logs')
 const uptrace = require('@uptrace/node')
 
 // Configure OpenTelemetry with sensible defaults.
-uptrace.configureOpentelemetry({
+const sdk = uptrace.configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
   //dsn: '',
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
+sdk.start()
 
 const logger = logs.getLogger('example', '1.0.0')
 
@@ -24,5 +25,5 @@ logger.emit({
 
 setTimeout(async () => {
   // Send buffered logs and free resources.
-  await uptrace.shutdown()
+  await sdk.shutdown()
 })

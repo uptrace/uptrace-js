@@ -1,7 +1,6 @@
 const { SeverityNumber } = require('@opentelemetry/api-logs')
 const { LoggerProvider, BatchLogRecordProcessor } = require('@opentelemetry/sdk-logs')
 const { OTLPLogExporter } = require('@opentelemetry/exporter-logs-otlp-http')
-const { CompressionAlgorithm } = require('@opentelemetry/otlp-exporter-base')
 
 const dsn = process.env.UPTRACE_DSN
 console.log('using dsn:', dsn)
@@ -9,13 +8,13 @@ console.log('using dsn:', dsn)
 const loggerExporter = new OTLPLogExporter({
   url: `https://api.uptrace.dev/v1/logs`,
   headers: { 'uptrace-dsn': dsn },
-  compression: CompressionAlgorithm.GZIP,
+  compression: 'gzip',
 })
-const loggerProvider = new LoggerProvider()
+const loggerProvider = new LoggerProvider({
+  processors: [new BatchLogRecordProcessor({ exporter: loggerExporter })],
+})
 
-loggerProvider.addLogRecordProcessor(new BatchLogRecordProcessor(loggerExporter))
-
-const logger = loggerProvider.getLogger('example-logger')
+const logger = loggerProvider.getLogger('app_or_package_name', '1.0.0')
 logger.emit({
   severityNumber: SeverityNumber.INFO,
   severityText: 'info',

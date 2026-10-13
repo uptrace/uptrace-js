@@ -5,21 +5,22 @@ const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumenta
 const { HapiInstrumentation } = require('@opentelemetry/instrumentation-hapi')
 const uptrace = require('@uptrace/node')
 
-uptrace.configureOpentelemetry({
+const sdk = uptrace.configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
-  dsn: '',
+  //dsn: '',
 
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 
   instrumentations: [getNodeAutoInstrumentations(), new HapiInstrumentation()],
 })
+sdk.start()
 
 const otel = require('@opentelemetry/api')
 const Hapi = require('@hapi/hapi')
 const tracer = otel.trace.getTracer('hapi-example')
 
-const server = await new Hapi.Server({
+const server = new Hapi.Server({
   port: 9999,
   host: 'localhost',
   state: { ignoreErrors: true }, // Ignore invalid cookie value
@@ -30,7 +31,7 @@ server.route({
   path: '/',
   options: {
     handler: async function response() {
-      const traceUrl = uptrace.traceUrl(trace.getSpan(context.active()))
+      const traceUrl = sdk.traceUrl(trace.getSpan(context.active()))
 
       const msg =
         `<html>` +
@@ -57,7 +58,7 @@ server.route({
       span.recordException(err)
 
       const username = request.params.username
-      const traceUrl = uptrace.traceUrl(span)
+      const traceUrl = sdk.traceUrl(span)
       const msg =
         `<html>` +
         `<h3>Hello ${username}</h3>` +

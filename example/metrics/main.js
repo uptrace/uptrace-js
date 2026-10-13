@@ -4,12 +4,13 @@ const otel = require('@opentelemetry/api')
 const uptrace = require('@uptrace/node')
 
 // Configure OpenTelemetry with sensible defaults.
-uptrace.configureOpentelemetry({
+const sdk = uptrace.configureOpentelemetry({
   // Set dsn or UPTRACE_DSN env var.
   //dsn: '',
   serviceName: 'myservice',
   serviceVersion: '1.0.0',
 })
+sdk.start()
 
 const meter = otel.metrics.getMeter('example')
 

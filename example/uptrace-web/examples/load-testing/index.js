@@ -89,7 +89,8 @@ const logExporter = new OTLPLogExporter({
 const loggerProvider = new LoggerProvider({
   resource,
   processors: [
-    new BatchLogRecordProcessor(logExporter, {
+    new BatchLogRecordProcessor({
+      exporter: logExporter,
       maxExportBatchSize: 500,
     }),
   ],
